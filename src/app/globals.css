@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --paper: #FBF6F7;
+  --paper-dark: #F3E7EB;
+  --ink: #241B22;
+  --ink-soft: #6B5A63;
+  --forest: #0E5C52;
+  --forest-dark: #093F38;
+  --gold: #B23A6B;
+  --gold-light: #E091B4;
+  --rule: #E3D3DA;
+  --blush: #E091B4;
+  --white: #FFFDFB;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--paper);
+  color: var(--ink);
+}
+
+body {
+  font-family: var(--font-inter), system-ui, sans-serif;
+  background-color: var(--paper);
+  color: var(--ink);
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* Custom fonts styling */
+.font-serif {
+  font-family: var(--font-cormorant), Georgia, serif;
+}
+
+.font-sans {
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
