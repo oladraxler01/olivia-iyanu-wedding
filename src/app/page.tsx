@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
+import EnvelopeLoader from "@/components/EnvelopeLoader";
 import CurvedGallery from "@/components/CurvedGallery";
 import VideoSection from "@/components/VideoSection";
 import CountdownSection from "@/components/CountdownSection";
@@ -8,15 +9,16 @@ import GameZone from "@/components/GameZone";
 import MasonryGallery from "@/components/MasonryGallery";
 import DressCode from "@/components/DressCode";
 import AsoebiPaymentForm from "@/components/AsoebiPaymentForm";
-import Accommodations from "@/components/Accommodations";
 import VenueMap from "@/components/VenueMap";
 import RSVP from "@/components/RSVP";
 import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#FDFBF7] text-[#241B22]">
-      <Navbar />
+    <>
+      <EnvelopeLoader />
+      <main id="main-content" className="min-h-screen bg-[#FDFBF7] text-[#241B22] overflow-x-hidden">
+        <Navbar />
       <Hero />
       <CurvedGallery />
       <VideoSection />
@@ -26,10 +28,10 @@ export default function Home() {
       <GameZone />
       <DressCode />
       <AsoebiPaymentForm />
-      <Accommodations />
       <VenueMap />
       <RSVP />
-      <Footer />
-    </main>
+        <Footer />
+      </main>
+    </>
   );
 }
