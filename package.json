@@ -10,6 +10,7 @@
   "dependencies": {
     "canvas-confetti": "^1.9.4",
     "framer-motion": "^12.42.2",
+    "heic-convert": "^2.1.0",
     "lucide-react": "^0.475.0",
     "next": "^16.2.11",
     "react": "^19.0.0",

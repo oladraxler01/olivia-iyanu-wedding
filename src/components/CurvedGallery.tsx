@@ -1,23 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
+import Image from "next/image";
 
 interface CardItem {
   id: number;
   label: string;
   sub: string;
+  image: string;
 }
 
 const cards: CardItem[] = [
-  { id: 1, label: "PHOTO 1", sub: "Pre-Wedding Shoot" },
-  { id: 2, label: "PHOTO 2", sub: "Proposal Moment" },
-  { id: 3, label: "PHOTO 3", sub: "Sunset Adventure" },
-  { id: 4, label: "PHOTO 4", sub: "Engagement Party" },
-  { id: 5, label: "PHOTO 5", sub: "Asoebi Cultural Look" },
-  { id: 6, label: "PHOTO 6", sub: "Romantic Walk" },
-  { id: 7, label: "PHOTO 7", sub: "Traditional Ceremony" },
+  { id: 1, image: "/images/IMG_0355.jpg", label: "The Genesis", sub: "Where our forever began" },
+  { id: 2, image: "/images/IMG_0515.jpg", label: "Soul Connection", sub: "Lost in the magic of us" },
+  { id: 3, image: "/images/IMG_0909.jpg", label: "Eternal Bond", sub: "Two souls intertwined" },
+  { id: 4, image: "/images/IMG_0919.jpg", label: "Radiant Love", sub: "The purest kind of happiness" },
+  { id: 5, image: "/images/IMG_3312.jpg", label: "Timeless Romance", sub: "A love written in the stars" },
+  { id: 6, image: "/images/IMG-20260722-WA0006.jpg", label: "Perfect Harmony", sub: "Together is our favorite place" },
+  { id: 7, image: "/images/IMG-20260722-WA0009.jpg", label: "Boundless Devotion", sub: "My heart belongs to you" },
+  { id: 8, image: "/images/IMG-20260722-WA0024.jpg", label: "The Promise", sub: "Walking into our beautiful future" },
 ];
 
 // Wraps offset so it loops: after 7 comes 1, before 1 comes 7
@@ -38,27 +41,27 @@ function getCardTransform(offset: number) {
 
   if (offset === 0) {
     rotateY = 0;
-    translateZ = 60;
+    translateZ = 80;
     scale = 1.05;
     opacity = 1;
   } else if (absOffset === 1) {
-    rotateY = -offset * 30;
-    translateZ = -80;
+    rotateY = -offset * 25;
+    translateZ = -100;
     scale = 0.9;
     opacity = 1;
   } else if (absOffset === 2) {
-    rotateY = -offset * 35;
-    translateZ = -200;
+    rotateY = -offset * 30;
+    translateZ = -250;
     scale = 0.75;
     opacity = 0.7;
   } else {
-    rotateY = -offset * 40;
-    translateZ = -320;
+    rotateY = -offset * 35;
+    translateZ = -400;
     scale = 0.6;
     opacity = 0.4;
   }
 
-  const translateX = offset * 160;
+  const translateX = offset * 210;
   return { rotateY, translateZ, translateX, scale, opacity, zIndex: 30 - absOffset };
 }
 
@@ -85,12 +88,21 @@ export default function CurvedGallery() {
     }
   };
 
+  // Auto-scroll effect
+  useEffect(() => {
+    if (expandedCard) return; // Pause auto-play if a card is expanded
+    const timer = setInterval(() => {
+      setActiveIndex((p) => (p + 1) % cards.length);
+    }, 3500);
+    return () => clearInterval(timer);
+  }, [expandedCard]);
+
   return (
     <section id="gallery" className="py-20 px-4 bg-[#FDFBF7] overflow-hidden select-none">
       {/* 3D container */}
       <div
         style={{ perspective: "1200px" }}
-        className="relative w-full max-w-7xl mx-auto h-[420px] sm:h-[500px] flex items-center justify-center"
+        className="relative w-full max-w-7xl mx-auto h-[500px] sm:h-[600px] flex items-center justify-center mt-10"
       >
         <motion.div
           drag="x"
@@ -111,44 +123,49 @@ export default function CurvedGallery() {
             return (
               <motion.div
                 key={card.id}
-                layoutId={`card-${card.id}`}
                 onClick={() => handleCardTap(card, idx)}
                 animate={{
-                  transform: `translateX(${t.translateX}px) translateZ(${t.translateZ}px) rotateY(${t.rotateY}deg) scale(${t.scale})`,
+                  x: t.translateX,
+                  z: t.translateZ,
+                  rotateY: t.rotateY,
+                  scale: isCenter ? [1.05, 1.25, 1.05] : t.scale,
                   opacity: t.opacity,
                 }}
                 transition={{
-                  type: "spring",
-                  stiffness: 180,
-                  damping: 22,
+                  scale: isCenter ? { duration: 3.5, times: [0, 0.4, 0.8], ease: "easeInOut" } : { type: "spring", stiffness: 180, damping: 22 },
+                  default: { type: "spring", stiffness: 180, damping: 22 },
                 }}
                 style={{
                   position: "absolute",
                   zIndex: t.zIndex,
                   transformStyle: "preserve-3d",
                 }}
-                className={`w-56 sm:w-64 rounded-2xl p-4 cursor-pointer border-2 ${
+                className={`w-64 sm:w-[340px] rounded-[1.5rem] p-2 cursor-pointer transition-colors duration-500 ${
                   isCenter
-                    ? "bg-[#FFFDFB] border-[#B23A6B] shadow-2xl ring-4 ring-[#B23A6B]/15"
-                    : "bg-[#F3E7EB] border-[#E3D3DA] shadow-xl hover:border-[#B23A6B]/40"
+                    ? "bg-white shadow-[0_30px_60px_rgba(0,0,0,0.15)] ring-4 ring-white/50"
+                    : "bg-white/60 shadow-xl hover:bg-white"
                 }`}
               >
-                <div className="w-full aspect-[3/4] rounded-xl bg-[#FDFBF7] border border-dashed border-[#E3D3DA] flex flex-col items-center justify-center p-4 text-center">
-                  <div className="w-full flex-1 rounded-lg bg-[#F3E7EB]/70 flex items-center justify-center border border-[#E3D3DA] mb-3">
-                    <span
-                      className={`text-xs font-bold uppercase tracking-wider ${
-                        isCenter ? "text-[#B23A6B]" : "text-[#6B5A63]"
-                      }`}
-                    >
+                <div className="w-full aspect-[3/4] rounded-xl relative overflow-hidden shadow-inner group">
+                  <Image 
+                    src={card.image} 
+                    alt={card.label} 
+                    fill 
+                    className="object-cover transition-transform duration-1000 group-hover:scale-110" 
+                    sizes="(max-width: 768px) 100vw, 400px"
+                  />
+                  {/* Subtle dark gradient at the bottom for text readability */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-70 group-hover:opacity-90 transition-opacity duration-500"></div>
+                  
+                  {/* Text Overlay */}
+                  <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 text-center transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                    <h3 className="font-serif text-xl sm:text-2xl leading-tight font-light text-white drop-shadow-md mb-1.5">
                       {card.label}
-                    </span>
+                    </h3>
+                    <p className="text-[10px] sm:text-xs uppercase font-bold text-[#E8C3D3] tracking-[0.2em] drop-shadow-md">
+                      {card.sub}
+                    </p>
                   </div>
-                  <p className="font-serif text-sm font-bold text-[#241B22]">
-                    Olivia &amp; Iyanu
-                  </p>
-                  <p className="text-[10px] uppercase font-semibold text-[#6B5A63] tracking-wider mt-0.5">
-                    {card.sub}
-                  </p>
                 </div>
               </motion.div>
             );
@@ -197,7 +214,6 @@ export default function CurvedGallery() {
             className="fixed inset-0 z-[100] bg-[#241B22]/70 backdrop-blur-md flex items-center justify-center p-6"
           >
             <motion.div
-              layoutId={`card-${expandedCard.id}`}
               onClick={(e) => e.stopPropagation()}
               initial={{ scale: 0.7, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -213,24 +229,28 @@ export default function CurvedGallery() {
                 <X className="w-4 h-4" />
               </button>
 
-              {/* Expanded Photo Placeholder */}
-              <div className="w-full aspect-[3/4] rounded-2xl bg-[#F3E7EB] border border-dashed border-[#E3D3DA] flex items-center justify-center mb-6">
-                <span className="text-lg font-bold uppercase tracking-wider text-[#B23A6B]">
-                  {expandedCard.label}
-                </span>
+              {/* Expanded Photo */}
+              <div className="w-full aspect-[3/4] rounded-2xl bg-[#F3E7EB] border border-[#E3D3DA] overflow-hidden mb-6 relative shadow-inner">
+                <Image 
+                  src={expandedCard.image} 
+                  alt={expandedCard.label} 
+                  fill 
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 600px"
+                />
               </div>
 
               {/* Info */}
               <div className="text-center space-y-2">
                 <h3 className="font-serif text-3xl font-bold text-[#241B22]">
-                  Olivia &amp; Iyanu
+                  {expandedCard.label}
                 </h3>
-                <p className="text-sm font-semibold uppercase tracking-wider text-[#0E5C52]">
+                <p className="text-sm font-semibold uppercase tracking-wider text-[#B23A6B]">
                   {expandedCard.sub}
                 </p>
                 <div className="w-10 h-[2px] bg-[#B23A6B]/40 mx-auto my-3"></div>
-                <p className="text-xs text-[#6B5A63] leading-relaxed">
-                  A beautiful moment captured during their journey together.
+                <p className="text-xs text-[#6B5A63] leading-relaxed italic">
+                  "Olivia and Iyanu — A match beautifully made in heaven."
                 </p>
               </div>
             </motion.div>

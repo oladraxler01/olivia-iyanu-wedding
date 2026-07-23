@@ -1,46 +1,45 @@
 "use client";
 
-import { Play } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function VideoSection() {
   return (
-    <section className="py-20 px-4 bg-[#FDFBF7]">
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
+    <section className="py-16 sm:py-24 bg-[#FDFBF7] overflow-hidden flex flex-col items-center">
+      {/* Section Heading */}
+      <motion.p 
+        initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="max-w-7xl mx-auto"
+        className="text-center text-[10px] sm:text-xs font-bold uppercase tracking-[0.3em] text-[#B23A6B] mb-8"
       >
-        {/* Section Heading */}
-        <p className="text-center text-xs font-bold uppercase tracking-[0.3em] text-[#B23A6B] mb-6">
-          Save The Date
-        </p>
+        Save The Date
+      </motion.p>
 
-        {/* Curved Plasma TV Video Container */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="w-full px-2 sm:px-4 flex justify-center"
+      >
+        {/* Massive Visually Curved Video Container */}
         <div
+          className="relative w-full max-w-[1800px] aspect-video sm:aspect-[18/9] bg-black shadow-[0_30px_60px_rgba(0,0,0,0.3)] overflow-hidden flex items-center justify-center border-[6px] sm:border-[12px] border-[#FFFDFB]"
           style={{
-            borderRadius: "24px / 60px",
+            // Creating a deep, beautiful visual curve
+            borderRadius: "70px / 140px",
           }}
-          className="relative w-full aspect-[16/9] bg-gradient-to-b from-[#F3E7EB]/80 to-[#FDFBF7] border border-[#E3D3DA] shadow-lg overflow-hidden flex items-center justify-center"
         >
-          {/* Video element placeholder — swap src later */}
+          {/* Real Pre-Wedding Video */}
           <video
-            className="absolute inset-0 w-full h-full object-cover opacity-0 pointer-events-none"
-            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+            src="/images/OLIVIA%20&%20IYANUOLUWA%20PRE%20WEDDING%20VIDEO.mp4"
+            autoPlay
             muted
+            loop
+            playsInline
+            controls
           />
-
-          {/* Centered Play Button + Prompt */}
-          <div className="relative z-10 flex flex-col items-center gap-4">
-            <button className="w-16 h-16 rounded-full border-2 border-[#B23A6B]/40 bg-[#FFFDFB] flex items-center justify-center shadow-md hover:bg-[#B23A6B] hover:border-[#B23A6B] group transition-all cursor-pointer">
-              <Play className="w-6 h-6 text-[#B23A6B] group-hover:text-white transition-colors ml-0.5" />
-            </button>
-            <p className="text-sm text-[#6B5A63] font-medium">
-              Add your save-the-date video here
-            </p>
-          </div>
         </div>
       </motion.div>
     </section>

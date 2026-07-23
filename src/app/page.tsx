@@ -24,12 +24,12 @@ export default function Home() {
       <VideoSection />
       <CountdownSection />
       <LoveStory />
-      <MasonryGallery />
       <GameZone />
+      <RSVP />
       <DressCode />
       <AsoebiPaymentForm />
+      <MasonryGallery />
       <VenueMap />
-      <RSVP />
         <Footer />
       </main>
     </>
