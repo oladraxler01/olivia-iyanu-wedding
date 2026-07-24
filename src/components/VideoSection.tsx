@@ -79,12 +79,15 @@ export default function VideoSection() {
             borderRadius: "70px / 140px",
           }}
         >
-          {/* Vimeo Embed - aspect-[9/16] wrapper forces a portrait aspect ratio to match the video, scaling its width to 100% of the container and allowing the overflow-hidden parent to crop the top and bottom perfectly without black bars! */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full min-w-[100%] aspect-[9/16] pointer-events-none">
+          {/* Vimeo Embed - intrinsic ratio trick to force a perfect 9:16 portrait aspect ratio */}
+          <div 
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full pointer-events-none"
+            style={{ paddingBottom: "177.77%" }}
+          >
             <iframe
               ref={iframeRef}
               src="https://player.vimeo.com/video/1212676451?background=1"
-              className="absolute inset-0 w-full h-full"
+              className="absolute top-0 left-0 w-full h-full"
               frameBorder="0"
               allow="autoplay; fullscreen; picture-in-picture"
               allowFullScreen
