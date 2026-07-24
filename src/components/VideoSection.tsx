@@ -74,13 +74,13 @@ export default function VideoSection() {
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="w-full px-2 sm:px-4 flex justify-center"
+        className="w-full px-1 sm:px-4 flex justify-center"
       >
         {/* Massive Visually Curved Video Container */}
         <div
-          className="relative w-full max-w-[1800px] aspect-video sm:aspect-[18/9] bg-black shadow-[0_30px_60px_rgba(0,0,0,0.3)] overflow-hidden flex items-center justify-center border-[6px] sm:border-[12px] border-[#FFFDFB] group"
+          className="relative w-full max-w-[1800px] aspect-[4/5] sm:aspect-[18/9] bg-black shadow-[0_30px_60px_rgba(0,0,0,0.3)] overflow-hidden flex items-center justify-center border-[4px] sm:border-[12px] border-[#FFFDFB] group"
           style={{
-            borderRadius: "70px / 140px",
+            borderRadius: "40px / 80px",
           }}
         >
           {/* Vimeo Embed - intrinsic ratio trick to force a perfect 9:16 portrait aspect ratio */}
