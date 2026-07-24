@@ -1,35 +1,57 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Player from "@vimeo/player";
+import { Volume2, VolumeX, Play, Pause } from "lucide-react";
 
 export default function VideoSection() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const playerRef = useRef<Player | null>(null);
+  const [isMuted, setIsMuted] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(true);
 
   useEffect(() => {
     if (!iframeRef.current) return;
 
     const player = new Player(iframeRef.current);
+    playerRef.current = player;
 
     player.on("volumechange", (data: any) => {
       if (data.volume > 0) {
+        setIsMuted(false);
         window.dispatchEvent(new Event("stop-music"));
+      } else {
+        setIsMuted(true);
       }
     });
 
-    player.on("play", () => {
-      player.getVolume().then((volume: number) => {
-        if (volume > 0) {
-          window.dispatchEvent(new Event("stop-music"));
-        }
-      });
-    });
+    player.on("play", () => setIsPlaying(true));
+    player.on("pause", () => setIsPlaying(false));
 
     return () => {
       player.destroy();
     };
   }, []);
+
+  const toggleMute = () => {
+    if (!playerRef.current) return;
+    if (isMuted) {
+      playerRef.current.setVolume(1);
+      window.dispatchEvent(new Event("stop-music"));
+    } else {
+      playerRef.current.setVolume(0);
+    }
+  };
+
+  const togglePlay = () => {
+    if (!playerRef.current) return;
+    if (isPlaying) {
+      playerRef.current.pause();
+    } else {
+      playerRef.current.play();
+    }
+  };
 
   return (
     <section className="py-16 sm:py-24 bg-[#FDFBF7] overflow-hidden flex flex-col items-center">
@@ -52,20 +74,46 @@ export default function VideoSection() {
       >
         {/* Massive Visually Curved Video Container */}
         <div
-          className="relative w-full max-w-[1800px] aspect-video sm:aspect-[18/9] bg-black shadow-[0_30px_60px_rgba(0,0,0,0.3)] overflow-hidden flex items-center justify-center border-[6px] sm:border-[12px] border-[#FFFDFB]"
+          className="relative w-full max-w-[1800px] aspect-video sm:aspect-[18/9] bg-black shadow-[0_30px_60px_rgba(0,0,0,0.3)] overflow-hidden flex items-center justify-center border-[6px] sm:border-[12px] border-[#FFFDFB] group"
           style={{
             borderRadius: "70px / 140px",
           }}
         >
-          {/* Vimeo Embed */}
-          <iframe
-            ref={iframeRef}
-            src="https://player.vimeo.com/video/1212676451?autoplay=1&loop=1&muted=1&title=0&byline=0&portrait=0"
-            className="absolute inset-0 w-full h-full object-cover"
-            frameBorder="0"
-            allow="autoplay; fullscreen; picture-in-picture"
-            allowFullScreen
-          ></iframe>
+          {/* Vimeo Embed - aspect-[9/16] wrapper forces a portrait aspect ratio to match the video, scaling its width to 100% of the container and allowing the overflow-hidden parent to crop the top and bottom perfectly without black bars! */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full min-w-[100%] aspect-[9/16] pointer-events-none">
+            <iframe
+              ref={iframeRef}
+              src="https://player.vimeo.com/video/1212676451?background=1"
+              className="absolute inset-0 w-full h-full"
+              frameBorder="0"
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowFullScreen
+            ></iframe>
+          </div>
+
+          {/* Custom Controls Overlay - Shows on Hover */}
+          <div className="absolute bottom-6 sm:bottom-8 left-0 right-0 px-8 sm:px-12 flex items-center justify-between z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <button
+              onClick={togglePlay}
+              className="flex items-center gap-2 bg-black/40 hover:bg-[#B23A6B]/80 backdrop-blur-md text-white px-4 py-2 sm:px-5 sm:py-3 rounded-full transition-all shadow-lg"
+            >
+              {isPlaying ? <Pause className="w-4 h-4 sm:w-5 sm:h-5" /> : <Play className="w-4 h-4 sm:w-5 sm:h-5" />}
+              <span className="text-xs sm:text-sm font-semibold tracking-wider uppercase">
+                {isPlaying ? "Pause" : "Play"}
+              </span>
+            </button>
+
+            <button
+              onClick={toggleMute}
+              className="flex items-center gap-2 bg-black/40 hover:bg-[#B23A6B]/80 backdrop-blur-md text-white px-4 py-2 sm:px-5 sm:py-3 rounded-full transition-all shadow-lg"
+            >
+              {isMuted ? <VolumeX className="w-4 h-4 sm:w-5 sm:h-5" /> : <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />}
+              <span className="text-xs sm:text-sm font-semibold tracking-wider uppercase">
+                {isMuted ? "Unmute" : "Mute"}
+              </span>
+            </button>
+          </div>
+          
         </div>
       </motion.div>
     </section>
