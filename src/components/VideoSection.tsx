@@ -1,8 +1,36 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import Player from "@vimeo/player";
 
 export default function VideoSection() {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  useEffect(() => {
+    if (!iframeRef.current) return;
+
+    const player = new Player(iframeRef.current);
+
+    player.on("volumechange", (data: any) => {
+      if (data.volume > 0) {
+        window.dispatchEvent(new Event("stop-music"));
+      }
+    });
+
+    player.on("play", () => {
+      player.getVolume().then((volume: number) => {
+        if (volume > 0) {
+          window.dispatchEvent(new Event("stop-music"));
+        }
+      });
+    });
+
+    return () => {
+      player.destroy();
+    };
+  }, []);
+
   return (
     <section className="py-16 sm:py-24 bg-[#FDFBF7] overflow-hidden flex flex-col items-center">
       {/* Section Heading */}
@@ -26,20 +54,18 @@ export default function VideoSection() {
         <div
           className="relative w-full max-w-[1800px] aspect-video sm:aspect-[18/9] bg-black shadow-[0_30px_60px_rgba(0,0,0,0.3)] overflow-hidden flex items-center justify-center border-[6px] sm:border-[12px] border-[#FFFDFB]"
           style={{
-            // Creating a deep, beautiful visual curve
             borderRadius: "70px / 140px",
           }}
         >
-          {/* Real Pre-Wedding Video */}
-          <video
+          {/* Vimeo Embed */}
+          <iframe
+            ref={iframeRef}
+            src="https://player.vimeo.com/video/1212676451?autoplay=1&loop=1&muted=1&title=0&byline=0&portrait=0"
             className="absolute inset-0 w-full h-full object-cover"
-            src="/images/OLIVIA%20&%20IYANUOLUWA%20PRE%20WEDDING%20VIDEO.mp4"
-            autoPlay
-            muted
-            loop
-            playsInline
-            controls
-          />
+            frameBorder="0"
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowFullScreen
+          ></iframe>
         </div>
       </motion.div>
     </section>

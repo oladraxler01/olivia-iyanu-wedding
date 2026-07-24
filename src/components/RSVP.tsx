@@ -3,6 +3,7 @@
 import { useState } from "react";
 import confetti from "canvas-confetti";
 import { Heart, CheckCircle2 } from "lucide-react";
+import Image from "next/image";
 
 export default function RSVP() {
   const [fullName, setFullName] = useState("");
@@ -29,9 +30,30 @@ export default function RSVP() {
   };
 
   return (
-    <section id="rsvp" className="py-20 px-4 bg-[#FDFBF7]">
-      <div className="max-w-2xl mx-auto text-center">
-        <div className="mb-10">
+    <section id="rsvp" className="relative py-24 bg-[#FDFBF7] overflow-hidden">
+      
+      {/* Decorative Left Botanical Element */}
+      <div className="absolute -left-16 -top-10 md:left-[-15%] lg:left-0 md:top-1/2 md:-translate-y-1/2 opacity-30 md:opacity-60 pointer-events-none z-0 mix-blend-multiply w-[250px] h-[250px] md:w-[400px] md:h-[400px]">
+        <Image 
+          src="/images/rose.png" 
+          alt="Decorative Rose" 
+          fill 
+          className="object-contain"
+        />
+      </div>
+
+      {/* Decorative Right Botanical Element */}
+      <div className="absolute -right-16 bottom-0 md:right-[-15%] lg:right-0 md:top-1/2 md:bottom-auto md:-translate-y-1/2 opacity-30 md:opacity-60 pointer-events-none z-0 mix-blend-multiply w-[250px] h-[250px] md:w-[400px] md:h-[400px]" style={{ transform: "scaleX(-1)" }}>
+        <Image 
+          src="/images/rose.png" 
+          alt="Decorative Rose" 
+          fill 
+          className="object-contain"
+        />
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-4 z-10">
+        <div className="text-center mb-10">
           <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#B23A6B] mb-2">
             Join The Celebration
           </p>
@@ -40,9 +62,9 @@ export default function RSVP() {
           </h2>
         </div>
 
-        <div className="bg-[#FFFDFB] border border-[#E3D3DA] rounded-3xl p-6 sm:p-10 shadow-lg text-left">
+        <div className="max-w-2xl mx-auto bg-[#FFFDFB] border border-[#E3D3DA] rounded-3xl p-6 sm:p-10 shadow-xl shadow-[#E3D3DA]/50 text-left relative z-20">
           {!submitted ? (
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6 relative">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-[#241B22] mb-2">
                   Full Name *
@@ -139,7 +161,7 @@ export default function RSVP() {
               </button>
             </form>
           ) : (
-            <div className="text-center py-8 space-y-4">
+            <div className="text-center py-12 space-y-4">
               <CheckCircle2 className="w-16 h-16 text-[#0E5C52] mx-auto" />
               <h3 className="font-serif text-3xl font-bold text-[#241B22]">
                 RSVP Confirmed!

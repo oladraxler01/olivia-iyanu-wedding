@@ -18,8 +18,22 @@ export default function Navbar() {
       }
     };
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    // Sync state with global AudioPlayer
+    const handleMusicState = (e: any) => {
+      setIsPlayingAudio(e.detail.isPlaying);
+    };
+    window.addEventListener("music-state-change", handleMusicState);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("music-state-change", handleMusicState);
+    };
   }, []);
+
+  const toggleGlobalMusic = () => {
+    window.dispatchEvent(new Event("toggle-music"));
+  };
 
   const navLinks = [
     { name: "Our Story", href: "#story" },
@@ -64,7 +78,7 @@ export default function Navbar() {
         <div className="flex items-center gap-3 sm:gap-4">
           {/* Ambient Music Toggle */}
           <button
-            onClick={() => setIsPlayingAudio(!isPlayingAudio)}
+            onClick={toggleGlobalMusic}
             title={isPlayingAudio ? "Mute Music" : "Play Ambient Wedding Music"}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition-all cursor-pointer ${scrolled ? 'bg-[#D4A5A5]/15 border-[#D4A5A5]/40 text-[#241B22] hover:bg-[#D4A5A5]/30' : 'bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm'}`}
           >

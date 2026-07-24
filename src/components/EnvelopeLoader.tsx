@@ -29,6 +29,9 @@ export default function EnvelopeLoader() {
   const handleOpen = () => {
     if (isOpen) return;
     setIsOpen(true);
+    
+    // Autoplay background music the exact second they open the envelope
+    window.dispatchEvent(new Event("start-music"));
 
     setTimeout(() => {
       setIsUnmounting(true);

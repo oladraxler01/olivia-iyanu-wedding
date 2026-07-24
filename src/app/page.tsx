@@ -11,11 +11,14 @@ import DressCode from "@/components/DressCode";
 import AsoebiPaymentForm from "@/components/AsoebiPaymentForm";
 import VenueMap from "@/components/VenueMap";
 import RSVP from "@/components/RSVP";
+import GiftRegistry from "@/components/GiftRegistry";
 import Footer from "@/components/Footer";
+import AudioPlayer from "@/components/AudioPlayer";
 
 export default function Home() {
   return (
     <>
+      <AudioPlayer />
       <EnvelopeLoader />
       <main id="main-content" className="min-h-screen bg-[#FDFBF7] text-[#241B22] overflow-x-hidden">
         <Navbar />
@@ -25,6 +28,7 @@ export default function Home() {
       <CountdownSection />
       <LoveStory />
       <GameZone />
+      <GiftRegistry />
       <RSVP />
       <DressCode />
       <AsoebiPaymentForm />
