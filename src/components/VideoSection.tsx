@@ -10,6 +10,7 @@ export default function VideoSection() {
   const playerRef = useRef<Player | null>(null);
   const [isMuted, setIsMuted] = useState(true);
   const [isPlaying, setIsPlaying] = useState(true);
+  const [isVideoReady, setIsVideoReady] = useState(false);
 
   useEffect(() => {
     if (!iframeRef.current) return;
@@ -26,7 +27,10 @@ export default function VideoSection() {
       }
     });
 
-    player.on("play", () => setIsPlaying(true));
+    player.on("play", () => {
+      setIsPlaying(true);
+      setIsVideoReady(true);
+    });
     player.on("pause", () => setIsPlaying(false));
 
     return () => {
@@ -92,6 +96,19 @@ export default function VideoSection() {
               allow="autoplay; fullscreen; picture-in-picture"
               allowFullScreen
             ></iframe>
+          </div>
+
+          {/* Beautiful Poster Image Placeholder - Fades out instantly when video is actually playing */}
+          <div 
+            className={`absolute inset-0 w-full h-full z-10 bg-black transition-opacity duration-1000 ${
+              isVideoReady ? "opacity-0 pointer-events-none" : "opacity-100"
+            }`}
+          >
+            <img 
+              src="/images/IMG_0919.jpg" 
+              alt="Loading Video..." 
+              className="w-full h-full object-cover opacity-90"
+            />
           </div>
 
           {/* Custom Controls Overlay - Shows on Hover */}
