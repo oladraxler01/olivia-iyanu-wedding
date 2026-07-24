@@ -32,7 +32,7 @@ export default function AsoebiPaymentForm() {
   };
 
   return (
-    <section className="py-24 px-4 bg-[#F5EFEF]">
+    <section id="asoebi" className="py-24 px-4 bg-[#F5EFEF]">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-12">
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#B23A6B] mb-3">

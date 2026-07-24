@@ -86,7 +86,7 @@ export default function VideoSection() {
           >
             <iframe
               ref={iframeRef}
-              src="https://player.vimeo.com/video/1212676451?background=1"
+              src="https://player.vimeo.com/video/1212676451?background=1&quality=1080p"
               className="absolute top-0 left-0 w-full h-full"
               frameBorder="0"
               allow="autoplay; fullscreen; picture-in-picture"

@@ -39,7 +39,7 @@ export default function Navbar() {
     { name: "Our Story", href: "#story" },
     { name: "Curved Gallery", href: "#gallery" },
     { name: "Asoebi Shop", href: "#asoebi" },
-    { name: "Fun Zone", href: "#funzone" },
+    { name: "Fun Zone", href: "#games" },
     { name: "RSVP", href: "#rsvp" },
   ];
 
