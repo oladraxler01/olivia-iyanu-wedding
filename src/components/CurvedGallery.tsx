@@ -206,20 +206,17 @@ export default function CurvedGallery() {
       <AnimatePresence>
         {expandedCard && (
           <motion.div
+            key="lightbox-curved"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
+            transition={{ duration: 0.3 }}
             onClick={() => setExpandedCard(null)}
-            className="fixed inset-0 z-[100] bg-[#241B22]/70 backdrop-blur-md flex items-center justify-center p-6"
+            className="fixed inset-0 z-[200] bg-[#241B22]/80 backdrop-blur-md flex items-center justify-center p-6"
           >
-            <motion.div
+            <div
               onClick={(e) => e.stopPropagation()}
-              initial={{ scale: 0.7, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.7, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 200, damping: 24 }}
-              className="relative w-full max-w-lg bg-[#FFFDFB] rounded-3xl border-2 border-[#B23A6B] shadow-2xl p-6 sm:p-8"
+              className="relative w-full max-w-lg bg-[#FFFDFB] rounded-3xl border-2 border-[#B23A6B] shadow-2xl p-6 sm:p-8 z-[205]"
             >
               {/* Close Button */}
               <button
@@ -230,13 +227,11 @@ export default function CurvedGallery() {
               </button>
 
               {/* Expanded Photo */}
-              <div className="w-full aspect-[3/4] rounded-2xl bg-[#F3E7EB] border border-[#E3D3DA] overflow-hidden mb-6 relative shadow-inner">
-                <Image 
+              <div className="w-full rounded-2xl bg-[#F3E7EB] border border-[#E3D3DA] overflow-hidden mb-6 shadow-inner flex items-center justify-center">
+                <img 
                   src={expandedCard.image} 
                   alt={expandedCard.label} 
-                  fill 
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 600px"
+                  className="w-full h-auto max-h-[60vh] object-cover"
                 />
               </div>
 
@@ -253,7 +248,7 @@ export default function CurvedGallery() {
                   "Olivia and Iyanu — A match beautifully made in heaven."
                 </p>
               </div>
-            </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

@@ -154,35 +154,31 @@ export default function MasonryGallery() {
       <AnimatePresence>
         {selectedImg && (
           <motion.div
+            key="lightbox"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
             onClick={() => setSelectedImg(null)}
-            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 sm:p-8"
+            className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-8"
           >
             <button
               onClick={() => setSelectedImg(null)}
-              className="absolute top-6 right-6 w-12 h-12 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors z-50 cursor-pointer"
+              className="absolute top-6 right-6 w-12 h-12 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors z-[210] cursor-pointer"
             >
               <X className="w-6 h-6" />
             </button>
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            
+            <div 
               onClick={(e) => e.stopPropagation()}
-              className="relative w-[95vw] h-[95vh] flex items-center justify-center pointer-events-none"
+              className="relative w-full max-w-6xl max-h-[90vh] flex items-center justify-center z-[205]"
             >
-              <Image 
+              <img 
                 src={selectedImg} 
                 alt="Expanded view" 
-                fill 
-                className="object-contain pointer-events-auto" 
-                sizes="100vw"
-                quality={100}
+                className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-[0_0_50px_rgba(0,0,0,0.5)] select-none" 
               />
-            </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
