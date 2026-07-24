@@ -122,14 +122,22 @@ export default function Navbar() {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-[#FDFBF7]/98 backdrop-blur-xl border-b border-[#D4AF37]/20 px-6 py-6 transition-all duration-300 shadow-xl">
+        <div className={`md:hidden backdrop-blur-xl border-b px-6 py-6 transition-all duration-300 shadow-xl ${
+          scrolled 
+            ? "bg-[#FDFBF7]/95 border-[#D4AF37]/20" 
+            : "bg-black/80 border-white/10"
+        }`}>
           <nav className="flex flex-col gap-4 text-center">
             {navLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-lg font-serif tracking-wider text-[#241B22] hover:text-[#D4AF37] py-2 border-b border-[#D4A5A5]/15 transition-colors"
+                className={`text-lg font-serif tracking-wider py-2 border-b transition-colors ${
+                  scrolled 
+                    ? "text-[#241B22] hover:text-[#D4AF37] border-[#D4A5A5]/15" 
+                    : "text-white/90 hover:text-white border-white/10"
+                }`}
               >
                 {link.name}
               </a>
@@ -137,7 +145,7 @@ export default function Navbar() {
             <a
               href="#rsvp"
               onClick={() => setMobileMenuOpen(false)}
-              className="mt-2 w-full py-3 rounded-full text-center text-sm font-semibold uppercase tracking-wider bg-gradient-to-r from-[#D4AF37] to-[#C29B27] text-white shadow-md"
+              className="mt-2 w-full py-3 rounded-full text-center text-sm font-semibold uppercase tracking-wider bg-gradient-to-r from-[#D4AF37] to-[#C29B27] text-white shadow-md hover:shadow-lg transition-all"
             >
               RSVP Now
             </a>
