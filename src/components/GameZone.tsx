@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronUp, ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Heart } from "lucide-react";
+import { X, ChevronUp, ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Heart, Loader2 } from "lucide-react";
+import { saveScore } from "./Leaderboard";
 
 // ─── CUSTOM SVG ICONS ─────────────────────────────
 const QuestionIcon = () => (
@@ -33,7 +34,7 @@ const TimelineIcon = () => (
 
 const HeartIcon = () => (
   <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-    <path d="M16 27S4 20 4 12.5C4 8.9 7 6 10.5 6C12.8 6 14.8 7.2 16 9C17.2 7.2 19.2 6 21.5 6C25 6 28 8.9 28 12.5C28 20 16 27 16 27Z" stroke="#F3E7EB" strokeWidth="2.2" strokeLinejoin="round" />
+    <path d="M16 27S4 20 4 12.5C4 8.9 7 6 10.5 6C12.8 6 14.8 7.2 16 9 C17.2 7.2 19.2 6 21.5 6C25 6 28 8.9 28 12.5C28 20 16 27 16 27Z" stroke="#F3E7EB" strokeWidth="2.2" strokeLinejoin="round" />
   </svg>
 );
 
@@ -220,9 +221,10 @@ function TriviaGame({ onClose }: { onClose: () => void }) {
           <p className="text-sm text-[#6B5A63] mb-6">
             {score >= 7 ? "You really know us!" : score >= 4 ? "Not bad at all!" : "We clearly need to hang out more."}
           </p>
+          <SaveScoreForm gameType="trivia" score={score} onSaved={() => {}} />
           <button
             onClick={() => { setQIdx(0); setScore(0); setSelected(null); setFinished(false); }}
-            className="px-6 py-2.5 rounded-full bg-[#0E5C52] text-white text-sm font-bold hover:bg-[#0A4A42] transition-colors cursor-pointer"
+            className="mt-6 px-6 py-2.5 rounded-full bg-[#0E5C52] text-white text-sm font-bold hover:bg-[#0A4A42] transition-colors cursor-pointer"
           >
             Play Again
           </button>
@@ -338,6 +340,8 @@ function MemoryGame({ onClose }: { onClose: () => void }) {
           <p className="text-5xl mb-3">🎊</p>
           <h3 className="font-serif text-2xl font-bold text-[#241B22] mb-1">All matched!</h3>
           <p className="text-sm text-[#6B5A63]">You did it in {moves} moves.</p>
+          <SaveScoreForm gameType="memory" score={moves} onSaved={() => {}} />
+          <button onClick={initGame} className="mt-6 px-6 py-2 rounded-full border border-[#E3D3DA] text-sm text-[#0E5C52] hover:bg-[#F5EFEF] transition-colors">Play Again</button>
         </div>
       ) : (
         <div className="grid grid-cols-4 gap-3">
@@ -490,6 +494,8 @@ function MazeGame({ onClose }: { onClose: () => void }) {
           <p className="text-5xl mb-3">💒</p>
           <h3 className="font-serif text-2xl font-bold text-[#241B22] mb-1">They found each other!</h3>
           <p className="text-sm text-[#6B5A63]">In {moves} moves.</p>
+          <SaveScoreForm gameType="maze" score={moves} onSaved={() => {}} />
+          <button onClick={restart} className="mt-6 px-6 py-2 rounded-full border border-[#E3D3DA] text-sm text-[#0E5C52] hover:bg-[#F5EFEF] transition-colors cursor-pointer">Play Again</button>
         </div>
       ) : (
         <>
@@ -561,5 +567,55 @@ function GameHeader({ title, onClose }: { title: string; onClose: () => void }) 
         Close <X className="w-3.5 h-3.5" />
       </button>
     </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════
+// SHARED: SCORE FORM HELPER
+// ═══════════════════════════════════════════════════
+function SaveScoreForm({ gameType, score, onSaved }: { gameType: string, score: number, onSaved: () => void }) {
+  const [name, setName] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [saved, setSaved] = useState(false);
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) return;
+    setSaving(true);
+    setError("");
+    try {
+      await saveScore(name.trim(), gameType, score);
+      setSaved(true);
+      setTimeout(onSaved, 2000);
+    } catch (err: any) {
+      setError(err.message || "Failed to save score");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (saved) return <p className="text-sm font-bold text-[#0E5C52] mt-4">Score saved to Leaderboard!</p>;
+
+  return (
+    <form onSubmit={onSubmit} className="mt-4 flex flex-col gap-2 max-w-[240px] mx-auto">
+      <input 
+        type="text" 
+        placeholder="Enter your name" 
+        value={name} 
+        onChange={e => setName(e.target.value)} 
+        required 
+        className="w-full px-3 py-2 border border-[#E3D3DA] rounded-sm text-sm text-center focus:outline-none focus:border-[#0E5C52]" 
+        disabled={saving} 
+      />
+      {error && <p className="text-[10px] text-red-500">{error}</p>}
+      <button 
+        type="submit" 
+        disabled={saving || !name.trim()} 
+        className="w-full py-2 bg-[#1A3C3A] text-white text-xs uppercase tracking-widest font-bold rounded-sm hover:bg-[#0E5C52] transition-colors disabled:opacity-70 flex justify-center items-center gap-2"
+      >
+        {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : "Save Score"}
+      </button>
+    </form>
   );
 }
