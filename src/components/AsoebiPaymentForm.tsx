@@ -13,7 +13,7 @@ const priceList = [
 ];
 
 export default function AsoebiPaymentForm() {
-  const [quantities, setQuantities] = useState<{ [key: string]: number }>({
+  const [quantities, setQuantities] = useState<{ [key: string]: number | "" }>({
     ladies: 0,
     men: 0,
     gele: 0,
@@ -30,11 +30,19 @@ export default function AsoebiPaymentForm() {
   const [error, setError] = useState<string | null>(null);
 
   const totalAmount = priceList.reduce(
-    (sum, item) => sum + item.price * (quantities[item.id] || 0),
+    (sum, item) => {
+      const q = quantities[item.id];
+      const val = typeof q === 'number' ? q : 0;
+      return sum + item.price * val;
+    },
     0
   );
 
   const handleQuantityChange = (id: string, val: string) => {
+    if (val === "") {
+      setQuantities((prev) => ({ ...prev, [id]: "" }));
+      return;
+    }
     const parsed = parseInt(val, 10);
     setQuantities((prev) => ({
       ...prev,
@@ -205,7 +213,7 @@ export default function AsoebiPaymentForm() {
                       <input
                         type="number"
                         min="0"
-                        value={quantities[item.id] || 0}
+                        value={quantities[item.id]}
                         onChange={(e) => handleQuantityChange(item.id, e.target.value)}
                         className="w-full sm:w-24 px-4 py-2 text-center border border-[#E3D3DA] rounded-sm text-sm focus:outline-none focus:border-[#0E5C52]"
                         disabled={isSubmitting}
