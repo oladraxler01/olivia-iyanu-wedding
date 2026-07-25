@@ -10,6 +10,7 @@ import MasonryGallery from "@/components/MasonryGallery";
 import DressCode from "@/components/DressCode";
 import AsoebiPaymentForm from "@/components/AsoebiPaymentForm";
 import VenueMap from "@/components/VenueMap";
+import PreviewSection from "@/components/PreviewSection";
 import RSVP from "@/components/RSVP";
 import GiftRegistry from "@/components/GiftRegistry";
 import Footer from "@/components/Footer";
@@ -29,6 +30,7 @@ export default function Home() {
       <LoveStory />
       <GameZone />
       <GiftRegistry />
+      <PreviewSection />
       <RSVP />
       <DressCode />
       <AsoebiPaymentForm />
