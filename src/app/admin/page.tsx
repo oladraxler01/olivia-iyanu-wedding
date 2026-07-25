@@ -8,7 +8,7 @@ type RSVP = {
   id: number;
   created_at: string;
   full_name: string;
-  attending: string;
+  attending: boolean;
   guest_count: number;
   song_request: string;
 };
@@ -84,7 +84,7 @@ export default function AdminDashboard() {
 
   // Derived Stats
   const totalAttending = rsvps
-    .filter(r => r.attending === "Yes")
+    .filter(r => r.attending === true)
     .reduce((sum, r) => sum + (r.guest_count || 1), 0);
     
   const totalRevenue = asoebiOrders.reduce((sum, order) => sum + (order.total_amount || 0), 0);
@@ -231,9 +231,9 @@ export default function AdminDashboard() {
                       <td className="px-6 py-4 font-medium">{rsvp.full_name}</td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex px-2 py-1 rounded-full text-xs font-bold ${
-                          rsvp.attending === "Yes" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                          rsvp.attending ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
                         }`}>
-                          {rsvp.attending}
+                          {rsvp.attending ? "Yes" : "No"}
                         </span>
                       </td>
                       <td className="px-6 py-4 font-bold">{rsvp.guest_count}</td>
