@@ -19,7 +19,7 @@ export default function Footer() {
         </p>
 
         <p className="text-[10px] text-[#E3D3DA]/40">
-          &copy; 2026 Olivia &amp; Iyanu. All rights reserved.
+          &copy; 2026 <a href="/admin" className="hover:text-[#E3D3DA]/80 transition-colors">olivia&amp;iyanu admin</a>. All rights reserved.
         </p>
       </div>
     </footer>
