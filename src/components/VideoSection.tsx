@@ -105,7 +105,7 @@ export default function VideoSection() {
             }`}
           >
             <img 
-              src="/images/IMG_0919.jpg" 
+              src="https://i.vimeocdn.com/video/2183179938-32b5e4e8f368b875abd29282712cb51176e1370b700b0c52c7a6eab5119f775c-d_1920?region=us" 
               alt="Loading Video..." 
               className="w-full h-full object-cover opacity-90"
             />
