@@ -6,6 +6,7 @@ import VideoSection from "@/components/VideoSection";
 import CountdownSection from "@/components/CountdownSection";
 import LoveStory from "@/components/LoveStory";
 import GameZone from "@/components/GameZone";
+import Leaderboard from "@/components/Leaderboard";
 import MasonryGallery from "@/components/MasonryGallery";
 import DressCode from "@/components/DressCode";
 import AsoebiPaymentForm from "@/components/AsoebiPaymentForm";
@@ -29,6 +30,7 @@ export default function Home() {
       <CountdownSection />
       <LoveStory />
       <GameZone />
+      <Leaderboard />
       <GiftRegistry />
       <PreviewSection />
       <RSVP />
