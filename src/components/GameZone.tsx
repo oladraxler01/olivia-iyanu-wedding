@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronUp, ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Heart, Loader2 } from "lucide-react";
-import { saveScore } from "./Leaderboard";
+import Leaderboard, { saveScore } from "./Leaderboard";
 
 // ─── CUSTOM SVG ICONS ─────────────────────────────
 const QuestionIcon = () => (
@@ -179,6 +179,9 @@ export default function GameZone() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Leaderboard embedded inside GameZone */}
+        <Leaderboard />
       </div>
     </section>
   );
@@ -425,6 +428,7 @@ function TimelineGame({ onClose }: { onClose: () => void }) {
         <div className="text-center py-4">
           <p className="text-4xl mb-2">🎉</p>
           <p className="font-serif text-xl font-bold text-[#0E5C52]">Perfect order!</p>
+          <SaveScoreForm gameType="timeline" score={1} onSaved={() => {}} />
         </div>
       ) : (
         <button
