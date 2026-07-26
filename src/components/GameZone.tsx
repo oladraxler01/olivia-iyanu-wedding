@@ -45,13 +45,13 @@ type GameId = "trivia" | "memory" | "timeline" | "maze" | null;
 const triviaQuestions = [
   { q: "Where did Olivia and Iyanu meet?", options: ["A friend’s Birthday Party", "At work", "At the Tennis club", "In church"], answer: 1 },
   { q: "Who said 'I love you' first?", options: ["Olivia", "Iyanu", "Both at the same time", "Neither remembers"], answer: 1 },
-  { q: "What is Iyanu's favourite meal Olivia cooks?", options: ["Beans and Plantain", "Efo and Poundo", "Jollof rice and Turkey with Plantains", "Afang and swallow"], answer: 2 },
+  { q: "What is Iyanu's favourite meal Olivia cooks?", options: ["Beans and Plantain", "Efo and Poundo", "Jollof rice and Turkey with Plantains", "Afang and swallow"], answer: 3 },
   { q: "What is Olivia's love language?", options: ["Words of affirmation", "Quality time", "Acts of service", "Physical touch"], answer: 0 },
-  { q: "What pet do they love to have?", options: ["A cat", "A Dog", "A parrot", "They are not lovers of pet"], answer: 3 },
-  { q: "What's their preferred go-to date night activity?", options: ["Wings Night out", "Cooking together", "Mortal Kombat", "Laughter Cave"], answer: 3 },
+  { q: "What pet do they love to have?", options: ["A cat", "A Dog", "A parrot", "They are not lovers of pet"], answer: 1 },
+  { q: "What's their preferred go-to date night activity?", options: ["Wings Night out", "Cooking together", "Mortal Kombat", "Laughter Cave"], answer: 0 },
   { q: "What city are they getting married in?", options: ["Abuja", "London", "Lagos", "Accra"], answer: 2 },
-  { q: "Who is more likely to plan a spontaneous trip?", options: ["Obim", "Adesewa", "Both equally spontaneous", "Neither — they always plan ahead"], answer: 0 },
-  { q: "What's their dream honeymoon destination?", options: ["Singapore", "Barbedos", "Santorini", "Bali"], answer: 2 },
+  { q: "Who is more likely to plan a spontaneous trip?", options: ["Obim", "Adesewa", "Both equally spontaneous", "Neither — they always plan ahead"], answer: 1 },
+  { q: "What's their dream honeymoon destination?", options: ["Singapore", "Barbedos", "Santorini", "Bali"], answer: 0 },
   { q: "Who is the better dancer?", options: ["Obim", "Adesewa", "They're evenly matched", "Neither dances to save a life"], answer: 1 },
 ];
 
