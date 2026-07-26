@@ -2,58 +2,35 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import Player from "@vimeo/player";
 import { Volume2, VolumeX, Play, Pause } from "lucide-react";
 
 export default function VideoSection() {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
-  const playerRef = useRef<Player | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [isMuted, setIsMuted] = useState(true);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [isVideoReady, setIsVideoReady] = useState(false);
 
   useEffect(() => {
-    if (!iframeRef.current) return;
-
-    const player = new Player(iframeRef.current);
-    playerRef.current = player;
-
-    player.on("volumechange", (data: any) => {
-      if (data.volume > 0) {
-        setIsMuted(false);
-        window.dispatchEvent(new Event("stop-music"));
-      } else {
-        setIsMuted(true);
-      }
-    });
-
-    player.on("play", () => {
-      setIsPlaying(true);
-      setIsVideoReady(true);
-    });
-    player.on("pause", () => setIsPlaying(false));
-
-    return () => {
-      player.destroy();
-    };
+    if (videoRef.current) {
+      videoRef.current.play().catch(e => console.log("Autoplay blocked:", e));
+    }
   }, []);
 
   const toggleMute = () => {
-    if (!playerRef.current) return;
+    if (!videoRef.current) return;
+    videoRef.current.muted = !isMuted;
+    setIsMuted(!isMuted);
     if (isMuted) {
-      playerRef.current.setVolume(1);
+      // If we are unmuting, dispatch event to stop background music
       window.dispatchEvent(new Event("stop-music"));
-    } else {
-      playerRef.current.setVolume(0);
     }
   };
 
   const togglePlay = () => {
-    if (!playerRef.current) return;
+    if (!videoRef.current) return;
     if (isPlaying) {
-      playerRef.current.pause();
+      videoRef.current.pause();
     } else {
-      playerRef.current.play();
+      videoRef.current.play();
     }
   };
 
@@ -83,33 +60,18 @@ export default function VideoSection() {
             borderRadius: "40px / 80px",
           }}
         >
-          {/* Vimeo Embed - intrinsic ratio trick to force a perfect 9:16 portrait aspect ratio */}
-          <div 
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full pointer-events-none"
-            style={{ paddingBottom: "177.77%" }}
-          >
-            <iframe
-              ref={iframeRef}
-              src="https://player.vimeo.com/video/1212676451?background=1&quality=1080p"
-              className="absolute top-0 left-0 w-full h-full"
-              frameBorder="0"
-              allow="autoplay; fullscreen; picture-in-picture"
-              allowFullScreen
-            ></iframe>
-          </div>
-
-          {/* Beautiful Poster Image Placeholder - Fades out instantly when video is actually playing */}
-          <div 
-            className={`absolute inset-0 w-full h-full z-10 bg-black transition-opacity duration-1000 ${
-              isVideoReady ? "opacity-0 pointer-events-none" : "opacity-100"
-            }`}
-          >
-            <img 
-              src="https://i.vimeocdn.com/video/2183179938-32b5e4e8f368b875abd29282712cb51176e1370b700b0c52c7a6eab5119f775c-d_1920?region=us" 
-              alt="Loading Video..." 
-              className="w-full h-full object-cover opacity-90"
-            />
-          </div>
+          {/* HTML5 Video */}
+          <video
+            ref={videoRef}
+            src="/images/IMG_1797.MP4"
+            className="absolute top-0 left-0 w-full h-full object-cover"
+            autoPlay
+            loop
+            muted={isMuted}
+            playsInline
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+          ></video>
 
           {/* Custom Controls Overlay - Shows on Hover */}
           <div className="absolute bottom-6 sm:bottom-8 left-0 right-0 px-8 sm:px-12 flex items-center justify-between z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
