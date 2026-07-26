@@ -253,9 +253,15 @@ function TriviaGame({ onClose }: { onClose: () => void }) {
       >
         Ten questions. No pressure. (Okay, a little pressure.)
       </p>
-      <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#B23A6B] mb-2">
-        Question {qIdx + 1} of {triviaQuestions.length}
-      </p>
+      
+      <div className="flex justify-between items-end mb-2">
+        <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#B23A6B]">
+          Question {qIdx + 1} of {triviaQuestions.length}
+        </p>
+        <p className="text-sm font-bold text-[#0E5C52]">
+          Score: {Math.floor(score)}
+        </p>
+      </div>
       <h3
         style={{ fontFamily: "var(--font-cormorant), Georgia, serif" }}
         className="text-xl sm:text-2xl text-[#241B22] mb-6"
