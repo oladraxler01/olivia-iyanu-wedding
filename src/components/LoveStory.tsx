@@ -1,15 +1,14 @@
 "use client";
 
-import { Heart, Camera } from "lucide-react";
+import { Heart, Camera, Utensils, Users, Image as ImageIcon, Crown } from "lucide-react";
 import { motion } from "framer-motion";
 
 const milestones = [
-  { year: "2021", title: "The proposal", desc: "" },
-  { year: "2022", title: "Traditional engagement (Introduction)", desc: "" },
-  { year: "2023", title: "First trip together", desc: "" },
-  { year: "2024", title: "Family dinner", desc: "" },
-  { year: "2025", title: "Getting the rings", desc: "" },
-  { year: "2026", title: "Just us", desc: "" },
+  { icon: <Utensils className="w-5 h-5 text-[#B23A6B]/50" />, title: "Lunch/Dinner dates", desc: "From first dates to forever — the dinner diaries are here." },
+  { icon: <Camera className="w-5 h-5 text-[#B23A6B]/50" />, title: "Proposal pictures", desc: "Every crown has a beginning. Ours started with one question & deserves a proper reveal, [X days] to reveal." },
+  { icon: <Users className="w-5 h-5 text-[#B23A6B]/50" />, title: "The Bridal party Squad", desc: "The crown doesn't stand alone — get ready to meet the ones who hold it up. [X days] to go." },
+  { icon: <ImageIcon className="w-5 h-5 text-[#B23A6B]/50" />, title: "Traditional engagement pictures", desc: "Two heritages, one love story — the traditional photos are almost here." },
+  { icon: <Crown className="w-5 h-5 text-[#B23A6B]/50" />, title: "White wedding ceremony", desc: "Be Present to capture the moments." },
 ];
 
 const storyParagraphs = [
@@ -66,15 +65,6 @@ export default function LoveStory() {
                   <Heart className="w-3 h-3 text-[#B23A6B] fill-[#B23A6B]" />
                 </div>
 
-                {/* Year Badge — on opposite side of the card */}
-                <div
-                  className={`absolute top-6 text-xs font-bold uppercase tracking-wider text-[#B23A6B] ${
-                    isEven ? "left-[54%]" : "right-[54%] text-right"
-                  }`}
-                >
-                  {m.year}
-                </div>
-
                 {/* Content Card */}
                 <div
                   className={`w-[45%] ${
@@ -84,14 +74,17 @@ export default function LoveStory() {
                   <div className="bg-[#FFFDFB] border border-[#E3D3DA] rounded-3xl p-6 shadow-sm hover:shadow-md transition-shadow">
                     {/* Image Placeholder */}
                     <div className="aspect-[16/9] w-full rounded-2xl bg-[#F3E7EB]/60 border border-dashed border-[#E3D3DA] flex flex-col items-center justify-center gap-2 mb-4">
-                      <Camera className="w-5 h-5 text-[#B23A6B]/50" />
+                      {m.icon}
                     </div>
 
                     <p
                       style={{ fontFamily: "var(--font-cormorant), Georgia, serif", fontStyle: "italic" }}
-                      className="text-sm text-[#0E5C52] font-medium"
+                      className="text-lg text-[#0E5C52] font-medium mb-2"
                     >
                       {m.title}
+                    </p>
+                    <p className="text-sm text-[#6B5A63]">
+                      {m.desc}
                     </p>
                   </div>
                 </div>
@@ -106,8 +99,14 @@ export default function LoveStory() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="max-w-2xl mx-auto space-y-6"
+          className="max-w-2xl mx-auto space-y-6 text-center"
         >
+          <h3 
+            style={{ fontFamily: "var(--font-cormorant), Georgia, serif" }}
+            className="text-3xl sm:text-4xl font-light text-[#0E5C52] mb-6"
+          >
+            Two houses, one crown.
+          </h3>
           {storyParagraphs.map((p, idx) => (
             <p
               key={idx}
