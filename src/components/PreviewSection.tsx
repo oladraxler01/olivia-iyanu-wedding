@@ -12,17 +12,17 @@ const previews = [
   {
     icon: PlusCircle,
     title: "Lucky Dip",
-    description: "Reach in, take a chance — every single dip wins something."
+    description: "Some gifts you choose. This one chooses you."
   },
   {
     icon: Music,
     title: "Live Band into DJ Set",
-    description: "Highlife live through dinner, then the dance floor takes over till late."
+    description: "The band says hello. The DJ says let's go. Buckle up"
   },
   {
     icon: Camera,
     title: "Photo Booth Corner",
-    description: "Props, a backdrop in our colours — snap something to take home."
+    description: "A little corner for big smiles — snap something to take home."
   },
   {
     icon: CreditCard,

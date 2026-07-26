@@ -47,6 +47,7 @@ export default function Hero() {
         <div className="space-y-1 text-xs sm:text-sm text-white/90 font-medium tracking-wide drop-shadow-md">
           <p className="font-sans">30 October 2026</p>
           <p className="text-white/70 text-[11px] uppercase tracking-[0.1em]">Lagos, Nigeria</p>
+          <p className="text-[#E8C3D3] font-bold text-xs mt-2 italic tracking-wide">#LetsDoLifeTogether</p>
         </div>
       </div>
     </section>

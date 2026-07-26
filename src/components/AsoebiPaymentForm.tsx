@@ -6,19 +6,23 @@ import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 const priceList = [
-  { id: "ladies", name: "Aso-ebi fabric — Ladies (2 yards)", price: 25000 },
+  { id: "ladies_3", name: "Aso-ebi fabric — Ladies (3 yards)", price: 24000 },
+  { id: "ladies_4", name: "Aso-ebi fabric — Ladies (4 yards)", price: 32000 },
   { id: "men", name: "Aso-ebi fabric — Men (native wear length)", price: 28000 },
-  { id: "gele", name: "Gele (head wrap)", price: 12000 },
-  { id: "fila", name: "Men's cap (fila)", price: 8000 },
+  { id: "gele", name: "Sego Gele (head wrap)", price: 12000 },
+  { id: "fila", name: "Men's cap (fila)", price: 10000 },
 ];
 
 export default function AsoebiPaymentForm() {
   const [quantities, setQuantities] = useState<{ [key: string]: number | "" }>({
-    ladies: 0,
+    ladies_3: 0,
+    ladies_4: 0,
     men: 0,
     gele: 0,
     fila: 0,
   });
+
+  const [filaMeasurement, setFilaMeasurement] = useState("");
 
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
@@ -97,7 +101,7 @@ export default function AsoebiPaymentForm() {
             full_name: fullName.trim(),
             phone: phone.trim(),
             delivery_location: deliveryLocation.trim(),
-            items: quantities,
+            items: { ...quantities, fila_measurement: filaMeasurement.trim() },
             total_amount: totalAmount,
             proof_of_payment_url: proofUrl,
           }
@@ -209,6 +213,21 @@ export default function AsoebiPaymentForm() {
                         <span className="text-[#6B5A63] text-xs">
                           (₦{item.price.toLocaleString()})
                         </span>
+                        {item.id === "fila" && quantities["fila"] > 0 && (
+                          <div className="mt-3">
+                            <label className="block text-[10px] text-[#6B5A63] mb-1 italic">
+                              We're getting your fila made! Please measure around your head in inches:
+                            </label>
+                            <input
+                              type="text"
+                              value={filaMeasurement}
+                              onChange={(e) => setFilaMeasurement(e.target.value)}
+                              placeholder="e.g. 22 inches"
+                              className="w-full sm:w-48 px-3 py-1.5 border border-[#E3D3DA] rounded-sm text-xs focus:outline-none focus:border-[#0E5C52]"
+                              disabled={isSubmitting}
+                            />
+                          </div>
+                        )}
                       </span>
                       <input
                         type="number"
@@ -225,7 +244,7 @@ export default function AsoebiPaymentForm() {
 
               <div>
                 <label className="block text-xs text-[#6B5A63] mb-2">
-                  Delivery location
+                  Delivery location <span className="italic text-[#B23A6B]">(Note: You are responsible for your asoebi delivery fee)</span>
                 </label>
                 <textarea
                   rows={3}
@@ -243,9 +262,9 @@ export default function AsoebiPaymentForm() {
                 <p className="text-xs font-semibold uppercase tracking-widest text-[#6B5A63] mb-4">
                   Payment details
                 </p>
-                <p className="mb-2">Bank: Guaranty Trust Bank (GTBank)</p>
-                <p className="mb-2">Account name: Olivia & Iyanu Wedding Account</p>
-                <p className="mb-4">Account number: 0123456789</p>
+                <p className="mb-2">Bank: Providus Bank</p>
+                <p className="mb-2">Account name: Olutunmbi Iyanuoluwa</p>
+                <p className="mb-4">Account number: 6506784864</p>
                 <p className="font-bold text-[#B23A6B]">
                   Amount due: ₦{totalAmount.toLocaleString()}
                 </p>
@@ -265,7 +284,7 @@ export default function AsoebiPaymentForm() {
                 />
                 <p className="text-xs text-[#6B5A63] mt-3 leading-relaxed">
                   If your upload doesn't go through, please also send your proof of
-                  payment directly to +234 800 000 0000 on WhatsApp.
+                  payment directly to +234 9075708080 on WhatsApp.
                 </p>
               </div>
 
@@ -304,7 +323,8 @@ export default function AsoebiPaymentForm() {
                   setPhone("");
                   setDeliveryLocation("");
                   setFile(null);
-                  setQuantities({ ladies: 0, men: 0, gele: 0, fila: 0 });
+                  setQuantities({ ladies_3: 0, ladies_4: 0, men: 0, gele: 0, fila: 0 });
+                  setFilaMeasurement("");
                   setSubmitted(false);
                 }}
                 className="mt-6 px-6 py-2 rounded-sm border border-[#E3D3DA] text-sm font-semibold text-[#0E5C52] hover:bg-[#F5EFEF] transition-colors"

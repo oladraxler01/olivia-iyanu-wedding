@@ -6,7 +6,7 @@ const lookbook = [
   {
     id: "palette",
     title: "Our Palette",
-    desc: "Teal, magenta, and blush — wear any shade in this family, mixed or matched.",
+    desc: "Teal green outfits, emerald green head gear, and a touch of silver for the shine.",
     colors: ["#0E5C52", "#B23A6B", "#D4A5A5", "#F3E7EB"],
     showImageSpace: false,
   },
@@ -21,7 +21,7 @@ const lookbook = [
   {
     id: "gentlemen",
     title: "Aso-Ebi Gentlemen",
-    desc: "Agbada or a native two-piece in aso-ebi fabric, with or without a fila cap.",
+    desc: "White Agbada or a native two-piece with the provided fila cap.",
     colors: ["#0E5C52", "#B23A6B"],
     showImageSpace: true,
     imageLabel: "Men's Fabric Material",
