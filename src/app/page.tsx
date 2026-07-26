@@ -30,14 +30,14 @@ export default function Home() {
       <CountdownSection />
       <LoveStory />
       <GameZone />
-      <GiftRegistry />
       <PreviewSection />
       <GuestUploads />
       <RSVP />
       <DressCode />
       <AsoebiPaymentForm />
-      <MasonryGallery />
+      <GiftRegistry />
       <VenueMap />
+      <MasonryGallery />
         <Footer />
       </main>
     </>

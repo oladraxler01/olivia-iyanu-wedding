@@ -195,6 +195,11 @@ function TriviaGame({ onClose }: { onClose: () => void }) {
   const [score, setScore] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [finished, setFinished] = useState(false);
+  const [startTime, setStartTime] = useState<number>(0);
+
+  useEffect(() => {
+    setStartTime(Date.now());
+  }, []);
 
   const current = triviaQuestions[qIdx];
 
@@ -207,26 +212,29 @@ function TriviaGame({ onClose }: { onClose: () => void }) {
         setQIdx((q) => q + 1);
         setSelected(null);
       } else {
+        const timeElapsed = (Date.now() - startTime) / 1000;
+        setScore((s) => s + (1 / timeElapsed));
         setFinished(true);
       }
     }, 800);
   };
 
   if (finished) {
+    const rawScore = Math.floor(score);
     return (
       <div>
         <GameHeader title="Couple Trivia" onClose={onClose} />
         <div className="text-center py-10">
-          <p className="text-6xl mb-4">{score >= 7 ? "🎉" : score >= 4 ? "😊" : "😅"}</p>
+          <p className="text-6xl mb-4">{rawScore >= 7 ? "🎉" : rawScore >= 4 ? "😊" : "😅"}</p>
           <h3 className="font-serif text-3xl font-bold text-[#241B22] mb-2">
-            You scored {score} / {triviaQuestions.length}
+            You scored {rawScore} / {triviaQuestions.length}
           </h3>
           <p className="text-sm text-[#6B5A63] mb-6">
-            {score >= 7 ? "You really know us!" : score >= 4 ? "Not bad at all!" : "We clearly need to hang out more."}
+            {rawScore >= 7 ? "You really know us!" : rawScore >= 4 ? "Not bad at all!" : "We clearly need to hang out more."}
           </p>
           <SaveScoreForm gameType="trivia" score={score} onSaved={() => {}} />
           <button
-            onClick={() => { setQIdx(0); setScore(0); setSelected(null); setFinished(false); }}
+            onClick={() => { setQIdx(0); setScore(0); setSelected(null); setFinished(false); setStartTime(Date.now()); }}
             className="mt-6 px-6 py-2.5 rounded-full bg-[#0E5C52] text-white text-sm font-bold hover:bg-[#0A4A42] transition-colors cursor-pointer"
           >
             Play Again

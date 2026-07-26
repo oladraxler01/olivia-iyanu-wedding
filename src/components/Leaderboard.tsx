@@ -113,7 +113,13 @@ export default function Leaderboard() {
             </div>
           ) : (
             <ul className="divide-y divide-[#F3E7EB]">
-              {scores.map((entry, idx) => (
+              {scores.map((entry, idx) => {
+                const isTrivia = activeTab === "trivia";
+                const rawScore = isTrivia ? Math.floor(entry.score) : entry.score;
+                const timeFrac = isTrivia ? entry.score - rawScore : 0;
+                const timeStr = timeFrac > 0 && timeFrac < 1 ? `(${(1 / timeFrac).toFixed(1)}s)` : "";
+
+                return (
                 <motion.li
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -133,13 +139,14 @@ export default function Leaderboard() {
                     )}
                   </div>
                   <div className="col-span-7 sm:col-span-8 font-medium text-[#241B22] truncate pr-4">
-                    {entry.guest_name}
+                    {entry.guest_name} {isTrivia && timeStr && <span className="text-[10px] text-[#6B5A63] ml-1">{timeStr}</span>}
                   </div>
                   <div className="col-span-3 text-right font-bold text-[#0E5C52]">
-                    {entry.score} {activeTab === "memory" || activeTab === "maze" ? <span className="text-[10px] font-normal text-[#6B5A63]">moves</span> : activeTab === "timeline" ? <span className="text-[10px] font-normal text-[#6B5A63]">pts</span> : ""}
+                    {rawScore} {activeTab === "memory" || activeTab === "maze" ? <span className="text-[10px] font-normal text-[#6B5A63]">moves</span> : activeTab === "timeline" ? <span className="text-[10px] font-normal text-[#6B5A63]">pts</span> : isTrivia ? <span className="text-[10px] font-normal text-[#6B5A63]">pts</span> : ""}
                   </div>
                 </motion.li>
-              ))}
+                );
+              })}
             </ul>
           )}
         </div>
