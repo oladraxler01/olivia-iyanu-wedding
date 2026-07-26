@@ -56,7 +56,16 @@ const triviaQuestions = [
 ];
 
 // ─── MEMORY MATCH DATA ────────────────────────────
-const memoryIcons = ["💍", "💐", "🎂", "💒", "🥂", "💌", "👰", "🤵"];
+const memoryIcons = [
+  "/images/matching_game/IMG_3593.png",
+  "/images/matching_game/IMG_3993.jpg",
+  "/images/matching_game/SAVE_20260704_202817.jpg",
+  "/images/matching_game/IMG_9412.jpg",
+  "/images/matching_game/IMG_9510.jpg",
+  "💍",
+  "💐",
+  "🎂",
+];
 
 function shuffleArray<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -370,13 +379,21 @@ function MemoryGame({ onClose }: { onClose: () => void }) {
               <button
                 key={idx}
                 onClick={() => handleFlip(idx)}
-                className={`aspect-square rounded-xl text-2xl sm:text-3xl flex items-center justify-center transition-all cursor-pointer border ${
+                className={`aspect-square rounded-xl text-2xl sm:text-3xl flex items-center justify-center transition-all cursor-pointer border overflow-hidden ${
                   isFlipped
-                    ? "bg-white border-[#E3D3DA] scale-100"
-                    : "bg-[#1A3C3A] border-[#1A3C3A] hover:bg-[#0E5C52]"
+                    ? "bg-white border-[#E3D3DA] scale-100 p-0"
+                    : "bg-[#1A3C3A] border-[#1A3C3A] hover:bg-[#0E5C52] p-2"
                 }`}
               >
-                {isFlipped ? card.icon : <Heart className="w-4 h-4 text-[#0E5C52]/40" />}
+                {isFlipped ? (
+                  card.icon.startsWith("/") ? (
+                    <img src={card.icon} alt="memory card" className="w-full h-full object-cover" />
+                  ) : (
+                    card.icon
+                  )
+                ) : (
+                  <Heart className="w-4 h-4 text-[#0E5C52]/40" />
+                )}
               </button>
             );
           })}
