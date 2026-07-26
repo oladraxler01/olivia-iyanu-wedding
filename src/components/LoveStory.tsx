@@ -21,7 +21,7 @@ const storyParagraphs = [
 export default function LoveStory() {
   return (
     <section id="story" className="py-24 px-4 bg-[#FDFBF7] relative overflow-hidden">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         {/* Heading */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -71,7 +71,7 @@ export default function LoveStory() {
                     isEven ? "mr-auto pr-8 text-right" : "ml-auto pl-8 text-left"
                   }`}
                 >
-                  <div className="bg-[#FFFDFB] border border-[#E3D3DA] rounded-3xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="bg-[#FFFDFB] border border-[#E3D3DA] rounded-3xl p-8 shadow-sm hover:shadow-md transition-shadow">
                     {/* Image Placeholder */}
                     <div className="aspect-[16/9] w-full rounded-2xl bg-[#F3E7EB]/60 border border-dashed border-[#E3D3DA] flex flex-col items-center justify-center gap-2 mb-4">
                       {m.icon}
