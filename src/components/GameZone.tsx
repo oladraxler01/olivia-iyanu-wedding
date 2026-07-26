@@ -43,16 +43,16 @@ type GameId = "trivia" | "memory" | "timeline" | "maze" | null;
 
 // ─── TRIVIA DATA ──────────────────────────────────
 const triviaQuestions = [
-  { q: "Where did Olivia and Iyanu meet?", options: ["A friend's rooftop party", "On a hiking trail", "At work", "In line for coffee"], answer: 0 },
-  { q: "What was their first trip together?", options: ["Paris", "Santorini", "Bali", "Accra"], answer: 1 },
-  { q: "Who said 'I love you' first?", options: ["Olivia", "Iyanu", "Both at the same time", "Neither remembers"], answer: 2 },
-  { q: "What is Iyanu's favourite meal Olivia cooks?", options: ["Jollof rice", "Pasta carbonara", "Fried plantain & eggs", "Egusi soup"], answer: 0 },
-  { q: "What song did Iyanu propose to?", options: ["Perfect — Ed Sheeran", "All of Me — John Legend", "No one — he forgot to press play", "Ojuelegba — Wizkid"], answer: 2 },
-  { q: "Where did the proposal happen?", options: ["A quiet overlook", "Their living room", "A restaurant in Lagos", "On a boat ride"], answer: 0 },
-  { q: "What is Olivia's love language?", options: ["Words of affirmation", "Quality time", "Acts of service", "Physical touch"], answer: 1 },
-  { q: "What pet do they want to adopt next?", options: ["A cat", "A golden retriever", "A parrot", "They already have too many"], answer: 1 },
-  { q: "What's their go-to date night activity?", options: ["Cinema", "Cooking together", "Board games", "Late-night drives"], answer: 3 },
+  { q: "Where did Olivia and Iyanu meet?", options: ["A friend’s Birthday Party", "At work", "At the Tennis club", "In church"], answer: 1 },
+  { q: "Who said 'I love you' first?", options: ["Olivia", "Iyanu", "Both at the same time", "Neither remembers"], answer: 1 },
+  { q: "What is Iyanu's favourite meal Olivia cooks?", options: ["Beans and Plantain", "Efo and Poundo", "Jollof rice and Turkey with Plantains", "Afang and swallow"], answer: 2 },
+  { q: "What is Olivia's love language?", options: ["Words of affirmation", "Quality time", "Acts of service", "Physical touch"], answer: 0 },
+  { q: "What pet do they love to have?", options: ["A cat", "A Dog", "A parrot", "They are not lovers of pet"], answer: 3 },
+  { q: "What's their preferred go-to date night activity?", options: ["Wings Night out", "Cooking together", "Mortal Kombat", "Laughter Cave"], answer: 3 },
   { q: "What city are they getting married in?", options: ["Abuja", "London", "Lagos", "Accra"], answer: 2 },
+  { q: "Who is more likely to plan a spontaneous trip?", options: ["Obim", "Adesewa", "Both equally spontaneous", "Neither — they always plan ahead"], answer: 0 },
+  { q: "What's their dream honeymoon destination?", options: ["Singapore", "Barbedos", "Santorini", "Bali"], answer: 2 },
+  { q: "Who is the better dancer?", options: ["Obim", "Adesewa", "They're evenly matched", "Neither dances to save a life"], answer: 1 },
 ];
 
 // ─── MEMORY MATCH DATA ────────────────────────────
@@ -69,10 +69,12 @@ function shuffleArray<T>(arr: T[]): T[] {
 
 // ─── TIMELINE DATA ────────────────────────────────
 const correctTimelineOrder = [
-  "First met at a friend's rooftop party",
-  "Said 'I love you' (at the exact same time)",
-  "Adopted their first dog together",
-  "Got engaged on a national park overlook",
+  "First met at work",
+  "First outing — terrible location, great conversation",
+  "Attended church together",
+  "Said I love you",
+  "Official outing to meet friends",
+  "Official outing to meet Family",
   "Wedding day — October 30th, 2026",
 ];
 
@@ -99,7 +101,7 @@ export default function GameZone() {
     { id: "trivia", icon: <QuestionIcon />, title: "Couple Trivia", sub: "how well do you know us?" },
     { id: "memory", icon: <CardsIcon />, title: "Memory Match", sub: "flip the wedding icons" },
     { id: "timeline", icon: <TimelineIcon />, title: "Our Timeline", sub: "put our story in order" },
-    { id: "maze", icon: <HeartIcon />, title: "Find the Groom", sub: "guide Olivia to Iyanu" },
+    { id: "maze", icon: <HeartIcon />, title: "Find the Bride", sub: "guide Iyanu to find Olivia" },
   ];
 
   return (
@@ -120,7 +122,7 @@ export default function GameZone() {
             style={{ fontFamily: "var(--font-cormorant), Georgia, serif" }}
             className="text-4xl sm:text-5xl font-light text-[#241B22] mb-3"
           >
-            Get to know us — a little
+            Get to know us – a little bit more.
           </h2>
           <p
             style={{ fontFamily: "var(--font-cormorant), Georgia, serif", fontStyle: "italic" }}
@@ -493,12 +495,12 @@ function MazeGame({ onClose }: { onClose: () => void }) {
 
   return (
     <div>
-      <GameHeader title="Help Olivia Find Her Groom" onClose={onClose} />
+      <GameHeader title="Help Iyanu Find His Bride" onClose={onClose} />
       <p
         style={{ fontFamily: "var(--font-cormorant), Georgia, serif", fontStyle: "italic" }}
         className="text-sm text-[#6B5A63] mb-4"
       >
-        Guide Olivia through the maze to reach Iyanu — use the arrows below or your keyboard.
+        Guide Iyanu through the maze to reach Olivia — use the arrows below or your keyboard.
       </p>
       <div className="flex items-center justify-between mb-4">
         <p className="text-sm text-[#241B22] font-medium">Moves: {moves}</p>
@@ -533,7 +535,7 @@ function MazeGame({ onClose }: { onClose: () => void }) {
                         isWall ? "bg-[#1A3C3A]" : "bg-[#F3E7EB]/40"
                       }`}
                     >
-                      {isPlayer ? "👰" : isEnd ? "🤵" : ""}
+                      {isPlayer ? "🤵" : isEnd ? "👰" : ""}
                     </div>
                   );
                 })
