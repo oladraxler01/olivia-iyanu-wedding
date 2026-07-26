@@ -16,9 +16,9 @@ export default function GuestUploads() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Check if it's the wedding date or later (Dec 18, 2026)
+  // Check if it's the wedding date or later (Oct 30, 2026)
   useEffect(() => {
-    const weddingDate = new Date("2026-12-18T00:00:00").getTime();
+    const weddingDate = new Date("2026-10-30T00:00:00").getTime();
     const now = new Date().getTime();
     if (now >= weddingDate) {
       setIsUnlocked(true);
@@ -108,7 +108,7 @@ export default function GuestUploads() {
             Digital Disposable Camera
           </h2>
           <p className="text-[#6B5A63] text-sm sm:text-base leading-relaxed">
-            This section is currently locked. Check back on our wedding day (December 18, 2026) to upload the photos and videos you take!
+            This section is currently locked. Check back on our wedding day (October 30, 2026) to upload the photos and videos you take!
           </p>
         </div>
       </section>
