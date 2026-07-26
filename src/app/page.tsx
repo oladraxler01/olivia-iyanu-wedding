@@ -13,6 +13,7 @@ import VenueMap from "@/components/VenueMap";
 import PreviewSection from "@/components/PreviewSection";
 import RSVP from "@/components/RSVP";
 import GiftRegistry from "@/components/GiftRegistry";
+import GuestUploads from "@/components/GuestUploads";
 import Footer from "@/components/Footer";
 import AudioPlayer from "@/components/AudioPlayer";
 
@@ -31,6 +32,7 @@ export default function Home() {
       <GameZone />
       <GiftRegistry />
       <PreviewSection />
+      <GuestUploads />
       <RSVP />
       <DressCode />
       <AsoebiPaymentForm />

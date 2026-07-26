@@ -24,15 +24,24 @@ type AsoebiOrder = {
   proof_of_payment_url: string;
 };
 
+type GuestMedia = {
+  id: number;
+  created_at: string;
+  guest_name: string;
+  media_url: string;
+  media_type: string;
+};
+
 export default function AdminDashboard() {
   const [passcode, setPasscode] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authError, setAuthError] = useState("");
 
-  const [activeTab, setActiveTab] = useState<"rsvps" | "asoebi">("rsvps");
+  const [activeTab, setActiveTab] = useState<"rsvps" | "asoebi" | "media">("rsvps");
   
   const [rsvps, setRsvps] = useState<RSVP[]>([]);
   const [asoebiOrders, setAsoebiOrders] = useState<AsoebiOrder[]>([]);
+  const [guestMedia, setGuestMedia] = useState<GuestMedia[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -66,8 +75,16 @@ export default function AdminDashboard() {
 
       if (asoebiError) throw asoebiError;
 
+      const { data: mediaData, error: mediaError } = await supabase
+        .from("guest_media")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (mediaError) throw mediaError;
+
       setRsvps(rsvpData || []);
       setAsoebiOrders(asoebiData || []);
+      setGuestMedia(mediaData || []);
     } catch (err: any) {
       console.error(err);
       setError("Failed to fetch data: " + err.message);
@@ -143,8 +160,8 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stats Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white p-6 rounded-xl border border-[#E3D3DA] shadow-sm flex items-center gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+          <div className="bg-white p-4 rounded-xl border border-[#E3D3DA] shadow-sm flex items-center gap-3">
             <div className="w-12 h-12 rounded-full bg-[#0E5C52]/10 flex items-center justify-center text-[#0E5C52]">
               <Users className="w-6 h-6" />
             </div>
@@ -171,13 +188,22 @@ export default function AdminDashboard() {
               <p className="text-2xl font-bold text-[#241B22]">₦{totalRevenue.toLocaleString()}</p>
             </div>
           </div>
-          <div className="bg-white p-6 rounded-xl border border-[#E3D3DA] shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-700">
-              <span className="font-bold text-xl">!</span>
+          <div className="bg-white p-4 rounded-xl border border-[#E3D3DA] shadow-sm flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-700">
+              <span className="font-bold">!</span>
             </div>
             <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-[#6B5A63]">Total RSVPs</p>
-              <p className="text-2xl font-bold text-[#241B22]">{rsvps.length}</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[#6B5A63]">RSVPs</p>
+              <p className="text-xl font-bold text-[#241B22]">{rsvps.length}</p>
+            </div>
+          </div>
+          <div className="bg-white p-4 rounded-xl border border-[#E3D3DA] shadow-sm flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-700">
+              <Eye className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[#6B5A63]">Uploads</p>
+              <p className="text-xl font-bold text-[#241B22]">{guestMedia.length}</p>
             </div>
           </div>
         </div>
@@ -200,11 +226,19 @@ export default function AdminDashboard() {
           </button>
           <button
             onClick={() => setActiveTab("asoebi")}
-            className={`px-6 py-3 rounded-t-xl text-sm font-bold transition-colors ${
+            className={`px-4 sm:px-6 py-3 rounded-t-xl text-sm font-bold transition-colors ${
               activeTab === "asoebi" ? "bg-white text-[#0E5C52] border-t border-l border-r border-[#E3D3DA]" : "bg-transparent text-[#6B5A63] hover:text-[#241B22]"
             }`}
           >
-            Aso-ebi Orders
+            Aso-ebi
+          </button>
+          <button
+            onClick={() => setActiveTab("media")}
+            className={`px-4 sm:px-6 py-3 rounded-t-xl text-sm font-bold transition-colors ${
+              activeTab === "media" ? "bg-white text-[#0E5C52] border-t border-l border-r border-[#E3D3DA]" : "bg-transparent text-[#6B5A63] hover:text-[#241B22]"
+            }`}
+          >
+            Guest Media
           </button>
         </div>
 
@@ -303,6 +337,52 @@ export default function AdminDashboard() {
                   )}
                 </tbody>
               </table>
+            </div>
+          )}
+
+          {/* GUEST MEDIA TAB */}
+          {activeTab === "media" && (
+            <div className="p-6">
+              {guestMedia.length === 0 ? (
+                <div className="text-center py-12 text-[#6B5A63]">
+                  No media uploaded yet. Check back after the wedding!
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {guestMedia.map((media) => (
+                    <div key={media.id} className="group relative aspect-square bg-[#FDFBF7] rounded-xl overflow-hidden border border-[#E3D3DA] shadow-sm">
+                      {media.media_type === "video" ? (
+                        <video 
+                          src={media.media_url} 
+                          className="w-full h-full object-cover" 
+                          controls
+                        />
+                      ) : (
+                        <img 
+                          src={media.media_url} 
+                          alt="Guest upload" 
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      )}
+                      
+                      {/* Overlay Info */}
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-3 pt-8 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <p className="text-white text-xs font-bold truncate">{media.guest_name}</p>
+                        <p className="text-white/70 text-[10px]">{new Date(media.created_at).toLocaleDateString()}</p>
+                        <a 
+                          href={media.media_url} 
+                          download 
+                          target="_blank" 
+                          rel="noreferrer"
+                          className="mt-2 inline-block px-3 py-1 bg-white/20 hover:bg-white/30 text-white rounded text-[10px] font-semibold backdrop-blur-sm transition-colors"
+                        >
+                          View / Download
+                        </a>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
