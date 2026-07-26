@@ -14,8 +14,8 @@ export const saveScore = async (guest_name: string, game_type: string, score: nu
 };
 
 // ─── DISPLAY COMPONENT ──────────────────────────────────
-type GameTab = "trivia" | "memory" | "timeline" | "maze";
-type ScoreEntry = { id: number; guest_name: string; score: number };
+type GameTab = "all" | "trivia" | "memory" | "timeline" | "maze";
+type ScoreEntry = { id: number; guest_name: string; score: number; game_type?: string; created_at?: string };
 
 export default function Leaderboard() {
   const [activeTab, setActiveTab] = useState<GameTab>("trivia");
@@ -29,12 +29,17 @@ export default function Leaderboard() {
     try {
       const isAscending = game_type !== "trivia";
 
-      const { data, error: dbError } = await supabase
+      let query = supabase
         .from("leaderboards")
-        .select("id, guest_name, score")
-        .eq("game_type", game_type)
-        .order("score", { ascending: isAscending })
-        .limit(10);
+        .select("id, guest_name, score, game_type, created_at");
+
+      if (game_type !== "all") {
+        query = query.eq("game_type", game_type).order("score", { ascending: isAscending }).limit(10);
+      } else {
+        query = query.order("created_at", { ascending: false }).limit(20);
+      }
+
+      const { data, error: dbError } = await query;
 
       if (dbError) throw dbError;
       setScores(data || []);
@@ -68,6 +73,7 @@ export default function Leaderboard() {
       {/* Tabs */}
       <div className="flex flex-wrap justify-center gap-2 mb-8">
         {[
+          { id: "all", label: "All Games" },
           { id: "trivia", label: "Couple Trivia" },
           { id: "memory", label: "Memory Match" },
           { id: "timeline", label: "Our Timeline" },
@@ -114,10 +120,18 @@ export default function Leaderboard() {
           ) : (
             <ul className="divide-y divide-[#F3E7EB]">
               {scores.map((entry, idx) => {
-                const isTrivia = activeTab === "trivia";
+                const effectiveTab = activeTab === "all" ? entry.game_type : activeTab;
+                const isTrivia = effectiveTab === "trivia";
                 const rawScore = isTrivia ? Math.floor(entry.score) : entry.score;
                 const timeFrac = isTrivia ? entry.score - rawScore : 0;
                 const timeStr = timeFrac > 0 && timeFrac < 1 ? `(${(1 / timeFrac).toFixed(1)}s)` : "";
+                
+                const gameNames: Record<string, string> = {
+                  trivia: "Trivia",
+                  memory: "Memory",
+                  timeline: "Timeline",
+                  maze: "Maze",
+                };
 
                 return (
                 <motion.li
@@ -128,7 +142,9 @@ export default function Leaderboard() {
                   className="grid grid-cols-12 items-center p-4 hover:bg-[#FDFBF7] transition-colors"
                 >
                   <div className="col-span-2 sm:col-span-1 flex justify-center">
-                    {idx === 0 ? (
+                    {activeTab === "all" ? (
+                      <span className="text-[10px] uppercase font-bold text-[#6B5A63] bg-[#E3D3DA]/40 px-2 py-1 rounded-full">{gameNames[entry.game_type || ""] || "Game"}</span>
+                    ) : idx === 0 ? (
                       <Medal className="w-5 h-5 text-yellow-500" />
                     ) : idx === 1 ? (
                       <Medal className="w-5 h-5 text-gray-400" />
@@ -138,11 +154,11 @@ export default function Leaderboard() {
                       <span className="text-sm font-bold text-[#6B5A63]">{idx + 1}</span>
                     )}
                   </div>
-                  <div className="col-span-7 sm:col-span-8 font-medium text-[#241B22] truncate pr-4">
+                  <div className={`col-span-7 sm:col-span-8 font-medium text-[#241B22] truncate ${activeTab === "all" ? "pl-2" : "pr-4"}`}>
                     {entry.guest_name} {isTrivia && timeStr && <span className="text-[10px] text-[#6B5A63] ml-1">{timeStr}</span>}
                   </div>
                   <div className="col-span-3 text-right font-bold text-[#0E5C52]">
-                    {rawScore} {activeTab === "memory" || activeTab === "maze" ? <span className="text-[10px] font-normal text-[#6B5A63]">moves</span> : activeTab === "timeline" ? <span className="text-[10px] font-normal text-[#6B5A63]">pts</span> : isTrivia ? <span className="text-[10px] font-normal text-[#6B5A63]">pts</span> : ""}
+                    {rawScore} {effectiveTab === "memory" || effectiveTab === "maze" ? <span className="text-[10px] font-normal text-[#6B5A63]">moves</span> : effectiveTab === "timeline" || isTrivia ? <span className="text-[10px] font-normal text-[#6B5A63]">pts</span> : ""}
                   </div>
                 </motion.li>
                 );

@@ -9,8 +9,8 @@ import { supabase } from "@/lib/supabase";
 export default function RSVP() {
   const [fullName, setFullName] = useState("");
   const [attending, setAttending] = useState<"yes" | "no">("yes");
-  const [guestCount, setGuestCount] = useState(1);
-  const [notes, setNotes] = useState("");
+  const [song, setSong] = useState("");
+  const [comments, setComments] = useState("");
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -24,14 +24,16 @@ export default function RSVP() {
     setError(null);
 
     try {
+      const combinedNotes = song.trim() + (comments.trim() ? `\n\nNotes: ${comments.trim()}` : "");
+      
       const { error: supabaseError } = await supabase
         .from('rsvps')
         .insert([
           {
             full_name: fullName.trim(),
             attending: attending === "yes",
-            guest_count: attending === "yes" ? guestCount : 0,
-            song_request: notes.trim(),
+            guest_count: 1,
+            song_request: combinedNotes,
           }
         ]);
 
@@ -149,32 +151,29 @@ export default function RSVP() {
                 </div>
               </div>
 
-              {attending === "yes" && (
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#093F38] mb-2">
-                    Total Guest Count Attending
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="5"
-                    value={guestCount}
-                    onChange={(e) => setGuestCount(parseInt(e.target.value) || 1)}
-                    className="w-full px-4 py-3 rounded-xl border border-[#E3D3DA] bg-[#FDFBF7] text-sm focus:outline-none focus:border-[#B23A6B]"
-                    disabled={isSubmitting}
-                  />
-                </div>
-              )}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#093F38] mb-2">
+                  Song Request
+                </label>
+                <input
+                  type="text"
+                  value={song}
+                  onChange={(e) => setSong(e.target.value)}
+                  placeholder="What song will get you on the dance floor?"
+                  className="w-full px-4 py-3 rounded-xl border border-[#E3D3DA] bg-[#FDFBF7] text-sm focus:outline-none focus:border-[#B23A6B]"
+                  disabled={isSubmitting}
+                />
+              </div>
 
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-[#093F38] mb-2">
-                  Song Request or Personal Message
+                  Comments / Notes
                 </label>
                 <textarea
                   rows={3}
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Share a message or song request for the DJ..."
+                  value={comments}
+                  onChange={(e) => setComments(e.target.value)}
+                  placeholder="Any dietary requirements or notes for us?"
                   className="w-full px-4 py-3 rounded-xl border border-[#E3D3DA] bg-[#FDFBF7] text-sm focus:outline-none focus:border-[#B23A6B]"
                   disabled={isSubmitting}
                 ></textarea>

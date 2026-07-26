@@ -100,9 +100,7 @@ export default function AdminDashboard() {
   }, [isAuthenticated]);
 
   // Derived Stats
-  const totalAttending = rsvps
-    .filter(r => r.attending === true)
-    .reduce((sum, r) => sum + (r.guest_count || 1), 0);
+  const totalAttending = rsvps.filter(r => r.attending === true).length;
     
   const totalRevenue = asoebiOrders.reduce((sum, order) => sum + (order.total_amount || 0), 0);
 
@@ -254,8 +252,7 @@ export default function AdminDashboard() {
                     <th className="px-6 py-4">Date</th>
                     <th className="px-6 py-4">Guest Name</th>
                     <th className="px-6 py-4">Attending</th>
-                    <th className="px-6 py-4">Count</th>
-                    <th className="px-6 py-4">Song Request</th>
+                    <th className="px-6 py-4 font-bold tracking-wider">Song / Notes</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#F3E7EB]">
@@ -270,13 +267,12 @@ export default function AdminDashboard() {
                           {rsvp.attending ? "Yes" : "No"}
                         </span>
                       </td>
-                      <td className="px-6 py-4 font-bold">{rsvp.guest_count}</td>
                       <td className="px-6 py-4 text-[#6B5A63] italic max-w-xs truncate" title={rsvp.song_request}>{rsvp.song_request || "—"}</td>
                     </tr>
                   ))}
                   {rsvps.length === 0 && (
                     <tr>
-                      <td colSpan={5} className="px-6 py-12 text-center text-[#6B5A63]">No RSVPs found.</td>
+                      <td colSpan={4} className="px-6 py-12 text-center text-[#6B5A63]">No RSVPs found.</td>
                     </tr>
                   )}
                 </tbody>
