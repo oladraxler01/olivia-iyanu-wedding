@@ -15,12 +15,12 @@ interface CardItem {
 const cards: CardItem[] = [
   { id: 1, image: "/images/IMG_0355.jpg", label: "The Genesis", sub: "Where our forever began" },
   { id: 2, image: "/images/IMG_0515.jpg", label: "Soul Connection", sub: "Lost in the magic of us" },
-  { id: 3, image: "/images/IMG_0909.jpg", label: "Eternal Bond", sub: "Two souls intertwined" },
+  { id: 3, image: "/images/IMG_0909.jpg", label: "The Silly Side of Love", sub: "Silly Together, Serious About Forever" },
   { id: 4, image: "/images/IMG_0919.jpg", label: "Radiant Love", sub: "The purest kind of happiness" },
   { id: 5, image: "/images/IMG_3312.jpg", label: "Timeless Romance", sub: "A love written in the stars" },
   { id: 6, image: "/images/IMG-20260722-WA0006.jpg", label: "Perfect Harmony", sub: "Together is our favorite place" },
-  { id: 7, image: "/images/IMG-20260722-WA0009.jpg", label: "Boundless Devotion", sub: "My heart belongs to you" },
-  { id: 8, image: "/images/IMG-20260722-WA0024.jpg", label: "The Promise", sub: "Walking into our beautiful future" },
+  { id: 7, image: "/images/IMG-20260722-WA0009.jpg", label: "Meet Obim", sub: "Built Like a King, Loves Like a Poet" },
+  { id: 8, image: "/images/IMG-20260722-WA0024.jpg", label: "Meet Adesewa", sub: "Beauty That Wears a Crown" },
 ];
 
 // Wraps offset so it loops: after 7 comes 1, before 1 comes 7
