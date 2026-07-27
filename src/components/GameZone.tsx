@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronUp, ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Heart, Loader2 } from "lucide-react";
 import Leaderboard, { saveScore } from "./Leaderboard";
@@ -403,7 +404,7 @@ function MemoryGame({ playerName, onClose, onNext, nextTitle }: { playerName: st
               <button
                 key={idx}
                 onClick={() => handleFlip(idx)}
-                className={`aspect-square rounded-xl text-2xl sm:text-3xl flex items-center justify-center transition-all cursor-pointer border overflow-hidden ${
+                className={`relative aspect-square rounded-xl text-2xl sm:text-3xl flex items-center justify-center transition-all cursor-pointer border overflow-hidden ${
                   isFlipped
                     ? "bg-white border-[#E3D3DA] scale-100 p-0"
                     : "bg-[#1A3C3A] border-[#1A3C3A] hover:bg-[#0E5C52] p-2"
@@ -411,7 +412,7 @@ function MemoryGame({ playerName, onClose, onNext, nextTitle }: { playerName: st
               >
                 {isFlipped ? (
                   card.icon.startsWith("/") ? (
-                    <img src={card.icon} alt="memory card" className="w-full h-full object-cover" />
+                    <Image src={card.icon} alt="memory card" fill sizes="150px" className="object-cover" />
                   ) : (
                     card.icon
                   )

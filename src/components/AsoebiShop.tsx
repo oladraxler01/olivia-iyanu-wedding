@@ -46,7 +46,7 @@ export default function AsoebiShop() {
       name: "Charcoal & Gold Senator Attire",
       target: "Groomsmen / Men",
       price: "₦75,000 / $100",
-      image: "/images/asoebi-senator.png",
+      image: "/images/WhatsApp Image 2026-07-27 at 14.55.31.jpeg",
       fabric: "Italian Wool Crepe & Gold Embroidered Trims",
       includes: [
         "4 Yards Charcoal Wool Crepe Fabric",

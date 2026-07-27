@@ -26,6 +26,7 @@ const lookbook = [
     colors: ["#0E5C52", "#B23A6B"],
     showImageSpace: true,
     imageLabel: "Men's Fabric Material",
+    image: "/images/WhatsApp Image 2026-07-27 at 14.55.31.jpeg",
   },
   {
     id: "guests",

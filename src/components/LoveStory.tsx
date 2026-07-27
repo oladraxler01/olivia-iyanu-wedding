@@ -65,6 +65,13 @@ export default function LoveStory() {
                   <Heart className="w-3 h-3 text-[#B23A6B] fill-[#B23A6B]" />
                 </div>
 
+                {/* Opposite Side Title */}
+                <div className={`absolute top-6 w-[45%] flex items-center ${isEven ? 'left-1/2 ml-8 justify-start' : 'right-1/2 mr-8 justify-end'}`}>
+                  <p style={{ fontFamily: "var(--font-cormorant), Georgia, serif", fontStyle: "italic" }} className="text-xl sm:text-2xl text-[#0E5C52] font-medium">
+                    {m.title}
+                  </p>
+                </div>
+
                 {/* Content Card */}
                 <div
                   className={`w-[45%] ${
@@ -77,12 +84,6 @@ export default function LoveStory() {
                       {m.icon}
                     </div>
 
-                    <p
-                      style={{ fontFamily: "var(--font-cormorant), Georgia, serif", fontStyle: "italic" }}
-                      className="text-lg text-[#0E5C52] font-medium mb-2"
-                    >
-                      {m.title}
-                    </p>
                     <p className="text-sm text-[#6B5A63]">
                       {m.desc}
                     </p>
