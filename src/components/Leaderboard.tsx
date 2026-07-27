@@ -103,7 +103,7 @@ export default function Leaderboard() {
           { id: "trivia", label: "Couple Trivia" },
           { id: "memory", label: "Memory Match" },
           { id: "timeline", label: "Our Timeline" },
-          { id: "maze", label: "Find the Groom" },
+          { id: "maze", label: "Find the Bride" },
         ].map((tab) => (
           <button
             key={tab.id}
