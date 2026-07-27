@@ -4,12 +4,44 @@ import { Heart, Camera, Utensils, Users, Image as ImageIcon, Crown } from "lucid
 import { motion } from "framer-motion";
 
 const milestones = [
-  { icon: <Utensils className="w-5 h-5 text-[#B23A6B]/50" />, title: "Lunch/Dinner dates", desc: "From first dates to forever — the dinner diaries are here." },
-  { icon: <Camera className="w-5 h-5 text-[#B23A6B]/50" />, title: "Pre-wedding shoot experience", desc: "A glimpse of the magic before the big day." },
-  { icon: <Camera className="w-5 h-5 text-[#B23A6B]/50" />, title: "Proposal pictures", desc: "Every crown has a beginning. Ours started with one question & deserves a proper reveal, [X days] to reveal." },
-  { icon: <Users className="w-5 h-5 text-[#B23A6B]/50" />, title: "The Bridal party Squad", desc: "The crown doesn't stand alone — get ready to meet the ones who hold it up. [X days] to go." },
-  { icon: <ImageIcon className="w-5 h-5 text-[#B23A6B]/50" />, title: "Traditional engagement pictures", desc: "Two heritages, one love story — the traditional photos are almost here." },
-  { icon: <Crown className="w-5 h-5 text-[#B23A6B]/50" />, title: "White wedding ceremony", desc: "Be Present to capture the moments." },
+  { 
+    icon: <Utensils className="w-5 h-5 text-[#B23A6B]/50" />, 
+    title: "Lunch/Dinner dates", 
+    desc: "From first dates to forever — the dinner diaries are here.",
+    media: "icon"
+  },
+  { 
+    icon: <Camera className="w-5 h-5 text-[#B23A6B]/50" />, 
+    title: "Pre-wedding shoot experience", 
+    desc: "A glimpse of the magic before the big day.",
+    media: "vimeo"
+  },
+  { 
+    icon: <Camera className="w-5 h-5 text-[#B23A6B]/50" />, 
+    title: "Proposal pictures", 
+    desc: "Every crown has a beginning. Ours started with one question & deserves a proper reveal.",
+    countdown: "60 Days to Reveal",
+    media: "loading"
+  },
+  { 
+    icon: <Users className="w-5 h-5 text-[#B23A6B]/50" />, 
+    title: "The Bridal party Squad", 
+    desc: "The crown doesn't stand alone — get ready to meet the ones who hold it up.",
+    media: "icon"
+  },
+  { 
+    icon: <ImageIcon className="w-5 h-5 text-[#B23A6B]/50" />, 
+    title: "Traditional engagement pictures", 
+    desc: "Two heritages, one love story — the traditional photos are almost here.",
+    countdown: "40 Days to Reveal",
+    media: "loading"
+  },
+  { 
+    icon: <Crown className="w-5 h-5 text-[#B23A6B]/50" />, 
+    title: "White wedding ceremony", 
+    desc: "Be Present to capture the moments.",
+    media: "icon"
+  },
 ];
 
 const storyParagraphs = [
@@ -22,7 +54,7 @@ const storyParagraphs = [
 export default function LoveStory() {
   return (
     <section id="story" className="py-24 px-4 bg-[#FDFBF7] relative overflow-hidden">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Heading */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -67,25 +99,50 @@ export default function LoveStory() {
                 </div>
 
                 {/* Opposite Side Title */}
-                <div className={`absolute top-6 w-[45%] flex items-center ${isEven ? 'left-1/2 ml-8 justify-start' : 'right-1/2 mr-8 justify-end'}`}>
-                  <p style={{ fontFamily: "var(--font-cormorant), Georgia, serif", fontStyle: "italic" }} className="text-xl sm:text-2xl text-[#0E5C52] font-medium">
+                <div className={`absolute top-6 w-[40%] flex items-center ${isEven ? 'left-1/2 ml-8 justify-start' : 'right-1/2 mr-8 justify-end'}`}>
+                  <p style={{ fontFamily: "var(--font-cormorant), Georgia, serif", fontStyle: "italic" }} className="text-2xl sm:text-3xl text-[#0E5C52] font-medium leading-tight">
                     {m.title}
                   </p>
                 </div>
 
                 {/* Content Card */}
                 <div
-                  className={`w-[45%] ${
+                  className={`w-[50%] ${
                     isEven ? "mr-auto pr-8 text-right" : "ml-auto pl-8 text-left"
                   }`}
                 >
-                  <div className="bg-[#FFFDFB] border border-[#E3D3DA] rounded-3xl p-8 shadow-sm hover:shadow-md transition-shadow">
-                    {/* Image Placeholder */}
-                    <div className="aspect-[16/9] w-full rounded-2xl bg-[#F3E7EB]/60 border border-dashed border-[#E3D3DA] flex flex-col items-center justify-center gap-2 mb-4">
-                      {m.icon}
-                    </div>
+                  <div className="bg-[#FFFDFB] border border-[#E3D3DA] rounded-3xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                    
+                    {/* Media Render */}
+                    {m.media === "vimeo" ? (
+                      <div className="aspect-[16/9] w-full rounded-2xl overflow-hidden bg-black mb-4">
+                        <iframe 
+                          src="https://player.vimeo.com/video/1000965385?badge=0&autopause=0&player_id=0&app_id=58479" 
+                          frameBorder="0" 
+                          allow="autoplay; fullscreen; picture-in-picture" 
+                          className="w-full h-full"
+                          title="Pre-wedding shoot"
+                        ></iframe>
+                      </div>
+                    ) : m.media === "loading" ? (
+                      <div className="aspect-[16/9] w-full rounded-2xl bg-gradient-to-br from-[#F5EFEF] via-[#EAE1E1] to-[#F5EFEF] border border-dashed border-[#E3D3DA] flex flex-col items-center justify-center gap-2 mb-4 relative overflow-hidden">
+                        {/* Shimmer Effect */}
+                        <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
+                        <ImageIcon className="w-8 h-8 text-[#B23A6B]/30 animate-pulse" />
+                      </div>
+                    ) : (
+                      <div className="aspect-[16/9] w-full rounded-2xl bg-[#F3E7EB]/60 border border-dashed border-[#E3D3DA] flex flex-col items-center justify-center gap-2 mb-4">
+                        {m.icon}
+                      </div>
+                    )}
 
-                    <p className="text-sm text-[#6B5A63]">
+                    {m.countdown && (
+                      <div className={`inline-block px-4 py-1 rounded-full bg-[#0E5C52]/10 border border-[#0E5C52]/20 mb-3`}>
+                        <span className="text-xs font-bold uppercase tracking-widest text-[#0E5C52]">{m.countdown}</span>
+                      </div>
+                    )}
+
+                    <p className="text-sm sm:text-base text-[#6B5A63]">
                       {m.desc}
                     </p>
                   </div>
