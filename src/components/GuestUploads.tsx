@@ -99,7 +99,7 @@ export default function GuestUploads() {
 
   if (!isUnlocked) {
     return (
-      <section className="py-24 px-4 bg-[#F5EFEF]">
+      <section className="py-24 px-4 bg-[#E8F0EF]">
         <div className="max-w-2xl mx-auto text-center">
           <div className="w-20 h-20 bg-white rounded-full mx-auto flex items-center justify-center mb-6 shadow-sm border border-[#E3D3DA]">
             <Lock className="w-8 h-8 text-[#6B5A63]" />
@@ -116,7 +116,7 @@ export default function GuestUploads() {
   }
 
   return (
-    <section className="py-24 px-4 bg-[#F5EFEF]">
+    <section className="py-24 px-4 bg-[#E8F0EF]">
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-10">
           <Camera className="w-10 h-10 text-[#B23A6B] mx-auto mb-4" />

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Flower2 } from "lucide-react";
 
 export default function EnvelopeLoader() {
   const [isOpen, setIsOpen] = useState(false);
@@ -164,8 +164,8 @@ export default function EnvelopeLoader() {
                       <p style={{ fontFamily: "var(--font-cormorant), cursive, serif" }} className="text-[#5C5056] text-xl sm:text-3xl md:text-4xl italic font-light mb-4 sm:mb-6">
                         You are lovingly invited to the wedding of
                       </p>
-                      <h1 className="text-[#1A1618] font-serif text-3xl sm:text-5xl md:text-6xl tracking-[0.2em] sm:tracking-[0.25em] uppercase mb-4">
-                        Olivia and Iyanu
+                      <h1 className="text-[#1A1618] font-serif text-3xl sm:text-4xl md:text-5xl tracking-[0.2em] uppercase mb-4 leading-normal">
+                        OLIVIA <br/> <span className="text-xl sm:text-2xl font-light">AND</span> <br/> IYANU
                       </h1>
                       <p className="text-[#8B8086] text-sm sm:text-lg tracking-[0.4em] font-medium font-mono mt-2">
                         30.10.2026
@@ -199,29 +199,18 @@ export default function EnvelopeLoader() {
                       
                       {/* Organic Melted Wax Outer Blob */}
                       <div 
-                        className="absolute inset-0 bg-gradient-to-br from-[#FFFFFF] via-[#FCFAF8] to-[#EAE4D8] shadow-[0_15px_35px_rgba(0,0,0,0.15),inset_0_-8px_20px_rgba(0,0,0,0.06),inset_0_8px_20px_rgba(255,255,255,1)] group-hover:scale-105 transition-transform duration-500"
+                        className="absolute inset-0 bg-gradient-to-br from-[#E3C37A] via-[#D4AF37] to-[#AA7C11] shadow-[0_15px_35px_rgba(0,0,0,0.25),inset_0_-8px_20px_rgba(0,0,0,0.15),inset_0_8px_20px_rgba(255,255,255,0.4)] group-hover:scale-105 transition-transform duration-500"
                         style={{ borderRadius: "52% 48% 55% 45% / 45% 55% 42% 58%" }}
                       ></div>
                       
                       {/* Inner Stamped Depression */}
                       <div 
-                        className="absolute inset-4 bg-gradient-to-br from-[#F5EFE6] to-[#FFFFFF] shadow-[inset_0_4px_10px_rgba(0,0,0,0.12),0_2px_5px_rgba(255,255,255,0.9)]"
+                        className="absolute inset-4 bg-gradient-to-br from-[#B58514] to-[#E3C37A] shadow-[inset_0_4px_10px_rgba(0,0,0,0.3),0_2px_5px_rgba(255,255,255,0.3)]"
                         style={{ borderRadius: "48% 52% 45% 55% / 55% 45% 50% 50%" }}
                       ></div>
 
                       {/* Floral Wreath Icon */}
-                      <svg className="relative z-10 w-20 h-20 md:w-24 md:h-24 text-[#D4CBB8] drop-shadow-[0_2px_1px_rgba(255,255,255,0.9)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" opacity="0.15" fill="currentColor"/>
-                        <path d="M7 12C7 9.23858 9.23858 7 12 7C14.7614 7 17 9.23858 17 12" strokeWidth="1.5"/>
-                        <path d="M7 12C7 14.7614 9.23858 17 12 17C14.7614 17 17 14.7614 17 12" strokeWidth="1.5"/>
-                        
-                        {/* Botanical leaves details */}
-                        <path d="M9 10C9.5 9.5 10 9.5 10.5 10C10.5 10.5 10 11 9.5 11C9 11 8.5 10.5 9 10Z" fill="currentColor"/>
-                        <path d="M15 10C14.5 9.5 14 9.5 13.5 10C13.5 10.5 14 11 14.5 11C15 11 15.5 10.5 15 10Z" fill="currentColor"/>
-                        <path d="M8.5 13.5C9 14 9.5 14 10 13.5C10 13 9.5 12.5 9 12.5C8.5 12.5 8 13 8.5 13.5Z" fill="currentColor"/>
-                        <path d="M15.5 13.5C15 14 14.5 14 14 13.5C14 13 14.5 12.5 15 12.5C15.5 12.5 16 13 15.5 13.5Z" fill="currentColor"/>
-                        <path d="M11 8.5C11.5 8 12 8 12.5 8.5C12.5 9 12 9.5 11.5 9.5C11 9.5 10.5 9 11 8.5Z" fill="currentColor"/>
-                      </svg>
+                      <Flower2 className="relative z-10 w-12 h-12 md:w-16 md:h-16 text-[#FBE3A1] drop-shadow-[0_2px_1px_rgba(0,0,0,0.4)]" strokeWidth={1.5} />
                     </div>
                   </motion.div>
                 )}
