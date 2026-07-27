@@ -15,7 +15,7 @@ export const saveScore = async (guest_name: string, game_type: string, score: nu
 
 // ─── DISPLAY COMPONENT ──────────────────────────────────
 type GameTab = "all" | "trivia" | "memory" | "timeline" | "maze";
-type ScoreEntry = { id: number; guest_name: string; score: number; game_type?: string; created_at?: string };
+type ScoreEntry = { id: number; guest_name: string; score: number; game_type?: string; created_at?: string; gamesPlayed?: number };
 
 export default function Leaderboard() {
   const [activeTab, setActiveTab] = useState<GameTab>("trivia");
@@ -35,14 +35,40 @@ export default function Leaderboard() {
 
       if (game_type !== "all") {
         query = query.eq("game_type", game_type).order("score", { ascending: isAscending }).limit(10);
+        const { data, error: dbError } = await query;
+        if (dbError) throw dbError;
+        setScores(data || []);
       } else {
-        query = query.order("created_at", { ascending: false }).limit(20);
+        query = query.order("created_at", { ascending: false }).limit(1000);
+        const { data, error: dbError } = await query;
+        if (dbError) throw dbError;
+        
+        const playerStats: Record<string, { guest_name: string; totalScore: number; gamesPlayed: number; created_at: string }> = {};
+        (data || []).forEach(entry => {
+          if (!playerStats[entry.guest_name]) {
+            playerStats[entry.guest_name] = { guest_name: entry.guest_name, totalScore: 0, gamesPlayed: 0, created_at: entry.created_at };
+          }
+          const stats = playerStats[entry.guest_name];
+          stats.gamesPlayed += 1;
+          
+          if (entry.game_type === 'trivia') stats.totalScore += Math.floor(entry.score) * 10;
+          else if (entry.game_type === 'timeline') stats.totalScore += 50;
+          else if (entry.game_type === 'memory') stats.totalScore += Math.max(0, 100 - (entry.score * 2));
+          else if (entry.game_type === 'maze') stats.totalScore += Math.max(0, 100 - (entry.score * 2));
+        });
+        
+        const aggregated = Object.values(playerStats)
+          .sort((a, b) => b.totalScore - a.totalScore)
+          .map((stats, idx) => ({
+            id: idx,
+            guest_name: stats.guest_name,
+            score: stats.totalScore,
+            game_type: "all",
+            gamesPlayed: stats.gamesPlayed
+          }));
+          
+        setScores(aggregated.slice(0, 10));
       }
-
-      const { data, error: dbError } = await query;
-
-      if (dbError) throw dbError;
-      setScores(data || []);
     } catch (err: any) {
       console.error(err);
       setError("Unable to load leaderboard. " + (err.message || ""));
@@ -142,9 +168,7 @@ export default function Leaderboard() {
                   className="grid grid-cols-12 items-center p-4 hover:bg-[#FDFBF7] transition-colors"
                 >
                   <div className="col-span-2 sm:col-span-1 flex justify-center">
-                    {activeTab === "all" ? (
-                      <span className="text-[10px] uppercase font-bold text-[#6B5A63] bg-[#E3D3DA]/40 px-2 py-1 rounded-full">{gameNames[entry.game_type || ""] || "Game"}</span>
-                    ) : idx === 0 ? (
+                    {idx === 0 ? (
                       <Medal className="w-5 h-5 text-yellow-500" />
                     ) : idx === 1 ? (
                       <Medal className="w-5 h-5 text-gray-400" />
@@ -154,11 +178,13 @@ export default function Leaderboard() {
                       <span className="text-sm font-bold text-[#6B5A63]">{idx + 1}</span>
                     )}
                   </div>
-                  <div className={`col-span-7 sm:col-span-8 font-medium text-[#241B22] truncate ${activeTab === "all" ? "pl-2" : "pr-4"}`}>
-                    {entry.guest_name} {isTrivia && timeStr && <span className="text-[10px] text-[#6B5A63] ml-1">{timeStr}</span>}
+                  <div className={`col-span-7 sm:col-span-8 font-medium text-[#241B22] truncate pr-4`}>
+                    {entry.guest_name} 
+                    {isTrivia && timeStr && <span className="text-[10px] text-[#6B5A63] ml-1">{timeStr}</span>}
+                    {activeTab === "all" && <span className="text-[10px] text-[#6B5A63] ml-2">({entry.gamesPlayed} games)</span>}
                   </div>
                   <div className="col-span-3 text-right font-bold text-[#0E5C52]">
-                    {rawScore} {effectiveTab === "memory" || effectiveTab === "maze" ? <span className="text-[10px] font-normal text-[#6B5A63]">moves</span> : effectiveTab === "timeline" || isTrivia ? <span className="text-[10px] font-normal text-[#6B5A63]">pts</span> : ""}
+                    {rawScore} {activeTab === "all" ? <span className="text-[10px] font-normal text-[#6B5A63]">total pts</span> : effectiveTab === "memory" || effectiveTab === "maze" ? <span className="text-[10px] font-normal text-[#6B5A63]">moves</span> : effectiveTab === "timeline" || isTrivia ? <span className="text-[10px] font-normal text-[#6B5A63]">pts</span> : ""}
                   </div>
                 </motion.li>
                 );
