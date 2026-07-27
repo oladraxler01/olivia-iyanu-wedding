@@ -62,9 +62,13 @@ export default function DressCode() {
             Scroll through for color inspiration and what we'd love to see on the day.
           </p>
           
-          <button className="inline-flex items-center gap-2 text-sm font-semibold text-[#0E5C52] hover:text-[#B23A6B] transition-colors pb-1 border-b border-[#0E5C52] hover:border-[#B23A6B]">
+          <a 
+            href="/lookbook.pdf" 
+            download="Olivia_Iyanu_Lookbook.pdf"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-[#0E5C52] hover:text-[#B23A6B] transition-colors pb-1 border-b border-[#0E5C52] hover:border-[#B23A6B]"
+          >
             Save as PDF <Download className="w-4 h-4" />
-          </button>
+          </a>
         </div>
 
         {/* Horizontal Scroll Container */}
