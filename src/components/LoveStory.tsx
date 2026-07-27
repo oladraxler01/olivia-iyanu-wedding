@@ -4,12 +4,46 @@ import { Heart, Camera, Utensils, Users, Image as ImageIcon, Crown } from "lucid
 import { motion } from "framer-motion";
 
 const milestones = [
-  { icon: <Utensils className="w-5 h-5 text-[#B23A6B]/50" />, title: "Lunch/Dinner dates", desc: "From first dates to forever — the dinner diaries are here." },
-  { icon: <Camera className="w-5 h-5 text-[#B23A6B]/50" />, title: "Pre-wedding shoot experience", desc: "A glimpse of the magic before the big day." },
-  { icon: <Camera className="w-5 h-5 text-[#B23A6B]/50" />, title: "Proposal pictures", desc: "Every crown has a beginning. Ours started with one question & deserves a proper reveal, [X days] to reveal." },
-  { icon: <Users className="w-5 h-5 text-[#B23A6B]/50" />, title: "The Bridal party Squad", desc: "The crown doesn't stand alone — get ready to meet the ones who hold it up. [X days] to go." },
-  { icon: <ImageIcon className="w-5 h-5 text-[#B23A6B]/50" />, title: "Traditional engagement pictures", desc: "Two heritages, one love story — the traditional photos are almost here." },
-  { icon: <Crown className="w-5 h-5 text-[#B23A6B]/50" />, title: "White wedding ceremony", desc: "Be Present to capture the moments." },
+  { 
+    icon: <Utensils className="w-5 h-5 text-[#B23A6B]/50" />, 
+    title: "Lunch/Dinner dates", 
+    desc: "From first dates to forever — the dinner diaries are here.",
+    media: "icon"
+  },
+  { 
+    icon: <Camera className="w-5 h-5 text-[#B23A6B]/50" />, 
+    title: "Pre-wedding shoot experience", 
+    desc: "A glimpse of the magic before the big day.",
+    media: "vimeo"
+  },
+  { 
+    icon: <Camera className="w-5 h-5 text-[#B23A6B]/50" />, 
+    title: "Proposal pictures", 
+    desc: "Every crown has a beginning. Ours started with one question & deserves a proper reveal.",
+    countdownNum: "60",
+    countdownText: "DAYS",
+    media: "loading"
+  },
+  { 
+    icon: <Users className="w-5 h-5 text-[#B23A6B]/50" />, 
+    title: "The Bridal party Squad", 
+    desc: "The crown doesn't stand alone — get ready to meet the ones who hold it up.",
+    media: "icon"
+  },
+  { 
+    icon: <ImageIcon className="w-5 h-5 text-[#B23A6B]/50" />, 
+    title: "Traditional engagement pictures", 
+    desc: "Two heritages, one love story — the traditional photos are almost here.",
+    countdownNum: "40",
+    countdownText: "DAYS",
+    media: "loading"
+  },
+  { 
+    icon: <Crown className="w-5 h-5 text-[#B23A6B]/50" />, 
+    title: "White wedding ceremony", 
+    desc: "Be Present to capture the moments.",
+    media: "icon"
+  },
 ];
 
 const storyParagraphs = [
@@ -22,7 +56,7 @@ const storyParagraphs = [
 export default function LoveStory() {
   return (
     <section id="story" className="py-24 px-4 bg-[#FDFBF7] relative overflow-hidden">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Heading */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -52,6 +86,45 @@ export default function LoveStory() {
 
           {milestones.map((m, idx) => {
             const isEven = idx % 2 === 0;
+
+            // Full-width special render for the Vimeo video
+            if (m.media === "vimeo") {
+              return (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8 }}
+                  className="relative flex flex-col items-center w-full my-24 z-20"
+                >
+                  <div className="absolute left-6 md:left-1/2 md:-translate-x-1/2 -translate-x-1/2 -top-12 w-7 h-7 rounded-full bg-[#FFFDFB] border-2 border-[#B23A6B] flex items-center justify-center shadow-sm z-30">
+                    <Heart className="w-3 h-3 text-[#B23A6B] fill-[#B23A6B]" />
+                  </div>
+                  
+                  <div className="text-left md:text-center mb-8 bg-[#FDFBF7] px-8 py-2 z-10">
+                    <h3 style={{ fontFamily: "var(--font-cormorant), Georgia, serif" }} className="text-3xl sm:text-4xl text-[#0E5C52] font-medium mb-3">
+                      {m.title}
+                    </h3>
+                    <p className="text-base text-[#6B5A63] max-w-xl mx-auto">{m.desc}</p>
+                  </div>
+
+                  <div 
+                    className="w-full max-w-[1800px] aspect-[16/9] sm:aspect-[21/9] bg-black shadow-[0_30px_60px_rgba(0,0,0,0.2)] overflow-hidden border-[8px] border-[#FFFDFB]"
+                    style={{ borderRadius: "30px" }}
+                  >
+                    <iframe 
+                      src="https://player.vimeo.com/video/1212676451?badge=0&autopause=0&player_id=0&app_id=58479" 
+                      frameBorder="0" 
+                      allow="autoplay; fullscreen; picture-in-picture" 
+                      className="w-full h-full"
+                      title="Pre-wedding shoot"
+                    ></iframe>
+                  </div>
+                </motion.div>
+              );
+            }
+
             return (
               <motion.div
                 key={idx}
@@ -166,4 +239,3 @@ export default function LoveStory() {
     </section>
   );
 }
-
