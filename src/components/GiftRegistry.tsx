@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function GiftRegistry() {
   const [copied, setCopied] = useState(false);
-  const accountNumber = "0123456789"; // Placeholder
+  const accountNumber = "6506784864";
 
   const handleCopy = () => {
     navigator.clipboard.writeText(accountNumber);
@@ -54,12 +54,12 @@ export default function GiftRegistry() {
             <div className="space-y-4">
               <div>
                 <p className="text-[10px] uppercase tracking-widest text-[#B23A6B] font-bold mb-1">Bank Name</p>
-                <p className="font-serif text-xl text-[#241B22]">Example Bank</p>
+                <p className="font-serif text-xl text-[#241B22]">Providus Bank</p>
               </div>
 
               <div>
                 <p className="text-[10px] uppercase tracking-widest text-[#B23A6B] font-bold mb-1">Account Name</p>
-                <p className="font-serif text-xl text-[#241B22]">Olivia & Iyanu</p>
+                <p className="font-serif text-xl text-[#241B22]">Olutunmbi Iyanuoluwa</p>
               </div>
 
               <div>
