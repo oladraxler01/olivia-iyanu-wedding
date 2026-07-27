@@ -31,7 +31,7 @@ export default function AsoebiShop() {
       name: "Blush & Gold French Lace Ensemble",
       target: "Ladies / Bridesmaids",
       price: "₦85,000 / $110",
-      image: "/images/asoebi-lace.png",
+      image: "/images/WhatsApp Image 2026-07-27 at 14.23.12.jpeg",
       fabric: "Premium French Net Lace with Hand Embroidery",
       includes: [
         "5 Yards French Embroidery Lace",

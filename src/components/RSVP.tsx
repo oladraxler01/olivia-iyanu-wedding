@@ -155,13 +155,13 @@ export default function RSVP() {
 
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-[#093F38] mb-2">
-                  Song Request
+                  Words of Advice / Prayers
                 </label>
                 <input
                   type="text"
                   value={song}
                   onChange={(e) => setSong(e.target.value)}
-                  placeholder="What song will get you on the dance floor?"
+                  placeholder="And comments you choose fits inside"
                   className="w-full px-4 py-3 rounded-xl border border-[#E3D3DA] bg-[#FDFBF7] text-sm focus:outline-none focus:border-[#B23A6B]"
                   disabled={isSubmitting}
                 />
@@ -175,7 +175,7 @@ export default function RSVP() {
                   rows={3}
                   value={comments}
                   onChange={(e) => setComments(e.target.value)}
-                  placeholder="Any dietary requirements or notes for us?"
+                  placeholder=""
                   className="w-full px-4 py-3 rounded-xl border border-[#E3D3DA] bg-[#FDFBF7] text-sm focus:outline-none focus:border-[#B23A6B]"
                   disabled={isSubmitting}
                 ></textarea>
