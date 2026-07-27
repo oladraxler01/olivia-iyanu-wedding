@@ -1,7 +1,8 @@
 "use client";
 
-import { Heart, Camera, Utensils, Users, Image as ImageIcon, Crown } from "lucide-react";
-import { motion } from "framer-motion";
+import { Heart, Camera, Utensils, Users, Image as ImageIcon, Crown, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
 
 const milestones = [
   { 
@@ -54,8 +55,32 @@ const storyParagraphs = [
 ];
 
 export default function LoveStory() {
+  const [fullscreenMedia, setFullscreenMedia] = useState<React.ReactNode | null>(null);
+
   return (
     <section id="story" className="py-24 px-4 bg-[#FDFBF7] relative overflow-hidden">
+      {/* Fullscreen Lightbox */}
+      <AnimatePresence>
+        {fullscreenMedia && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 cursor-pointer"
+            onClick={() => setFullscreenMedia(null)}
+          >
+            <div className="absolute top-6 right-6 text-white cursor-pointer hover:bg-white/10 p-2 rounded-full">
+              <X className="w-8 h-8" />
+            </div>
+            <div className="max-w-5xl max-h-[90vh] w-full h-full flex items-center justify-center pointer-events-none" onClick={e => e.stopPropagation()}>
+               <div className="w-full h-full flex items-center justify-center cursor-default bg-white rounded-2xl overflow-hidden">
+                 {fullscreenMedia}
+               </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="max-w-7xl mx-auto">
         {/* Heading */}
         <motion.div
@@ -87,44 +112,6 @@ export default function LoveStory() {
           {milestones.map((m, idx) => {
             const isEven = idx % 2 === 0;
 
-            // Full-width special render for the Vimeo video
-            if (m.media === "vimeo") {
-              return (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8 }}
-                  className="relative flex flex-col items-center w-full my-24 z-20"
-                >
-                  <div className="absolute left-6 md:left-1/2 md:-translate-x-1/2 -translate-x-1/2 -top-12 w-7 h-7 rounded-full bg-[#FFFDFB] border-2 border-[#B23A6B] flex items-center justify-center shadow-sm z-30">
-                    <Heart className="w-3 h-3 text-[#B23A6B] fill-[#B23A6B]" />
-                  </div>
-                  
-                  <div className="text-left md:text-center mb-8 bg-[#FDFBF7] px-8 py-2 z-10">
-                    <h3 style={{ fontFamily: "var(--font-cormorant), Georgia, serif" }} className="text-3xl sm:text-4xl text-[#0E5C52] font-medium mb-3">
-                      {m.title}
-                    </h3>
-                    <p className="text-base text-[#6B5A63] max-w-xl mx-auto">{m.desc}</p>
-                  </div>
-
-                  <div 
-                    className="w-full max-w-[1800px] aspect-[16/9] sm:aspect-[21/9] bg-black shadow-[0_30px_60px_rgba(0,0,0,0.2)] overflow-hidden border-[8px] border-[#FFFDFB]"
-                    style={{ borderRadius: "30px" }}
-                  >
-                    <iframe 
-                      src="https://player.vimeo.com/video/1212676451?badge=0&autopause=0&player_id=0&app_id=58479" 
-                      frameBorder="0" 
-                      allow="autoplay; fullscreen; picture-in-picture" 
-                      className="w-full h-full"
-                      title="Pre-wedding shoot"
-                    ></iframe>
-                  </div>
-                </motion.div>
-              );
-            }
-
             return (
               <motion.div
                 key={idx}
@@ -135,28 +122,15 @@ export default function LoveStory() {
                 className="relative flex flex-col md:flex-row items-start md:items-center"
               >
                 {/* Timeline Heart Node */}
-                <div className="absolute left-6 md:left-1/2 -translate-x-1/2 top-0 md:top-6 w-7 h-7 rounded-full bg-[#FFFDFB] border-2 border-[#B23A6B] flex items-center justify-center shadow-sm z-10">
+                <div className="absolute left-6 md:left-1/2 md:-translate-x-1/2 top-0 md:top-6 w-7 h-7 rounded-full bg-[#FFFDFB] border-2 border-[#B23A6B] flex items-center justify-center shadow-sm z-10">
                   <Heart className="w-3 h-3 text-[#B23A6B] fill-[#B23A6B]" />
                 </div>
 
-                {/* Desktop: Opposite Side Title & Countdown */}
+                {/* Desktop: Opposite Side Title */}
                 <div className={`hidden md:flex absolute top-6 w-[40%] flex-col ${isEven ? 'left-1/2 ml-8 items-start text-left' : 'right-1/2 mr-8 items-end text-right'}`}>
                   <p style={{ fontFamily: "var(--font-cormorant), Georgia, serif", fontStyle: "italic" }} className="text-2xl sm:text-3xl text-[#0E5C52] font-medium leading-tight">
                     {m.title}
                   </p>
-                  
-                  {m.countdownNum && (
-                    <div className="mt-4">
-                      <div className="flex flex-col items-center justify-center border border-[#E3D3DA] rounded-[18px] w-[80px] h-[85px] bg-[#FFFDFB] shadow-sm">
-                        <span style={{ fontFamily: "var(--font-cormorant), Georgia, serif" }} className="text-4xl text-[#0E5C52] leading-none mb-1">
-                          {m.countdownNum}
-                        </span>
-                        <span className="text-[10px] font-bold tracking-[0.15em] text-[#6B5A63] uppercase">
-                          {m.countdownText}
-                        </span>
-                      </div>
-                    </div>
-                  )}
                 </div>
 
                 {/* Content Card */}
@@ -176,34 +150,43 @@ export default function LoveStory() {
                     
                     {/* Media Render */}
                     {m.media === "loading" ? (
-                      <div className="aspect-[16/9] w-full rounded-2xl bg-gradient-to-br from-[#F5EFEF] via-[#EAE1E1] to-[#F5EFEF] border border-dashed border-[#E3D3DA] flex flex-col items-center justify-center gap-2 mb-4 relative overflow-hidden">
-                        {/* Shimmer Effect */}
-                        <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
-                        <ImageIcon className="w-8 h-8 text-[#B23A6B]/30 animate-pulse" />
+                      <div className="aspect-[16/9] w-full rounded-2xl bg-[#FFFDFB] border border-dashed border-[#E3D3DA] flex flex-col items-center justify-center mb-4">
+                        <div className="flex flex-col items-center justify-center">
+                          <span style={{ fontFamily: "var(--font-cormorant), Georgia, serif" }} className="text-6xl text-[#0E5C52] leading-none mb-2">
+                            {m.countdownNum}
+                          </span>
+                          <span className="text-[12px] font-bold tracking-[0.2em] text-[#6B5A63] uppercase">
+                            {m.countdownText}
+                          </span>
+                        </div>
+                      </div>
+                    ) : m.media === "vimeo" ? (
+                      <div className="w-full max-w-[320px] mx-auto aspect-[9/16] rounded-2xl overflow-hidden bg-black mb-4 shadow-sm">
+                        <iframe 
+                          src="https://player.vimeo.com/video/1212676451?badge=0&autopause=0&player_id=0&app_id=58479" 
+                          frameBorder="0" 
+                          allow="autoplay; fullscreen; picture-in-picture" 
+                          className="w-full h-full"
+                          title="Pre-wedding shoot"
+                        ></iframe>
                       </div>
                     ) : (
-                      <div className="aspect-[16/9] w-full rounded-2xl bg-[#F3E7EB]/60 border border-dashed border-[#E3D3DA] flex flex-col items-center justify-center gap-2 mb-4">
+                      <div 
+                        onClick={() => setFullscreenMedia(
+                          <div className="flex flex-col items-center justify-center w-full h-full bg-[#F3E7EB]/20">
+                            {m.icon && <div className="scale-[4]">{m.icon}</div>}
+                          </div>
+                        )}
+                        className="aspect-[16/9] w-full rounded-2xl bg-[#F3E7EB]/60 border border-dashed border-[#E3D3DA] flex flex-col items-center justify-center gap-2 mb-4 cursor-pointer hover:bg-[#F3E7EB]/80 transition-colors"
+                      >
                         {m.icon}
+                        <span className="text-[10px] text-[#B23A6B] uppercase tracking-widest mt-2 opacity-50">Click to view</span>
                       </div>
                     )}
 
                     <p className="text-sm sm:text-base text-[#6B5A63]">
                       {m.desc}
                     </p>
-
-                    {/* Mobile: Countdown underneath the description */}
-                    {m.countdownNum && (
-                      <div className="md:hidden mt-4 flex justify-start">
-                        <div className="flex flex-col items-center justify-center border border-[#E3D3DA] rounded-[18px] w-[80px] h-[85px] bg-[#FFFDFB] shadow-sm">
-                          <span style={{ fontFamily: "var(--font-cormorant), Georgia, serif" }} className="text-4xl text-[#0E5C52] leading-none mb-1">
-                            {m.countdownNum}
-                          </span>
-                          <span className="text-[10px] font-bold tracking-[0.15em] text-[#6B5A63] uppercase">
-                            {m.countdownText}
-                          </span>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
               </motion.div>
