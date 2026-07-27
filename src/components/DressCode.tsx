@@ -4,10 +4,10 @@ import { Download } from "lucide-react";
 
 const lookbook = [
   {
-    id: "general",
-    title: "The Palette",
-    desc: "Turquoise, Emerald Green, Silver, and White.",
-    colors: ["#30D5C8", "#0E5C52", "#C0C0C0", "#FFFFFF"],
+    id: "palette",
+    title: "Our Palette",
+    desc: "Teal green outfits, emerald green head gear, and a touch of silver for the shine.",
+    colors: ["#0E5C52", "#B23A6B", "#D4A5A5", "#F3E7EB"],
     showImageSpace: false,
   },
   {
@@ -31,8 +31,8 @@ const lookbook = [
   {
     id: "guests",
     title: "General Guests",
-    desc: "Not wearing aso-ebi? Stick to the palette — turquoise, emerald green, silver, or white in any fabric you love.",
-    colors: ["#30D5C8", "#0E5C52", "#C0C0C0", "#FFFFFF"],
+    desc: "Not wearing aso-ebi? Stick to the palette — jewel tones, soft blush, or teal in any fabric you love.",
+    colors: ["#D4A5A5", "#F3E7EB", "#0E5C52"],
     showImageSpace: false,
   },
   {
@@ -61,9 +61,9 @@ export default function DressCode() {
           <p className="text-sm sm:text-base text-[#6B5A63] mb-6">
             Scroll through for color inspiration and what we'd love to see on the day.
           </p>
-          
-          <a 
-            href="/lookbook.pdf" 
+
+          <a
+            href="/lookbook.pdf"
             download="Olivia_Iyanu_Lookbook.pdf"
             className="inline-flex items-center gap-2 text-sm font-semibold text-[#0E5C52] hover:text-[#B23A6B] transition-colors pb-1 border-b border-[#0E5C52] hover:border-[#B23A6B]"
           >
@@ -113,8 +113,9 @@ export default function DressCode() {
           ))}
         </div>
       </div>
-      
-      <style dangerouslySetInnerHTML={{__html: `
+
+      <style dangerouslySetInnerHTML={{
+        __html: `
         .hide-scrollbar::-webkit-scrollbar {
           display: none;
         }

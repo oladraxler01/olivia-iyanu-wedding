@@ -33,14 +33,6 @@ const config: Config = {
         serif: ["var(--font-cormorant)", "Georgia", "serif"],
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
       },
-      keyframes: {
-        shimmer: {
-          "100%": { transform: "translateX(100%)" },
-        },
-      },
-      animation: {
-        shimmer: "shimmer 2s infinite",
-      },
     },
   },
   plugins: [],
