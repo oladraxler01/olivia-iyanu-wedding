@@ -209,8 +209,8 @@ export default function RSVP() {
               <button 
                 onClick={() => {
                   setFullName("");
-                  setGuestCount(1);
-                  setNotes("");
+                  setSong("");
+                  setComments("");
                   setAttending("yes");
                   setSubmitted(false);
                 }}
