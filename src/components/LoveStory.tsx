@@ -2,7 +2,7 @@
 
 import { Heart, Camera, Utensils, Users, Image as ImageIcon, Crown, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const milestones = [
   { 
@@ -21,8 +21,7 @@ const milestones = [
     icon: <Camera className="w-5 h-5 text-[#B23A6B]/50" />, 
     title: "Proposal pictures", 
     desc: "Every crown has a beginning. Ours started with one question & deserves a proper reveal.",
-    countdownNum: "60",
-    countdownText: "DAYS",
+    showCountdown: true,
     media: "loading"
   },
   { 
@@ -35,8 +34,7 @@ const milestones = [
     icon: <ImageIcon className="w-5 h-5 text-[#B23A6B]/50" />, 
     title: "Traditional engagement pictures", 
     desc: "Two heritages, one love story — the traditional photos are almost here.",
-    countdownNum: "40",
-    countdownText: "DAYS",
+    showCountdown: true,
     media: "loading"
   },
   { 
@@ -56,6 +54,32 @@ const storyParagraphs = [
 
 export default function LoveStory() {
   const [fullscreenMedia, setFullscreenMedia] = useState<React.ReactNode | null>(null);
+
+  const targetDate = new Date("2026-10-30T14:00:00").getTime();
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+
+  useEffect(() => {
+    const updateTimer = () => {
+      const now = new Date().getTime();
+      const diff = targetDate - now;
+      if (diff > 0) {
+        setTimeLeft({
+          days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((diff % (1000 * 60)) / 1000),
+        });
+      }
+    };
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [targetDate]);
 
   return (
     <section id="story" className="py-24 px-4 bg-[#FDFBF7] relative overflow-hidden">
@@ -159,7 +183,7 @@ export default function LoveStory() {
                     ) : m.media === "vimeo" ? (
                       <div className="w-full aspect-[9/16] rounded-2xl overflow-hidden bg-black mb-4 shadow-sm">
                         <iframe 
-                          src="https://player.vimeo.com/video/1212676451?badge=0&autopause=0&player_id=0&app_id=58479" 
+                          src="https://player.vimeo.com/video/1212676451?badge=0&autopause=0&player_id=0&app_id=58479&title=0&byline=0&portrait=0" 
                           frameBorder="0" 
                           allow="autoplay; fullscreen; picture-in-picture" 
                           className="w-full h-full"
@@ -185,15 +209,24 @@ export default function LoveStory() {
                     </p>
 
                     {/* Countdown underneath the description text */}
-                    {m.countdownNum && (
+                    {m.showCountdown && (
                       <div className="mt-6 flex flex-col items-start w-full">
-                        <div className="flex flex-col items-start justify-center">
-                          <span style={{ fontFamily: "var(--font-cormorant), Georgia, serif" }} className="text-6xl text-[#0E5C52] leading-none mb-2">
-                            {m.countdownNum}
-                          </span>
-                          <span className="text-[12px] font-bold tracking-[0.2em] text-[#6B5A63] uppercase">
-                            {m.countdownText}
-                          </span>
+                        <div className="grid grid-cols-4 gap-2 w-full max-w-[280px]">
+                          {[
+                            { label: "Days", val: timeLeft.days },
+                            { label: "Hours", val: timeLeft.hours },
+                            { label: "Minutes", val: timeLeft.minutes },
+                            { label: "Seconds", val: timeLeft.seconds },
+                          ].map((unit) => (
+                            <div key={unit.label} className="bg-[#FFFDFB] border border-[#E3D3DA] rounded-xl py-2 px-1 text-center shadow-xs">
+                              <span className="font-serif text-xl sm:text-2xl font-bold text-[#0E5C52]">
+                                {String(unit.val).padStart(2, "0")}
+                              </span>
+                              <span className="block text-[7px] sm:text-[8px] font-semibold uppercase tracking-wider text-[#6B5A63] mt-1">
+                                {unit.label}
+                              </span>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     )}
