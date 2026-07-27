@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Menu, X, Music, VolumeX, Heart } from "lucide-react";
+import { Menu, X, Music, VolumeX, Heart, Gift } from "lucide-react";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -40,6 +40,7 @@ export default function Navbar() {
     { name: "Curved Gallery", href: "#gallery" },
     { name: "Asoebi Shop", href: "#asoebi" },
     { name: "Fun Zone", href: "#games" },
+    { name: "Registry", href: "#registry" },
     { name: "RSVP", href: "#rsvp" },
   ];
 
@@ -100,6 +101,15 @@ export default function Navbar() {
             )}
           </button>
 
+          {/* Quick Registry CTA */}
+          <a
+            href="#registry"
+            className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider bg-gradient-to-r from-[#D4AF37] to-[#C29B27] text-white shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300"
+          >
+            <Gift className="w-3.5 h-3.5" />
+            Registry
+          </a>
+
           {/* Quick RSVP CTA */}
           <a
             href="#rsvp"
@@ -142,13 +152,22 @@ export default function Navbar() {
                 {link.name}
               </a>
             ))}
-            <a
-              href="#rsvp"
-              onClick={() => setMobileMenuOpen(false)}
-              className="mt-2 w-full py-3 rounded-full text-center text-sm font-semibold uppercase tracking-wider bg-gradient-to-r from-[#D4AF37] to-[#C29B27] text-white shadow-md hover:shadow-lg transition-all"
-            >
-              RSVP Now
-            </a>
+            <div className="flex gap-4 w-full mt-2">
+              <a
+                href="#registry"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex-1 py-3 rounded-full text-center text-sm font-semibold uppercase tracking-wider bg-gradient-to-r from-[#D4AF37] to-[#C29B27] text-white shadow-md hover:shadow-lg transition-all"
+              >
+                Registry
+              </a>
+              <a
+                href="#rsvp"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex-1 py-3 rounded-full text-center text-sm font-semibold uppercase tracking-wider bg-gradient-to-r from-[#D4AF37] to-[#C29B27] text-white shadow-md hover:shadow-lg transition-all"
+              >
+                RSVP Now
+              </a>
+            </div>
           </nav>
         </div>
       )}
