@@ -105,6 +105,7 @@ const mazeEnd = { r: 6, c: 5 };
 // ═══════════════════════════════════════════════════
 export default function GameZone() {
   const [activeGame, setActiveGame] = useState<GameId>(null);
+  const [playerName, setPlayerName] = useState("");
 
   const games: { id: GameId; icon: React.ReactNode; title: string; sub: string }[] = [
     { id: "trivia", icon: <QuestionIcon />, title: "Couple Trivia", sub: "how well do you know us?" },
@@ -174,7 +175,32 @@ export default function GameZone() {
 
         {/* Game Panel */}
         <AnimatePresence mode="wait">
-          {activeGame && (
+          {activeGame && !playerName && (
+            <motion.div
+              key="name-entry"
+              initial={{ opacity: 0, y: 20, height: 0 }}
+              animate={{ opacity: 1, y: 0, height: "auto" }}
+              exit={{ opacity: 0, y: 20, height: 0 }}
+              transition={{ duration: 0.35 }}
+              className="bg-[#FFFDFB] rounded-3xl border border-[#E3D3DA] shadow-lg p-6 sm:p-10 overflow-hidden"
+            >
+              <div className="max-w-sm mx-auto text-center py-8">
+                <h3 className="font-serif text-2xl font-bold text-[#241B22] mb-3">Who's playing?</h3>
+                <p className="text-sm text-[#6B5A63] mb-6">Enter your name to start playing and save your scores to the leaderboard.</p>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  const fd = new FormData(e.currentTarget);
+                  const name = fd.get("player_name") as string;
+                  if (name.trim()) setPlayerName(name.trim());
+                }}>
+                  <input type="text" name="player_name" placeholder="Your Name" required className="w-full px-4 py-3 border border-[#E3D3DA] rounded-xl text-center focus:outline-none focus:border-[#0E5C52] mb-4" />
+                  <button type="submit" className="w-full py-3 bg-[#0E5C52] text-white text-sm font-bold rounded-xl hover:bg-[#0A4A42] transition-colors cursor-pointer">Start Game</button>
+                </form>
+                <button onClick={() => setActiveGame(null)} className="mt-4 text-xs font-bold text-[#6B5A63] hover:text-[#B23A6B] uppercase tracking-wider cursor-pointer">Cancel</button>
+              </div>
+            </motion.div>
+          )}
+          {activeGame && playerName && (
             <motion.div
               key={activeGame}
               initial={{ opacity: 0, y: 20, height: 0 }}
@@ -183,10 +209,10 @@ export default function GameZone() {
               transition={{ duration: 0.35 }}
               className="bg-[#FFFDFB] rounded-3xl border border-[#E3D3DA] shadow-lg p-6 sm:p-10 overflow-hidden"
             >
-              {activeGame === "trivia" && <TriviaGame onClose={() => setActiveGame(null)} onNext={() => setActiveGame("memory")} nextTitle="Memory Match" />}
-              {activeGame === "memory" && <MemoryGame onClose={() => setActiveGame(null)} onNext={() => setActiveGame("timeline")} nextTitle="Our Timeline" />}
-              {activeGame === "timeline" && <TimelineGame onClose={() => setActiveGame(null)} onNext={() => setActiveGame("maze")} nextTitle="Find the Bride" />}
-              {activeGame === "maze" && <MazeGame onClose={() => setActiveGame(null)} onNext={() => setActiveGame("trivia")} nextTitle="Couple Trivia" />}
+              {activeGame === "trivia" && <TriviaGame playerName={playerName} onClose={() => setActiveGame(null)} onNext={() => setActiveGame("memory")} nextTitle="Memory Match" />}
+              {activeGame === "memory" && <MemoryGame playerName={playerName} onClose={() => setActiveGame(null)} onNext={() => setActiveGame("timeline")} nextTitle="Our Timeline" />}
+              {activeGame === "timeline" && <TimelineGame playerName={playerName} onClose={() => setActiveGame(null)} onNext={() => setActiveGame("maze")} nextTitle="Find the Bride" />}
+              {activeGame === "maze" && <MazeGame playerName={playerName} onClose={() => setActiveGame(null)} onNext={() => setActiveGame("trivia")} nextTitle="Couple Trivia" />}
             </motion.div>
           )}
         </AnimatePresence>
@@ -201,7 +227,7 @@ export default function GameZone() {
 // ═══════════════════════════════════════════════════
 // GAME 1: COUPLE TRIVIA
 // ═══════════════════════════════════════════════════
-function TriviaGame({ onClose, onNext, nextTitle }: { onClose: () => void, onNext: () => void, nextTitle: string }) {
+function TriviaGame({ playerName, onClose, onNext, nextTitle }: { playerName: string, onClose: () => void, onNext: () => void, nextTitle: string }) {
   const [qIdx, setQIdx] = useState(0);
   const [score, setScore] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
@@ -236,12 +262,12 @@ function TriviaGame({ onClose, onNext, nextTitle }: { onClose: () => void, onNex
         <div className="text-center py-10">
           <p className="text-6xl mb-4">{rawScore >= 7 ? "🎉" : rawScore >= 4 ? "😊" : "😅"}</p>
           <h3 className="font-serif text-3xl font-bold text-[#241B22] mb-2">
-            You scored {rawScore} / {triviaQuestions.length}
+            Well done, {playerName}! You scored {rawScore} / {triviaQuestions.length}
           </h3>
           <p className="text-sm text-[#6B5A63] mb-6">
             {rawScore >= 7 ? "You really know us!" : rawScore >= 4 ? "Not bad at all!" : "We clearly need to hang out more."}
           </p>
-          <SaveScoreForm gameType="trivia" score={score} onSaved={() => {}} />
+          <AutoSaveScore gameType="trivia" score={score} playerName={playerName} />
           <button
             onClick={onNext}
             className="mt-6 px-6 py-2.5 rounded-full bg-[#0E5C52] text-white text-sm font-bold hover:bg-[#0A4A42] transition-colors cursor-pointer"
@@ -303,7 +329,7 @@ function TriviaGame({ onClose, onNext, nextTitle }: { onClose: () => void, onNex
 // ═══════════════════════════════════════════════════
 // GAME 2: MEMORY MATCH
 // ═══════════════════════════════════════════════════
-function MemoryGame({ onClose, onNext, nextTitle }: { onClose: () => void, onNext: () => void, nextTitle: string }) {
+function MemoryGame({ playerName, onClose, onNext, nextTitle }: { playerName: string, onClose: () => void, onNext: () => void, nextTitle: string }) {
   const [cards, setCards] = useState<{ icon: string; matched: boolean }[]>([]);
   const [flipped, setFlipped] = useState<number[]>([]);
   const [moves, setMoves] = useState(0);
@@ -364,9 +390,9 @@ function MemoryGame({ onClose, onNext, nextTitle }: { onClose: () => void, onNex
       {allMatched ? (
         <div className="text-center py-8">
           <p className="text-5xl mb-3">🎊</p>
-          <h3 className="font-serif text-2xl font-bold text-[#241B22] mb-1">All matched!</h3>
-          <p className="text-sm text-[#6B5A63]">You did it in {moves} moves.</p>
-          <SaveScoreForm gameType="memory" score={moves} onSaved={() => {}} />
+          <h3 className="font-serif text-2xl font-bold text-[#241B22] mb-1">Well done, {playerName}!</h3>
+          <p className="text-sm text-[#6B5A63]">You matched all pairs in {moves} moves.</p>
+          <AutoSaveScore gameType="memory" score={moves} playerName={playerName} />
           <button onClick={onNext} className="mt-6 px-6 py-2 rounded-full border border-[#E3D3DA] text-sm text-[#0E5C52] hover:bg-[#F5EFEF] transition-colors">Next Game: {nextTitle}</button>
         </div>
       ) : (
@@ -404,7 +430,7 @@ function MemoryGame({ onClose, onNext, nextTitle }: { onClose: () => void, onNex
 // ═══════════════════════════════════════════════════
 // GAME 3: OUR TIMELINE (SORT)
 // ═══════════════════════════════════════════════════
-function TimelineGame({ onClose, onNext, nextTitle }: { onClose: () => void, onNext: () => void, nextTitle: string }) {
+function TimelineGame({ playerName, onClose, onNext, nextTitle }: { playerName: string, onClose: () => void, onNext: () => void, nextTitle: string }) {
   const [items, setItems] = useState<string[]>(() => shuffleArray([...correctTimelineOrder]));
   const [checked, setChecked] = useState(false);
 
@@ -458,8 +484,8 @@ function TimelineGame({ onClose, onNext, nextTitle }: { onClose: () => void, onN
       {isCorrect && checked ? (
         <div className="text-center py-4">
           <p className="text-4xl mb-2">🎉</p>
-          <p className="font-serif text-xl font-bold text-[#0E5C52]">Perfect order!</p>
-          <SaveScoreForm gameType="timeline" score={1} onSaved={() => {}} />
+          <p className="font-serif text-xl font-bold text-[#0E5C52]">Well done, {playerName}! Perfect order!</p>
+          <AutoSaveScore gameType="timeline" score={1} playerName={playerName} />
           <button onClick={onNext} className="mt-6 px-6 py-2 rounded-full border border-[#E3D3DA] text-sm text-[#0E5C52] hover:bg-[#F5EFEF] transition-colors">Next Game: {nextTitle}</button>
         </div>
       ) : (
@@ -477,7 +503,7 @@ function TimelineGame({ onClose, onNext, nextTitle }: { onClose: () => void, onN
 // ═══════════════════════════════════════════════════
 // GAME 4: FIND THE GROOM (MAZE)
 // ═══════════════════════════════════════════════════
-function MazeGame({ onClose, onNext, nextTitle }: { onClose: () => void, onNext: () => void, nextTitle: string }) {
+function MazeGame({ playerName, onClose, onNext, nextTitle }: { playerName: string, onClose: () => void, onNext: () => void, nextTitle: string }) {
   const [pos, setPos] = useState(mazeStart);
   const [moves, setMoves] = useState(0);
   const [won, setWon] = useState(false);
@@ -528,9 +554,9 @@ function MazeGame({ onClose, onNext, nextTitle }: { onClose: () => void, onNext:
       {won ? (
         <div className="text-center py-8">
           <p className="text-5xl mb-3">💒</p>
-          <h3 className="font-serif text-2xl font-bold text-[#241B22] mb-1">They found each other!</h3>
-          <p className="text-sm text-[#6B5A63]">In {moves} moves.</p>
-          <SaveScoreForm gameType="maze" score={moves} onSaved={() => {}} />
+          <h3 className="font-serif text-2xl font-bold text-[#241B22] mb-1">Well done, {playerName}!</h3>
+          <p className="text-sm text-[#6B5A63]">You found Olivia in {moves} moves.</p>
+          <AutoSaveScore gameType="maze" score={moves} playerName={playerName} />
           <button onClick={onNext} className="mt-6 px-6 py-2 rounded-full border border-[#E3D3DA] text-sm text-[#0E5C52] hover:bg-[#F5EFEF] transition-colors cursor-pointer">Next Game: {nextTitle}</button>
         </div>
       ) : (
@@ -609,49 +635,18 @@ function GameHeader({ title, onClose }: { title: string; onClose: () => void }) 
 // ═══════════════════════════════════════════════════
 // SHARED: SCORE FORM HELPER
 // ═══════════════════════════════════════════════════
-function SaveScoreForm({ gameType, score, onSaved }: { gameType: string, score: number, onSaved: () => void }) {
-  const [name, setName] = useState("");
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
-  const [saved, setSaved] = useState(false);
+function AutoSaveScore({ gameType, score, playerName }: { gameType: string, score: number, playerName: string }) {
+  const [status, setStatus] = useState<"saving" | "saved" | "error">("saving");
 
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name.trim()) return;
-    setSaving(true);
-    setError("");
-    try {
-      await saveScore(name.trim(), gameType, score);
-      setSaved(true);
-      setTimeout(onSaved, 2000);
-    } catch (err: any) {
-      setError(err.message || "Failed to save score");
-    } finally {
-      setSaving(false);
-    }
-  };
+  useEffect(() => {
+    let isMounted = true;
+    saveScore(playerName, gameType, score)
+      .then(() => { if (isMounted) setStatus("saved"); })
+      .catch((err) => { if (isMounted) setStatus("error"); console.error(err); });
+    return () => { isMounted = false; };
+  }, [gameType, score, playerName]);
 
-  if (saved) return <p className="text-sm font-bold text-[#0E5C52] mt-4">Score saved to Leaderboard!</p>;
-
-  return (
-    <form onSubmit={onSubmit} className="mt-4 flex flex-col gap-2 max-w-[240px] mx-auto">
-      <input 
-        type="text" 
-        placeholder="Enter your name" 
-        value={name} 
-        onChange={e => setName(e.target.value)} 
-        required 
-        className="w-full px-3 py-2 border border-[#E3D3DA] rounded-sm text-sm text-center focus:outline-none focus:border-[#0E5C52]" 
-        disabled={saving} 
-      />
-      {error && <p className="text-[10px] text-red-500">{error}</p>}
-      <button 
-        type="submit" 
-        disabled={saving || !name.trim()} 
-        className="w-full py-2 bg-[#1A3C3A] text-white text-xs uppercase tracking-widest font-bold rounded-sm hover:bg-[#0E5C52] transition-colors disabled:opacity-70 flex justify-center items-center gap-2"
-      >
-        {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : "Save Score"}
-      </button>
-    </form>
-  );
+  if (status === "saving") return <p className="text-xs text-[#6B5A63] flex items-center justify-center gap-2 mt-4"><Loader2 className="w-3 h-3 animate-spin" /> Saving score to leaderboard...</p>;
+  if (status === "error") return <p className="text-xs text-red-500 mt-4">Failed to save score.</p>;
+  return <p className="text-xs font-bold text-[#0E5C52] mt-4">Score saved to Leaderboard!</p>;
 }
