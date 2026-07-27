@@ -31,8 +31,8 @@ const lookbook = [
   {
     id: "guests",
     title: "General Guests",
-    desc: "Not wearing aso-ebi? Stick to the palette — jewel tones, soft blush, or teal in any fabric you love.",
-    colors: ["#D4A5A5", "#F3E7EB", "#0E5C52"],
+    desc: "Not wearing aso-ebi? Stick to the palette — turquoise, emerald green, silver, or white in any fabric you love.",
+    colors: ["#30D5C8", "#0E5C52", "#C0C0C0", "#FFFFFF"],
     showImageSpace: false,
   },
   {
