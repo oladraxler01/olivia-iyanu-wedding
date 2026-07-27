@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 
 const milestones = [
   { icon: <Utensils className="w-5 h-5 text-[#B23A6B]/50" />, title: "Lunch/Dinner dates", desc: "From first dates to forever — the dinner diaries are here." },
+  { icon: <Camera className="w-5 h-5 text-[#B23A6B]/50" />, title: "Pre-wedding shoot experience", desc: "A glimpse of the magic before the big day." },
   { icon: <Camera className="w-5 h-5 text-[#B23A6B]/50" />, title: "Proposal pictures", desc: "Every crown has a beginning. Ours started with one question & deserves a proper reveal, [X days] to reveal." },
   { icon: <Users className="w-5 h-5 text-[#B23A6B]/50" />, title: "The Bridal party Squad", desc: "The crown doesn't stand alone — get ready to meet the ones who hold it up. [X days] to go." },
   { icon: <ImageIcon className="w-5 h-5 text-[#B23A6B]/50" />, title: "Traditional engagement pictures", desc: "Two heritages, one love story — the traditional photos are almost here." },

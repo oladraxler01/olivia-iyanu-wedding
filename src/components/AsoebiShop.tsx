@@ -243,13 +243,13 @@ export default function AsoebiShop() {
 
                 <div>
                   <label className="block text-xs font-semibold text-[#241B22] uppercase tracking-wider mb-1.5">
-                    Special Delivery Instructions or Customization Notes
+                    Delivery, Customization Notes, or Men's Cap Size
                   </label>
                   <textarea
                     rows={2}
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Provide tailoring notes or preferred delivery location (Lagos, London, Houston)..."
+                    placeholder="Provide tailoring notes, men's cap size, or delivery location (Lagos, London, Houston)..."
                     className="w-full px-4 py-2.5 rounded-xl border border-[#D4A5A5]/40 bg-white text-sm focus:outline-none focus:border-[#D4AF37]"
                   ></textarea>
                 </div>

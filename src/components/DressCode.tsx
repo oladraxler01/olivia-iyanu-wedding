@@ -23,7 +23,7 @@ const lookbook = [
     id: "gentlemen",
     title: "Aso-Ebi Gentlemen",
     desc: "White Agbada or a native two-piece with the provided fila cap.",
-    colors: ["#0E5C52", "#B23A6B"],
+    colors: ["#FFFFFF", "#0E5C52", "#C0C0C0"],
     showImageSpace: true,
     imageLabel: "Men's Fabric Material",
     image: "/images/WhatsApp Image 2026-07-27 at 14.55.31.jpeg",
@@ -92,7 +92,7 @@ export default function DressCode() {
                 {item.colors.map((color, idx) => (
                   <div
                     key={idx}
-                    className="w-5 h-5 rounded-full border border-black/10"
+                    className={`w-5 h-5 rounded-full ${color === "#FFFFFF" ? "border-2 border-[#241B22]" : "border border-black/10"}`}
                     style={{ backgroundColor: color }}
                   />
                 ))}
