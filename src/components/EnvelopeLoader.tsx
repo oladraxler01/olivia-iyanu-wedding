@@ -112,29 +112,41 @@ export default function EnvelopeLoader() {
                 <polyline points="0,100 50,40.2 100,100" fill="none" stroke="url(#goldGradient)" strokeWidth="0.15" />
               </svg>
 
-              {/* Corner Filigree Ornaments */}
-              <div className="absolute top-8 left-8 w-16 h-16 pointer-events-none z-20 opacity-60">
-                <svg viewBox="0 0 100 100" fill="none" stroke="url(#goldGradient)" strokeWidth="2">
-                  <path d="M0 0 Q 50 0 50 50 Q 50 0 100 0" />
-                  <path d="M0 0 Q 0 50 50 50 Q 0 50 0 100" />
+              {/* Corner Filigree Ornaments - Enhanced & Enlarged */}
+              <div className="absolute top-4 left-4 w-32 h-32 pointer-events-none z-20 opacity-80">
+                <svg viewBox="0 0 100 100" fill="none" stroke="url(#goldGradient)" strokeWidth="1.5" strokeLinecap="round">
+                  <path d="M0 0 Q 60 0 60 60 Q 60 0 100 0" />
+                  <path d="M0 0 Q 0 60 60 60 Q 0 60 0 100" />
+                  <circle cx="25" cy="25" r="2" fill="#D4AF37" stroke="none" />
+                  <circle cx="45" cy="15" r="1.5" fill="#D4AF37" stroke="none" />
+                  <circle cx="15" cy="45" r="1.5" fill="#D4AF37" stroke="none" />
                 </svg>
               </div>
-              <div className="absolute top-8 right-8 w-16 h-16 pointer-events-none z-20 opacity-60" style={{ transform: "scaleX(-1)" }}>
-                <svg viewBox="0 0 100 100" fill="none" stroke="url(#goldGradient)" strokeWidth="2">
-                  <path d="M0 0 Q 50 0 50 50 Q 50 0 100 0" />
-                  <path d="M0 0 Q 0 50 50 50 Q 0 50 0 100" />
+              <div className="absolute top-4 right-4 w-32 h-32 pointer-events-none z-20 opacity-80" style={{ transform: "scaleX(-1)" }}>
+                <svg viewBox="0 0 100 100" fill="none" stroke="url(#goldGradient)" strokeWidth="1.5" strokeLinecap="round">
+                  <path d="M0 0 Q 60 0 60 60 Q 60 0 100 0" />
+                  <path d="M0 0 Q 0 60 60 60 Q 0 60 0 100" />
+                  <circle cx="25" cy="25" r="2" fill="#D4AF37" stroke="none" />
+                  <circle cx="45" cy="15" r="1.5" fill="#D4AF37" stroke="none" />
+                  <circle cx="15" cy="45" r="1.5" fill="#D4AF37" stroke="none" />
                 </svg>
               </div>
-              <div className="absolute bottom-8 left-8 w-16 h-16 pointer-events-none z-20 opacity-60" style={{ transform: "scaleY(-1)" }}>
-                <svg viewBox="0 0 100 100" fill="none" stroke="url(#goldGradient)" strokeWidth="2">
-                  <path d="M0 0 Q 50 0 50 50 Q 50 0 100 0" />
-                  <path d="M0 0 Q 0 50 50 50 Q 0 50 0 100" />
+              <div className="absolute bottom-4 left-4 w-32 h-32 pointer-events-none z-20 opacity-80" style={{ transform: "scaleY(-1)" }}>
+                <svg viewBox="0 0 100 100" fill="none" stroke="url(#goldGradient)" strokeWidth="1.5" strokeLinecap="round">
+                  <path d="M0 0 Q 60 0 60 60 Q 60 0 100 0" />
+                  <path d="M0 0 Q 0 60 60 60 Q 0 60 0 100" />
+                  <circle cx="25" cy="25" r="2" fill="#D4AF37" stroke="none" />
+                  <circle cx="45" cy="15" r="1.5" fill="#D4AF37" stroke="none" />
+                  <circle cx="15" cy="45" r="1.5" fill="#D4AF37" stroke="none" />
                 </svg>
               </div>
-              <div className="absolute bottom-8 right-8 w-16 h-16 pointer-events-none z-20 opacity-60" style={{ transform: "scale(-1, -1)" }}>
-                <svg viewBox="0 0 100 100" fill="none" stroke="url(#goldGradient)" strokeWidth="2">
-                  <path d="M0 0 Q 50 0 50 50 Q 50 0 100 0" />
-                  <path d="M0 0 Q 0 50 50 50 Q 0 50 0 100" />
+              <div className="absolute bottom-4 right-4 w-32 h-32 pointer-events-none z-20 opacity-80" style={{ transform: "scale(-1, -1)" }}>
+                <svg viewBox="0 0 100 100" fill="none" stroke="url(#goldGradient)" strokeWidth="1.5" strokeLinecap="round">
+                  <path d="M0 0 Q 60 0 60 60 Q 60 0 100 0" />
+                  <path d="M0 0 Q 0 60 60 60 Q 0 60 0 100" />
+                  <circle cx="25" cy="25" r="2" fill="#D4AF37" stroke="none" />
+                  <circle cx="45" cy="15" r="1.5" fill="#D4AF37" stroke="none" />
+                  <circle cx="15" cy="45" r="1.5" fill="#D4AF37" stroke="none" />
                 </svg>
               </div>
 
@@ -156,19 +168,39 @@ export default function EnvelopeLoader() {
                     </defs>
                     {/* Deep V-shaped Top Flap goes down to 65% height exactly like reference */}
                     <polygon points="0,0 100,0 50,65" fill="#FDFCFB" filter="url(#shadow-top)" />
-                    {/* Golden Edge */}
-                    <polyline points="0,0 50,64.8 100,0" fill="none" stroke="url(#goldGradient)" strokeWidth="0.2" />
+                    {/* Golden Edge Main */}
+                    <polyline points="0,0 50,64.8 100,0" fill="none" stroke="url(#goldGradient)" strokeWidth="0.25" />
+                    {/* Inner Golden Double Lines */}
+                    <polyline points="2,0 50,62 98,0" fill="none" stroke="url(#goldGradient)" strokeWidth="0.1" opacity="0.8" />
+                    <polyline points="4,0 50,59 96,0" fill="none" stroke="url(#goldGradient)" strokeWidth="0.05" opacity="0.5" />
                   </svg>
                   
                   {/* Typography on the Flap */}
-                  <div className="absolute top-[18%] md:top-[15%] left-0 w-full text-center flex flex-col items-center justify-start pointer-events-none px-4">
-                      <p style={{ fontFamily: "var(--font-cormorant), cursive, serif" }} className="text-[#5C5056] text-xl sm:text-3xl md:text-4xl italic font-light mb-4 sm:mb-6">
+                  <div className="absolute top-[12%] md:top-[12%] left-0 w-full text-center flex flex-col items-center justify-start pointer-events-none px-4">
+                      
+                      {/* Top Ornament */}
+                      <div className="flex items-center justify-center gap-4 mb-4 w-full max-w-[240px] opacity-80">
+                        <div className="h-[1px] flex-grow bg-gradient-to-r from-transparent to-[#D4AF37]"></div>
+                        <div className="w-2 h-2 rotate-45 border border-[#D4AF37]"></div>
+                        <div className="h-[1px] flex-grow bg-gradient-to-l from-transparent to-[#D4AF37]"></div>
+                      </div>
+
+                      <p style={{ fontFamily: "var(--font-cormorant), cursive, serif" }} className="text-[#5C5056] text-xl sm:text-3xl md:text-4xl italic font-light mb-4 sm:mb-5">
                         You are lovingly invited to the wedding of
                       </p>
+                      
                       <h1 className="text-[#1A1618] font-serif text-3xl sm:text-4xl md:text-5xl tracking-[0.2em] uppercase mb-4 leading-normal">
-                        OLIVIA <br/> <span className="text-xl sm:text-2xl font-light">AND</span> <br/> IYANU
+                        OLIVIA <br/> <span className="text-xl sm:text-2xl font-light text-[#D4AF37]">AND</span> <br/> IYANU
                       </h1>
-                      <p className="text-[#8B8086] text-sm sm:text-lg tracking-[0.4em] font-medium font-mono mt-2">
+
+                      {/* Bottom Ornament */}
+                      <div className="flex items-center justify-center gap-3 mt-1 mb-3 w-full max-w-[120px] opacity-70">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></div>
+                        <div className="h-[1px] flex-grow bg-[#D4AF37]"></div>
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></div>
+                      </div>
+
+                      <p className="text-[#8B8086] text-sm sm:text-lg tracking-[0.4em] font-medium font-mono mt-1">
                         30.10.2026
                       </p>
                   </div>
