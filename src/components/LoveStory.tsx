@@ -20,7 +20,8 @@ const milestones = [
     icon: <Camera className="w-5 h-5 text-[#B23A6B]/50" />, 
     title: "Proposal pictures", 
     desc: "Every crown has a beginning. Ours started with one question & deserves a proper reveal.",
-    countdown: "60 Days to Reveal",
+    countdownNum: "60",
+    countdownText: "DAYS",
     media: "loading"
   },
   { 
@@ -33,7 +34,8 @@ const milestones = [
     icon: <ImageIcon className="w-5 h-5 text-[#B23A6B]/50" />, 
     title: "Traditional engagement pictures", 
     desc: "Two heritages, one love story — the traditional photos are almost here.",
-    countdown: "40 Days to Reveal",
+    countdownNum: "40",
+    countdownText: "DAYS",
     media: "loading"
   },
   { 
@@ -117,7 +119,7 @@ export default function LoveStory() {
                     {m.media === "vimeo" ? (
                       <div className="aspect-[16/9] w-full rounded-2xl overflow-hidden bg-black mb-4">
                         <iframe 
-                          src="https://player.vimeo.com/video/1000965385?badge=0&autopause=0&player_id=0&app_id=58479" 
+                          src="https://player.vimeo.com/video/1212676451?badge=0&autopause=0&player_id=0&app_id=58479" 
                           frameBorder="0" 
                           allow="autoplay; fullscreen; picture-in-picture" 
                           className="w-full h-full"
@@ -136,15 +138,22 @@ export default function LoveStory() {
                       </div>
                     )}
 
-                    {m.countdown && (
-                      <div className={`inline-block px-4 py-1 rounded-full bg-[#0E5C52]/10 border border-[#0E5C52]/20 mb-3`}>
-                        <span className="text-xs font-bold uppercase tracking-widest text-[#0E5C52]">{m.countdown}</span>
-                      </div>
-                    )}
-
                     <p className="text-sm sm:text-base text-[#6B5A63]">
                       {m.desc}
                     </p>
+
+                    {m.countdownNum && (
+                      <div className={`flex ${isEven ? 'justify-end' : 'justify-start'} mt-4`}>
+                        <div className="flex flex-col items-center justify-center border border-[#E3D3DA] rounded-[18px] w-[85px] h-[90px] bg-[#FFFDFB] shadow-sm">
+                          <span style={{ fontFamily: "var(--font-cormorant), Georgia, serif" }} className="text-4xl text-[#0E5C52] leading-none mb-1">
+                            {m.countdownNum}
+                          </span>
+                          <span className="text-[10px] font-bold tracking-[0.15em] text-[#6B5A63] uppercase">
+                            {m.countdownText}
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </motion.div>
