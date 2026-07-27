@@ -128,22 +128,11 @@ export default function LoveStory() {
                   <Heart className="w-3 h-3 text-[#B23A6B] fill-[#B23A6B]" />
                 </div>
 
-                {/* Desktop: Opposite Side Title & Countdown */}
+                {/* Desktop: Opposite Side Title */}
                 <div className={`hidden md:flex absolute top-6 w-[40%] flex-col ${isEven ? 'left-1/2 ml-8 items-start text-left' : 'right-1/2 mr-8 items-end text-right'}`}>
                   <p style={{ fontFamily: "var(--font-cormorant), Georgia, serif", fontStyle: "italic" }} className="text-2xl sm:text-3xl text-[#0E5C52] font-medium leading-tight">
                     {m.title}
                   </p>
-                  
-                  {m.countdownNum && (
-                    <div className="mt-6 flex flex-col items-center justify-center">
-                      <span style={{ fontFamily: "var(--font-cormorant), Georgia, serif" }} className="text-6xl text-[#0E5C52] leading-none mb-2">
-                        {m.countdownNum}
-                      </span>
-                      <span className="text-[12px] font-bold tracking-[0.2em] text-[#6B5A63] uppercase">
-                        {m.countdownText}
-                      </span>
-                    </div>
-                  )}
                 </div>
 
                 {/* Content Card */}
@@ -168,7 +157,7 @@ export default function LoveStory() {
                         <ImageIcon className="w-8 h-8 text-[#B23A6B]/30 animate-pulse" />
                       </div>
                     ) : m.media === "vimeo" ? (
-                      <div className="w-full max-w-[320px] mx-auto aspect-[9/16] rounded-2xl overflow-hidden bg-black mb-4 shadow-sm">
+                      <div className="w-full aspect-[9/16] rounded-2xl overflow-hidden bg-black mb-4 shadow-sm">
                         <iframe 
                           src="https://player.vimeo.com/video/1212676451?badge=0&autopause=0&player_id=0&app_id=58479" 
                           frameBorder="0" 
@@ -195,10 +184,10 @@ export default function LoveStory() {
                       {m.desc}
                     </p>
 
-                    {/* Mobile: Countdown underneath the description */}
+                    {/* Countdown underneath the description text */}
                     {m.countdownNum && (
-                      <div className="md:hidden mt-6 flex justify-center">
-                        <div className="flex flex-col items-center justify-center">
+                      <div className="mt-6 flex flex-col items-start w-full">
+                        <div className="flex flex-col items-start justify-center">
                           <span style={{ fontFamily: "var(--font-cormorant), Georgia, serif" }} className="text-6xl text-[#0E5C52] leading-none mb-2">
                             {m.countdownNum}
                           </span>
