@@ -4,10 +4,10 @@ import { Download } from "lucide-react";
 
 const lookbook = [
   {
-    id: "palette",
-    title: "Our Palette",
-    desc: "Teal green outfits, emerald green head gear, and a touch of silver for the shine.",
-    colors: ["#0E5C52", "#B23A6B", "#D4A5A5", "#F3E7EB"],
+    id: "general",
+    title: "The Palette",
+    desc: "Turquoise, Emerald Green, Silver, and White.",
+    colors: ["#30D5C8", "#0E5C52", "#C0C0C0", "#FFFFFF"],
     showImageSpace: false,
   },
   {
