@@ -7,7 +7,7 @@ const lookbook = [
     id: "palette",
     title: "Our Palette",
     desc: "Teal green outfits, emerald green head gear, and a touch of silver for the shine.",
-    colors: ["#0E5C52", "#B23A6B", "#D4A5A5", "#F3E7EB"],
+    colors: ["#30D5C8", "#0E5C52", "#C0C0C0", "#FFFFFF"],
     showImageSpace: false,
   },
   {
@@ -32,7 +32,7 @@ const lookbook = [
     id: "guests",
     title: "General Guests",
     desc: "Not wearing aso-ebi? Stick to the palette — jewel tones, soft blush, or teal in any fabric you love.",
-    colors: ["#D4A5A5", "#F3E7EB", "#0E5C52"],
+    colors: ["#30D5C8", "#0E5C52", "#C0C0C0", "#FFFFFF"],
     showImageSpace: false,
   },
   {
