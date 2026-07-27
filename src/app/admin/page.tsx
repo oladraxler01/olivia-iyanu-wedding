@@ -48,7 +48,7 @@ export default function AdminDashboard() {
   // Authentication
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (passcode === "OliviaIyanu2026") {
+    if (passcode === "#LetsDoLifeTogether admin") {
       setIsAuthenticated(true);
       setAuthError("");
     } else {
