@@ -235,6 +235,7 @@ export default function LoveStory() {
                         </div>
                       </div>
                     )}
+                  </div>
                 </div>
               </motion.div>
             );
