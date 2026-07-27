@@ -183,10 +183,10 @@ export default function GameZone() {
               transition={{ duration: 0.35 }}
               className="bg-[#FFFDFB] rounded-3xl border border-[#E3D3DA] shadow-lg p-6 sm:p-10 overflow-hidden"
             >
-              {activeGame === "trivia" && <TriviaGame onClose={() => setActiveGame(null)} />}
-              {activeGame === "memory" && <MemoryGame onClose={() => setActiveGame(null)} />}
-              {activeGame === "timeline" && <TimelineGame onClose={() => setActiveGame(null)} />}
-              {activeGame === "maze" && <MazeGame onClose={() => setActiveGame(null)} />}
+              {activeGame === "trivia" && <TriviaGame onClose={() => setActiveGame(null)} onNext={() => setActiveGame("memory")} nextTitle="Memory Match" />}
+              {activeGame === "memory" && <MemoryGame onClose={() => setActiveGame(null)} onNext={() => setActiveGame("timeline")} nextTitle="Our Timeline" />}
+              {activeGame === "timeline" && <TimelineGame onClose={() => setActiveGame(null)} onNext={() => setActiveGame("maze")} nextTitle="Find the Bride" />}
+              {activeGame === "maze" && <MazeGame onClose={() => setActiveGame(null)} onNext={() => setActiveGame("trivia")} nextTitle="Couple Trivia" />}
             </motion.div>
           )}
         </AnimatePresence>
@@ -201,7 +201,7 @@ export default function GameZone() {
 // ═══════════════════════════════════════════════════
 // GAME 1: COUPLE TRIVIA
 // ═══════════════════════════════════════════════════
-function TriviaGame({ onClose }: { onClose: () => void }) {
+function TriviaGame({ onClose, onNext, nextTitle }: { onClose: () => void, onNext: () => void, nextTitle: string }) {
   const [qIdx, setQIdx] = useState(0);
   const [score, setScore] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
@@ -223,8 +223,6 @@ function TriviaGame({ onClose }: { onClose: () => void }) {
         setQIdx((q) => q + 1);
         setSelected(null);
       } else {
-        const timeElapsed = (Date.now() - startTime) / 1000;
-        setScore((s) => s + (1 / timeElapsed));
         setFinished(true);
       }
     }, 800);
@@ -245,10 +243,10 @@ function TriviaGame({ onClose }: { onClose: () => void }) {
           </p>
           <SaveScoreForm gameType="trivia" score={score} onSaved={() => {}} />
           <button
-            onClick={() => { setQIdx(0); setScore(0); setSelected(null); setFinished(false); setStartTime(Date.now()); }}
+            onClick={onNext}
             className="mt-6 px-6 py-2.5 rounded-full bg-[#0E5C52] text-white text-sm font-bold hover:bg-[#0A4A42] transition-colors cursor-pointer"
           >
-            Play Again
+            Next Game: {nextTitle}
           </button>
         </div>
       </div>
@@ -305,7 +303,7 @@ function TriviaGame({ onClose }: { onClose: () => void }) {
 // ═══════════════════════════════════════════════════
 // GAME 2: MEMORY MATCH
 // ═══════════════════════════════════════════════════
-function MemoryGame({ onClose }: { onClose: () => void }) {
+function MemoryGame({ onClose, onNext, nextTitle }: { onClose: () => void, onNext: () => void, nextTitle: string }) {
   const [cards, setCards] = useState<{ icon: string; matched: boolean }[]>([]);
   const [flipped, setFlipped] = useState<number[]>([]);
   const [moves, setMoves] = useState(0);
@@ -369,7 +367,7 @@ function MemoryGame({ onClose }: { onClose: () => void }) {
           <h3 className="font-serif text-2xl font-bold text-[#241B22] mb-1">All matched!</h3>
           <p className="text-sm text-[#6B5A63]">You did it in {moves} moves.</p>
           <SaveScoreForm gameType="memory" score={moves} onSaved={() => {}} />
-          <button onClick={initGame} className="mt-6 px-6 py-2 rounded-full border border-[#E3D3DA] text-sm text-[#0E5C52] hover:bg-[#F5EFEF] transition-colors">Play Again</button>
+          <button onClick={onNext} className="mt-6 px-6 py-2 rounded-full border border-[#E3D3DA] text-sm text-[#0E5C52] hover:bg-[#F5EFEF] transition-colors">Next Game: {nextTitle}</button>
         </div>
       ) : (
         <div className="grid grid-cols-4 gap-3">
@@ -406,7 +404,7 @@ function MemoryGame({ onClose }: { onClose: () => void }) {
 // ═══════════════════════════════════════════════════
 // GAME 3: OUR TIMELINE (SORT)
 // ═══════════════════════════════════════════════════
-function TimelineGame({ onClose }: { onClose: () => void }) {
+function TimelineGame({ onClose, onNext, nextTitle }: { onClose: () => void, onNext: () => void, nextTitle: string }) {
   const [items, setItems] = useState<string[]>(() => shuffleArray([...correctTimelineOrder]));
   const [checked, setChecked] = useState(false);
 
@@ -462,6 +460,7 @@ function TimelineGame({ onClose }: { onClose: () => void }) {
           <p className="text-4xl mb-2">🎉</p>
           <p className="font-serif text-xl font-bold text-[#0E5C52]">Perfect order!</p>
           <SaveScoreForm gameType="timeline" score={1} onSaved={() => {}} />
+          <button onClick={onNext} className="mt-6 px-6 py-2 rounded-full border border-[#E3D3DA] text-sm text-[#0E5C52] hover:bg-[#F5EFEF] transition-colors">Next Game: {nextTitle}</button>
         </div>
       ) : (
         <button
@@ -478,7 +477,7 @@ function TimelineGame({ onClose }: { onClose: () => void }) {
 // ═══════════════════════════════════════════════════
 // GAME 4: FIND THE GROOM (MAZE)
 // ═══════════════════════════════════════════════════
-function MazeGame({ onClose }: { onClose: () => void }) {
+function MazeGame({ onClose, onNext, nextTitle }: { onClose: () => void, onNext: () => void, nextTitle: string }) {
   const [pos, setPos] = useState(mazeStart);
   const [moves, setMoves] = useState(0);
   const [won, setWon] = useState(false);
@@ -532,7 +531,7 @@ function MazeGame({ onClose }: { onClose: () => void }) {
           <h3 className="font-serif text-2xl font-bold text-[#241B22] mb-1">They found each other!</h3>
           <p className="text-sm text-[#6B5A63]">In {moves} moves.</p>
           <SaveScoreForm gameType="maze" score={moves} onSaved={() => {}} />
-          <button onClick={restart} className="mt-6 px-6 py-2 rounded-full border border-[#E3D3DA] text-sm text-[#0E5C52] hover:bg-[#F5EFEF] transition-colors cursor-pointer">Play Again</button>
+          <button onClick={onNext} className="mt-6 px-6 py-2 rounded-full border border-[#E3D3DA] text-sm text-[#0E5C52] hover:bg-[#F5EFEF] transition-colors cursor-pointer">Next Game: {nextTitle}</button>
         </div>
       ) : (
         <>
