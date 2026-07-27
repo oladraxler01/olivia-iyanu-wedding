@@ -62,9 +62,9 @@ const memoryIcons = [
   "/images/matching_game/SAVE_20260704_202817.jpg",
   "/images/matching_game/IMG_9412.jpg",
   "/images/matching_game/IMG_9510.jpg",
-  "💍",
-  "💐",
-  "🎂",
+  "/images/IMG_0355.jpg",
+  "/images/soul_connection.jpg",
+  "/images/The Silly side of love.jpg",
 ];
 
 function shuffleArray<T>(arr: T[]): T[] {
