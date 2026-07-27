@@ -22,6 +22,7 @@ const milestones = [
     title: "Proposal pictures", 
     desc: "Every crown has a beginning. Ours started with one question & deserves a proper reveal.",
     showCountdown: true,
+    countdownDays: 60,
     media: "loading"
   },
   { 
@@ -35,6 +36,7 @@ const milestones = [
     title: "Traditional engagement pictures", 
     desc: "Two heritages, one love story — the traditional photos are almost here.",
     showCountdown: true,
+    countdownDays: 40,
     media: "loading"
   },
   { 
@@ -152,11 +154,31 @@ export default function LoveStory() {
                   <Heart className="w-3 h-3 text-[#B23A6B] fill-[#B23A6B]" />
                 </div>
 
-                {/* Desktop: Opposite Side Title */}
+                {/* Desktop: Opposite Side Title & Countdown */}
                 <div className={`hidden md:flex absolute top-6 w-[40%] flex-col ${isEven ? 'left-1/2 ml-8 items-start text-left' : 'right-1/2 mr-8 items-end text-right'}`}>
                   <p style={{ fontFamily: "var(--font-cormorant), Georgia, serif", fontStyle: "italic" }} className="text-2xl sm:text-3xl text-[#0E5C52] font-medium leading-tight">
                     {m.title}
                   </p>
+
+                  {m.showCountdown && (
+                    <div className={`mt-6 grid grid-cols-4 gap-2 w-full max-w-[280px] ${isEven ? 'mr-auto' : 'ml-auto'}`}>
+                      {[
+                        { label: "Days", val: m.countdownDays },
+                        { label: "Hours", val: timeLeft.hours },
+                        { label: "Minutes", val: timeLeft.minutes },
+                        { label: "Seconds", val: timeLeft.seconds },
+                      ].map((unit) => (
+                        <div key={unit.label} className="bg-[#FFFDFB] border border-[#E3D3DA] rounded-xl py-2 px-1 text-center shadow-xs">
+                          <span className="font-serif text-xl sm:text-2xl font-bold text-[#0E5C52]">
+                            {String(unit.val).padStart(2, "0")}
+                          </span>
+                          <span className="block text-[7px] sm:text-[8px] font-semibold uppercase tracking-wider text-[#6B5A63] mt-1">
+                            {unit.label}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Content Card */}
@@ -208,12 +230,12 @@ export default function LoveStory() {
                       {m.desc}
                     </p>
 
-                    {/* Countdown underneath the description text */}
+                    {/* Mobile: Countdown underneath the description text */}
                     {m.showCountdown && (
-                      <div className="mt-6 flex flex-col items-start w-full">
+                      <div className="md:hidden mt-6 flex flex-col items-start w-full">
                         <div className="grid grid-cols-4 gap-2 w-full max-w-[280px]">
                           {[
-                            { label: "Days", val: timeLeft.days },
+                            { label: "Days", val: m.countdownDays },
                             { label: "Hours", val: timeLeft.hours },
                             { label: "Minutes", val: timeLeft.minutes },
                             { label: "Seconds", val: timeLeft.seconds },
