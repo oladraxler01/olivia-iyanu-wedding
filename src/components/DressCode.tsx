@@ -80,9 +80,9 @@ export default function DressCode() {
             >
               {/* Image Space for Materials */}
               {item.showImageSpace && (
-                <div className="w-full aspect-square bg-[#F3E7EB]/50 border-2 border-dashed border-[#E3D3DA] flex items-center justify-center mb-6 relative overflow-hidden">
+                <div className="w-full aspect-[4/5] bg-[#F3E7EB]/50 border-2 border-dashed border-[#E3D3DA] flex items-center justify-center mb-6 relative overflow-hidden rounded-md">
                   {item.image ? (
-                    <img src={item.image} alt={item.title} className="absolute inset-0 w-full h-full object-cover object-top" />
+                    <img src={item.image} alt={item.title} className="absolute inset-0 w-full h-full object-cover" />
                   ) : (
                     <span className="text-xs font-semibold text-[#B23A6B]/50 uppercase tracking-widest text-center px-4">
                       {item.imageLabel}<br />(Image goes here)
