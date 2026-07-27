@@ -14,7 +14,7 @@ const lookbook = [
     id: "ladies",
     title: "Aso-Ebi Ladies",
     desc: "Aso-ebi fabric styled as you like — buba & wrapper, a gown, or a fitted kaftan. Gele optional but encouraged.",
-    colors: ["#0E5C52", "#B23A6B"],
+    colors: ["#30D5C8", "#0E5C52", "#C0C0C0"],
     showImageSpace: true,
     imageLabel: "Ladies Fabric Material",
     image: "/images/WhatsApp Image 2026-07-27 at 14.23.12.jpeg",
