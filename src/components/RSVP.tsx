@@ -68,6 +68,7 @@ export default function RSVP() {
           src="/images/rose.png" 
           alt="Decorative Rose" 
           fill 
+          sizes="(max-width: 768px) 250px, 400px"
           className="object-contain"
         />
       </div>
@@ -78,6 +79,7 @@ export default function RSVP() {
           src="/images/rose.png" 
           alt="Decorative Rose" 
           fill 
+          sizes="(max-width: 768px) 250px, 400px"
           className="object-contain"
         />
       </div>
