@@ -9,7 +9,7 @@ const priceList = [
   { id: "ladies_3", name: "Aso-ebi fabric — Ladies (3 yards)", price: 24000 },
   { id: "ladies_4", name: "Aso-ebi fabric — Ladies (4 yards)", price: 32000 },
   { id: "men", name: "Aso-ebi fabric — Men (native wear length)", price: 28000 },
-  { id: "gele", name: "Sego Gele (head wrap)", price: 12000 },
+  { id: "gele", name: "Sego Gele (head wrap)", price: 16000 },
   { id: "fila", name: "Men's cap (fila)", price: 10000 },
 ];
 
@@ -160,7 +160,7 @@ export default function AsoebiPaymentForm() {
         <div className="bg-white p-8 border border-[#E3D3DA]">
           {!submitted ? (
             <form className="space-y-6" onSubmit={handleSubmit}>
-              
+
               {error && (
                 <div className="bg-red-50 text-red-600 p-4 rounded-sm border border-red-100 flex items-start gap-3 text-sm">
                   <AlertCircle className="w-5 h-5 shrink-0" />
@@ -317,7 +317,7 @@ export default function AsoebiPaymentForm() {
               <p className="text-sm text-[#6B5A63] leading-relaxed">
                 Thank you, <strong>{fullName}</strong>. We have received your order details and payment proof safely. We'll be in touch shortly regarding your delivery!
               </p>
-              <button 
+              <button
                 onClick={() => {
                   setFullName("");
                   setPhone("");
