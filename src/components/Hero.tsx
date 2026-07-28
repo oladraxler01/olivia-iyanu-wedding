@@ -8,7 +8,7 @@ export default function Hero() {
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <Image 
-          src="/images/IMG-20260722-WA0011.jpg" 
+          src="/images/perfect%20harmony.PNG" 
           alt="Olivia and Iyanu Pre-wedding"
           fill
           className="object-cover object-[center_25%]"

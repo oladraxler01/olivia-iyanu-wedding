@@ -410,15 +410,24 @@ function MemoryGame({ playerName, onClose, onNext, nextTitle }: { playerName: st
                     : "bg-[#1A3C3A] border-[#1A3C3A] hover:bg-[#0E5C52] p-2"
                 }`}
               >
-                {isFlipped ? (
-                  card.icon.startsWith("/") ? (
-                    <Image src={card.icon} alt="memory card" fill sizes="150px" className="object-cover" />
-                  ) : (
-                    card.icon
-                  )
+                {card.icon.startsWith("/") ? (
+                  <Image 
+                    src={card.icon} 
+                    alt="memory card" 
+                    fill 
+                    sizes="150px" 
+                    className={`object-cover transition-opacity duration-300 ${isFlipped ? "opacity-100" : "opacity-0"}`}
+                    priority
+                  />
                 ) : (
-                  <Heart className="w-4 h-4 text-[#0E5C52]/40" />
+                  <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${isFlipped ? "opacity-100" : "opacity-0"}`}>
+                    {card.icon}
+                  </div>
                 )}
+                
+                <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 pointer-events-none ${isFlipped ? "opacity-0" : "opacity-100"}`}>
+                  <Heart className="w-4 h-4 text-[#0E5C52]/40" />
+                </div>
               </button>
             );
           })}
