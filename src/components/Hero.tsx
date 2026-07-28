@@ -11,7 +11,7 @@ export default function Hero() {
           src="/images/perfect%20harmony.PNG" 
           alt="Olivia and Iyanu Pre-wedding"
           fill
-          className="object-cover object-[center_25%]"
+          className="object-cover object-[center_top] md:object-center"
           priority
         />
         {/* Dark elegant overlay for text readability */}
