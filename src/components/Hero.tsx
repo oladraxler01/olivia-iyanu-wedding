@@ -6,12 +6,24 @@ export default function Hero() {
   return (
     <section id="hero" className="min-h-screen w-full flex flex-col items-center justify-center pt-28 pb-16 px-4 text-center relative overflow-hidden">
       {/* Background Image */}
+      {/* Blurred Background to fill ultra-wide screens */}
+      <div className="absolute inset-0 z-0 overflow-hidden bg-black">
+        <Image 
+          src="/images/perfect%20harmony.PNG" 
+          alt="Blurred Background"
+          fill
+          className="object-cover opacity-40 blur-2xl scale-110"
+          priority
+        />
+      </div>
+
+      {/* Main Image - cover on mobile, contain on desktop to prevent face cropping */}
       <div className="absolute inset-0 z-0">
         <Image 
           src="/images/perfect%20harmony.PNG" 
           alt="Olivia and Iyanu Pre-wedding"
           fill
-          className="object-cover object-[center_20%]"
+          className="object-cover object-[center_20%] md:object-contain"
           priority
         />
         {/* Dark elegant overlay for text readability */}
