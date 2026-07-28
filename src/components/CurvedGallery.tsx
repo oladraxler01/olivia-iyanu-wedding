@@ -17,7 +17,7 @@ const cards: CardItem[] = [
   { id: 2, image: "/images/soul_connection.jpg", label: "Soul Connection", sub: "Lost in the magic of us" },
   { id: 3, image: "/images/The Silly side of love.jpg", label: "The Silly Side of Love", sub: "Silly Together, Serious About Forever" },
   { id: 4, image: "/images/Radiant_LOVE.jpg", label: "Radiant Love", sub: "The purest kind of happiness" },
-  { id: 5, image: "/images/IMG_3312.jpg", label: "Timeless Romance", sub: "A love written in the stars" },
+  { id: 5, image: "/images/IMG_2545.HEIC", label: "Timeless Romance", sub: "A love written in the stars" },
   { id: 6, image: "/images/perfect harmony.PNG", label: "Perfect Harmony", sub: "Together is our favorite place" },
   { id: 7, image: "/images/IMG-20260722-WA0009.jpg", label: "Meet Obim", sub: "Built Like a King, Loves Like a Poet" },
   { id: 8, image: "/images/SAVE_20260726_215533.jpg", label: "Meet Adesewa", sub: "Beauty That Wears a Crown" },
