@@ -127,7 +127,7 @@ export default function Leaderboard() {
           <div className="col-span-3 text-right">Score</div>
         </div>
 
-        <div className="min-h-[250px]">
+        <div className="min-h-[250px] max-h-[350px] overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#0E5C52]/20 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#0E5C52]/40 transition-colors">
           {loading ? (
             <div className="flex flex-col items-center justify-center h-[250px] text-[#6B5A63]">
               <Loader2 className="w-8 h-8 animate-spin mb-3 text-[#0E5C52]" />
