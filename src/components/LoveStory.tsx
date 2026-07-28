@@ -277,7 +277,7 @@ export default function LoveStory() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="max-w-2xl mx-auto space-y-6 text-center"
+          className="max-w-2xl mx-auto text-center"
         >
           <h3
             style={{ fontFamily: "var(--font-cormorant), Georgia, serif" }}
@@ -285,15 +285,26 @@ export default function LoveStory() {
           >
             Our Love Story
           </h3>
-          {storyParagraphs.map((p, idx) => (
-            <p
-              key={idx}
-              style={{ fontFamily: "var(--font-cormorant), Georgia, serif" }}
-              className="text-base sm:text-lg leading-relaxed text-[#241B22]/85"
-            >
-              {p}
-            </p>
-          ))}
+          
+          <div className="relative border-y border-[#E3D3DA]/50 py-2">
+            {/* Top gradient mask for smooth scrolling feel */}
+            <div className="absolute top-0 left-0 right-0 h-10 bg-gradient-to-b from-[#FDFBF7] to-transparent z-10 pointer-events-none"></div>
+            
+            <div className="max-h-[60vh] sm:max-h-96 overflow-y-auto space-y-6 px-4 py-8 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#0E5C52]/20 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#0E5C52]/40 transition-colors">
+              {storyParagraphs.map((p, idx) => (
+                <p
+                  key={idx}
+                  style={{ fontFamily: "var(--font-cormorant), Georgia, serif" }}
+                  className="text-base sm:text-lg leading-relaxed text-[#241B22]/85"
+                >
+                  {p}
+                </p>
+              ))}
+            </div>
+
+            {/* Bottom gradient mask */}
+            <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#FDFBF7] to-transparent z-10 pointer-events-none"></div>
+          </div>
         </motion.div>
       </div>
     </section>
