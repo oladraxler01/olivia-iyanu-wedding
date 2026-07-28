@@ -5,43 +5,43 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 
 const milestones = [
-  { 
-    icon: <Utensils className="w-5 h-5 text-[#B23A6B]/50" />, 
-    title: "Lunch/Dinner dates", 
+  {
+    icon: <Utensils className="w-5 h-5 text-[#B23A6B]/50" />,
+    title: "Lunch/Dinner dates",
     desc: "From first dates to forever — the dinner diaries are here.",
     media: "icon"
   },
-  { 
-    icon: <Camera className="w-5 h-5 text-[#B23A6B]/50" />, 
-    title: "Pre-wedding shoot experience", 
+  {
+    icon: <Camera className="w-5 h-5 text-[#B23A6B]/50" />,
+    title: "Pre-wedding shoot experience",
     desc: "A glimpse of the magic before the big day.",
     media: "vimeo"
   },
-  { 
-    icon: <Camera className="w-5 h-5 text-[#B23A6B]/50" />, 
-    title: "Proposal pictures", 
+  {
+    icon: <Camera className="w-5 h-5 text-[#B23A6B]/50" />,
+    title: "Proposal pictures",
     desc: "Every crown has a beginning. Ours started with one question & deserves a proper reveal.",
     showCountdown: true,
     countdownDays: 60,
     media: "loading"
   },
-  { 
-    icon: <Users className="w-5 h-5 text-[#B23A6B]/50" />, 
-    title: "The Bridal party Squad", 
+  {
+    icon: <Users className="w-5 h-5 text-[#B23A6B]/50" />,
+    title: "The Bridal party Squad",
     desc: "The crown doesn't stand alone — get ready to meet the ones who hold it up.",
     media: "icon"
   },
-  { 
-    icon: <ImageIcon className="w-5 h-5 text-[#B23A6B]/50" />, 
-    title: "Traditional engagement pictures", 
+  {
+    icon: <ImageIcon className="w-5 h-5 text-[#B23A6B]/50" />,
+    title: "Traditional engagement pictures",
     desc: "Two heritages, one love story — the traditional photos are almost here.",
     showCountdown: true,
     countdownDays: 40,
     media: "loading"
   },
-  { 
-    icon: <Crown className="w-5 h-5 text-[#B23A6B]/50" />, 
-    title: "White wedding ceremony", 
+  {
+    icon: <Crown className="w-5 h-5 text-[#B23A6B]/50" />,
+    title: "White wedding ceremony",
     desc: "Be Present to capture the moments.",
     media: "icon"
   },
@@ -111,9 +111,9 @@ export default function LoveStory() {
               <X className="w-8 h-8" />
             </div>
             <div className="max-w-5xl max-h-[90vh] w-full h-full flex items-center justify-center pointer-events-none" onClick={e => e.stopPropagation()}>
-               <div className="w-full h-full flex items-center justify-center cursor-default bg-white rounded-2xl overflow-hidden">
-                 {fullscreenMedia}
-               </div>
+              <div className="w-full h-full flex items-center justify-center cursor-default bg-white rounded-2xl overflow-hidden">
+                {fullscreenMedia}
+              </div>
             </div>
           </motion.div>
         )}
@@ -195,9 +195,8 @@ export default function LoveStory() {
 
                 {/* Content Card */}
                 <div
-                  className={`w-full pl-16 pr-2 pt-1 md:pt-0 md:w-[50%] md:px-0 ${
-                    isEven ? "md:mr-auto md:pr-8 md:text-right" : "md:ml-auto md:pl-8 md:text-left"
-                  }`}
+                  className={`w-full pl-16 pr-2 pt-1 md:pt-0 md:w-[50%] md:px-0 ${isEven ? "md:mr-auto md:pr-8 md:text-right" : "md:ml-auto md:pl-8 md:text-left"
+                    }`}
                 >
                   {/* Mobile: Title above the card */}
                   <div className="md:hidden mb-3 text-left">
@@ -207,7 +206,7 @@ export default function LoveStory() {
                   </div>
 
                   <div className="bg-[#FFFDFB] border border-[#E3D3DA] rounded-3xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow text-left">
-                    
+
                     {m.media === "loading" ? (
                       <div className="aspect-[16/9] w-full rounded-2xl bg-gradient-to-br from-[#F5EFEF] via-[#EAE1E1] to-[#F5EFEF] border border-dashed border-[#E3D3DA] flex flex-col items-center justify-center gap-2 mb-4 relative overflow-hidden">
                         {/* Shimmer Effect */}
@@ -216,16 +215,16 @@ export default function LoveStory() {
                       </div>
                     ) : m.media === "vimeo" ? (
                       <div className="w-full aspect-[9/16] rounded-2xl overflow-hidden bg-black mb-4 shadow-sm">
-                        <iframe 
-                          src="https://player.vimeo.com/video/1212676451?badge=0&autopause=0&player_id=0&app_id=58479&title=0&byline=0&portrait=0" 
-                          frameBorder="0" 
-                          allow="autoplay; fullscreen; picture-in-picture" 
+                        <iframe
+                          src="https://player.vimeo.com/video/1213738960?badge=0&autopause=0&player_id=0&app_id=58479&title=0&byline=0&portrait=0"
+                          frameBorder="0"
+                          allow="autoplay; fullscreen; picture-in-picture"
                           className="w-full h-full"
                           title="Pre-wedding shoot"
                         ></iframe>
                       </div>
                     ) : (
-                      <div 
+                      <div
                         onClick={() => setFullscreenMedia(
                           <div className="flex flex-col items-center justify-center w-full h-full bg-[#F3E7EB]/20">
                             {m.icon && <div className="scale-[4]">{m.icon}</div>}
@@ -285,11 +284,11 @@ export default function LoveStory() {
           >
             Our Love Story
           </h3>
-          
+
           <div className="relative border-y border-[#E3D3DA]/50 py-2">
             {/* Top gradient mask for smooth scrolling feel */}
             <div className="absolute top-0 left-0 right-0 h-10 bg-gradient-to-b from-[#FDFBF7] to-transparent z-10 pointer-events-none"></div>
-            
+
             <div className="max-h-[60vh] sm:max-h-96 overflow-y-auto space-y-6 px-4 py-8 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#0E5C52]/20 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#0E5C52]/40 transition-colors">
               {storyParagraphs.map((p, idx) => (
                 <p
