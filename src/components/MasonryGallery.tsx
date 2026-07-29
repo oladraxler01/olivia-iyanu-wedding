@@ -6,9 +6,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 
 const images = [
-  "/images/IMG-20260722-WA0004.jpg",
+  "/images/IMG_2545.jpg",
   "/images/IMG-20260722-WA0005.jpg",
-  "/images/IMG-20260722-WA0006.jpg",
+  "/images/IMG_2588.JPG",
   "/images/IMG-20260722-WA0007.jpg",
   "/images/IMG-20260722-WA0008.jpg",
   "/images/IMG-20260722-WA0009.jpg",
