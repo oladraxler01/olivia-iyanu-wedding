@@ -34,27 +34,64 @@ export default function Leaderboard() {
         .select("id, guest_name, score, game_type, created_at");
 
       if (game_type !== "all") {
-        query = query.eq("game_type", game_type).order("score", { ascending: isAscending }).limit(10);
+        query = query.eq("game_type", game_type).limit(1000);
         const { data, error: dbError } = await query;
         if (dbError) throw dbError;
-        setScores(data || []);
+
+        const bestScores: Record<string, ScoreEntry> = {};
+        (data || []).forEach(entry => {
+          if (!bestScores[entry.guest_name]) {
+            bestScores[entry.guest_name] = entry;
+          } else {
+            const currentBest = bestScores[entry.guest_name].score;
+            if (isAscending) {
+              if (entry.score < currentBest) bestScores[entry.guest_name] = entry;
+            } else {
+              if (entry.score > currentBest) bestScores[entry.guest_name] = entry;
+            }
+          }
+        });
+
+        const sorted = Object.values(bestScores).sort((a, b) => {
+          if (isAscending) return a.score - b.score;
+          return b.score - a.score;
+        });
+        setScores(sorted.slice(0, 10));
       } else {
-        query = query.order("created_at", { ascending: false }).limit(1000);
+        query = query.limit(1000);
         const { data, error: dbError } = await query;
         if (dbError) throw dbError;
         
-        const playerStats: Record<string, { guest_name: string; totalScore: number; gamesPlayed: number; created_at: string }> = {};
+        const playerStats: Record<string, { guest_name: string; totalScore: number; games: Set<string>; created_at: string; bestScores: Record<string, number> }> = {};
+        
         (data || []).forEach(entry => {
           if (!playerStats[entry.guest_name]) {
-            playerStats[entry.guest_name] = { guest_name: entry.guest_name, totalScore: 0, gamesPlayed: 0, created_at: entry.created_at };
+            playerStats[entry.guest_name] = { guest_name: entry.guest_name, totalScore: 0, games: new Set(), created_at: entry.created_at, bestScores: {} };
           }
           const stats = playerStats[entry.guest_name];
-          stats.gamesPlayed += 1;
+          const gt = entry.game_type;
           
-          if (entry.game_type === 'trivia') stats.totalScore += Math.floor(entry.score) * 10;
-          else if (entry.game_type === 'timeline') stats.totalScore += 50;
-          else if (entry.game_type === 'memory') stats.totalScore += Math.max(0, 100 - (entry.score * 2));
-          else if (entry.game_type === 'maze') stats.totalScore += Math.max(0, 100 - (entry.score * 2));
+          if (!stats.bestScores[gt]) {
+            stats.bestScores[gt] = entry.score;
+            stats.games.add(gt);
+          } else {
+            const isAsc = gt !== "trivia";
+            const currentBest = stats.bestScores[gt];
+            if (isAsc) {
+              if (entry.score < currentBest) stats.bestScores[gt] = entry.score;
+            } else {
+              if (entry.score > currentBest) stats.bestScores[gt] = entry.score;
+            }
+          }
+        });
+        
+        Object.values(playerStats).forEach(stats => {
+           Object.entries(stats.bestScores).forEach(([gt, best]) => {
+              if (gt === 'trivia') stats.totalScore += Math.floor(best) * 10;
+              else if (gt === 'timeline') stats.totalScore += 50;
+              else if (gt === 'memory') stats.totalScore += Math.max(0, 100 - (Math.floor(best) * 2));
+              else if (gt === 'maze') stats.totalScore += Math.max(0, 100 - (Math.floor(best) * 2));
+           });
         });
         
         const aggregated = Object.values(playerStats)
@@ -64,7 +101,7 @@ export default function Leaderboard() {
             guest_name: stats.guest_name,
             score: stats.totalScore,
             game_type: "all",
-            gamesPlayed: stats.gamesPlayed
+            gamesPlayed: stats.games.size
           }));
           
         setScores(aggregated.slice(0, 10));
@@ -148,9 +185,20 @@ export default function Leaderboard() {
               {scores.map((entry, idx) => {
                 const effectiveTab = activeTab === "all" ? entry.game_type : activeTab;
                 const isTrivia = effectiveTab === "trivia";
-                const rawScore = isTrivia ? Math.floor(entry.score) : entry.score;
-                const timeFrac = isTrivia ? entry.score - rawScore : 0;
-                const timeStr = timeFrac > 0 && timeFrac < 1 ? `(${(1 / timeFrac).toFixed(1)}s)` : "";
+                const isTimed = effectiveTab === "memory" || effectiveTab === "maze";
+                const rawScore = isTimed || isTrivia ? Math.floor(entry.score) : entry.score;
+                
+                let timeStr = "";
+                if (isTrivia) {
+                  const timeFrac = entry.score - rawScore;
+                  timeStr = timeFrac > 0 && timeFrac < 1 ? `(${(1 / timeFrac).toFixed(1)}s)` : "";
+                } else if (isTimed) {
+                  const timeFrac = entry.score - rawScore;
+                  if (timeFrac > 0) {
+                    const ms = timeFrac * 1000000;
+                    timeStr = `(${(ms / 1000).toFixed(1)}s)`;
+                  }
+                }
                 
                 const gameNames: Record<string, string> = {
                   trivia: "Trivia",

@@ -335,6 +335,8 @@ function MemoryGame({ playerName, onClose, onNext, nextTitle }: { playerName: st
   const [flipped, setFlipped] = useState<number[]>([]);
   const [moves, setMoves] = useState(0);
   const [locked, setLocked] = useState(false);
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [finalScore, setFinalScore] = useState<number | null>(null);
 
   const initGame = useCallback(() => {
     const pairs = shuffleArray([...memoryIcons, ...memoryIcons]);
@@ -342,6 +344,8 @@ function MemoryGame({ playerName, onClose, onNext, nextTitle }: { playerName: st
     setFlipped([]);
     setMoves(0);
     setLocked(false);
+    setStartTime(Date.now());
+    setFinalScore(null);
   }, []);
 
   useEffect(() => { initGame(); }, [initGame]);
@@ -369,6 +373,17 @@ function MemoryGame({ playerName, onClose, onNext, nextTitle }: { playerName: st
 
   const allMatched = cards.length > 0 && cards.every((c) => c.matched);
 
+  useEffect(() => {
+    if (allMatched && !finalScore && startTime) {
+      const timeMs = Date.now() - startTime;
+      // Encode time as a fraction so lower time breaks ties (e.g., 15.042500)
+      // Limit to 999,999 ms (~16 minutes) to fit cleanly in fraction
+      const cappedMs = Math.min(timeMs, 999999);
+      const scoreWithTime = moves + (cappedMs / 1000000);
+      setFinalScore(scoreWithTime);
+    }
+  }, [allMatched, finalScore, startTime, moves]);
+
   return (
     <div>
       <GameHeader title="Memory Match" onClose={onClose} />
@@ -393,7 +408,7 @@ function MemoryGame({ playerName, onClose, onNext, nextTitle }: { playerName: st
           <p className="text-5xl mb-3">🎊</p>
           <h3 className="font-serif text-2xl font-bold text-[#241B22] mb-1">Well done, {playerName}!</h3>
           <p className="text-sm text-[#6B5A63]">You matched all pairs in {moves} moves.</p>
-          <AutoSaveScore gameType="memory" score={moves} playerName={playerName} />
+          {finalScore !== null && <AutoSaveScore gameType="memory" score={finalScore} playerName={playerName} />}
           <button onClick={onNext} className="mt-6 px-6 py-2 rounded-full border border-[#E3D3DA] text-sm text-[#0E5C52] hover:bg-[#F5EFEF] transition-colors">Next Game: {nextTitle}</button>
         </div>
       ) : (
@@ -517,6 +532,12 @@ function MazeGame({ playerName, onClose, onNext, nextTitle }: { playerName: stri
   const [pos, setPos] = useState(mazeStart);
   const [moves, setMoves] = useState(0);
   const [won, setWon] = useState(false);
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [finalScore, setFinalScore] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!startTime) setStartTime(Date.now());
+  }, [startTime]);
 
   const move = useCallback(
     (dr: number, dc: number) => {
@@ -527,9 +548,19 @@ function MazeGame({ playerName, onClose, onNext, nextTitle }: { playerName: stri
       if (mazeGrid[nr][nc] === 1) return;
       setPos({ r: nr, c: nc });
       setMoves((m) => m + 1);
-      if (nr === mazeEnd.r && nc === mazeEnd.c) setWon(true);
+      if (nr === mazeEnd.r && nc === mazeEnd.c) {
+        setWon(true);
+        if (startTime) {
+          const timeMs = Date.now() - startTime;
+          const cappedMs = Math.min(timeMs, 999999);
+          const scoreWithTime = (m + 1) + (cappedMs / 1000000);
+          setFinalScore(scoreWithTime);
+        } else {
+          setFinalScore(m + 1);
+        }
+      }
     },
-    [pos, won]
+    [pos, won, startTime]
   );
 
   useEffect(() => {
@@ -543,7 +574,7 @@ function MazeGame({ playerName, onClose, onNext, nextTitle }: { playerName: stri
     return () => window.removeEventListener("keydown", handleKey);
   }, [move]);
 
-  const restart = () => { setPos(mazeStart); setMoves(0); setWon(false); };
+  const restart = () => { setPos(mazeStart); setMoves(0); setWon(false); setStartTime(Date.now()); setFinalScore(null); };
 
   return (
     <div>
@@ -566,7 +597,7 @@ function MazeGame({ playerName, onClose, onNext, nextTitle }: { playerName: stri
           <p className="text-5xl mb-3">💒</p>
           <h3 className="font-serif text-2xl font-bold text-[#241B22] mb-1">Well done, {playerName}!</h3>
           <p className="text-sm text-[#6B5A63]">You found Olivia in {moves} moves.</p>
-          <AutoSaveScore gameType="maze" score={moves} playerName={playerName} />
+          {finalScore !== null && <AutoSaveScore gameType="maze" score={finalScore} playerName={playerName} />}
           <button onClick={onNext} className="mt-6 px-6 py-2 rounded-full border border-[#E3D3DA] text-sm text-[#0E5C52] hover:bg-[#F5EFEF] transition-colors cursor-pointer">Next Game: {nextTitle}</button>
         </div>
       ) : (
