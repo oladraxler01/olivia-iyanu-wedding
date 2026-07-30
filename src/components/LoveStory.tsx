@@ -1,6 +1,6 @@
 "use client";
 
-import { Heart, Camera, Utensils, Users, Image as ImageIcon, Crown, X } from "lucide-react";
+import { Heart, Camera, Utensils, Users, Image as ImageIcon, Crown, X, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 
@@ -13,7 +13,7 @@ const milestones = [
   },
   {
     icon: <Camera className="w-5 h-5 text-[#B23A6B]/50" />,
-    title: "Pre-wedding shoot experience",
+    title: "creating memories",
     desc: "A glimpse of the magic before the big day.",
     media: "vimeo"
   },
@@ -36,7 +36,7 @@ const milestones = [
     title: "Traditional engagement pictures",
     desc: "Two heritages, one love story — the traditional photos are almost here.",
     showCountdown: true,
-    countdownDays: 40,
+    countdownDays: 75,
     media: "loading"
   },
   {
@@ -208,10 +208,14 @@ export default function LoveStory() {
                   <div className="bg-[#FFFDFB] border border-[#E3D3DA] rounded-3xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow text-left">
 
                     {m.media === "loading" ? (
-                      <div className="aspect-[16/9] w-full rounded-2xl bg-gradient-to-br from-[#F5EFEF] via-[#EAE1E1] to-[#F5EFEF] border border-dashed border-[#E3D3DA] flex flex-col items-center justify-center gap-2 mb-4 relative overflow-hidden">
-                        {/* Shimmer Effect */}
-                        <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
-                        <ImageIcon className="w-8 h-8 text-[#B23A6B]/30 animate-pulse" />
+                      <div className="aspect-[16/9] w-full rounded-2xl border border-dashed border-[#E3D3DA] flex flex-col items-center justify-center gap-2 mb-4 relative overflow-hidden bg-[#EAE1E1]">
+                        {/* Blurred background image to look like a placeholder */}
+                        <img src="/images/IMG_2588.JPG" alt="Loading" className="absolute inset-0 w-full h-full object-cover blur-xl opacity-60 scale-110" />
+                        <div className="absolute inset-0 bg-black/10 z-10"></div>
+                        <div className="z-20 flex flex-col items-center gap-3">
+                           <Loader2 className="w-8 h-8 text-white animate-spin drop-shadow-md" />
+                           <span className="text-white text-xs font-semibold tracking-widest uppercase drop-shadow-md">Loading Image...</span>
+                        </div>
                       </div>
                     ) : m.media === "vimeo" ? (
                       <div className="w-full aspect-[9/16] rounded-2xl overflow-hidden bg-black mb-4 shadow-sm">

@@ -213,7 +213,7 @@ export default function AsoebiPaymentForm() {
                         <span className="text-[#6B5A63] text-xs">
                           (₦{item.price.toLocaleString()})
                         </span>
-                        {item.id === "fila" && Number(quantities["fila"]) > 0 && (
+                        {item.id === "fila" && (
                           <div className="mt-3">
                             <label className="block text-[10px] text-[#6B5A63] mb-1 italic">
                               We're getting your fila made! Please measure around your head in inches:

@@ -8,8 +8,8 @@ export default function Hero() {
       {/* Background Image */}
       {/* Background Image - fill screen, pinned to top to keep faces visible */}
       <div className="absolute inset-0 z-0">
-        <Image 
-          src="/images/perfect%20harmony.PNG" 
+        <Image
+          src="/images/perfect%20harmony.PNG"
           alt="Olivia and Iyanu Pre-wedding"
           fill
           className="object-cover object-[center_35%]"
@@ -23,7 +23,7 @@ export default function Hero() {
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center mt-12 w-full px-4">
-        
+
         {/* Elegant Text Overlay */}
         <div className="relative flex flex-col items-center min-w-[320px] sm:min-w-[400px]">
           {/* Eyebrow Badge */}
@@ -49,11 +49,11 @@ export default function Hero() {
 
           {/* Date & Location text */}
           <div className="space-y-3 text-xs sm:text-sm text-white/90 font-medium tracking-widest text-center">
-            <p className="font-serif text-lg tracking-[0.2em] text-[#FDFCFB] drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">30 OCTOBER 2026</p>
+            <p className="font-serif text-lg tracking-[0.2em] text-[#FDFCFB] drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">30th OCTOBER 2026</p>
             <p className="text-white/80 text-[10px] uppercase tracking-[0.3em] drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">LAGOS, NIGERIA</p>
           </div>
         </div>
-        
+
         <p className="text-[#D4AF37] font-bold text-xs mt-12 italic tracking-[0.15em] drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] relative z-10">#LetsDoLifeTogether</p>
       </div>
     </section>
