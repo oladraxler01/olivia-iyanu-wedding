@@ -1,6 +1,7 @@
 "use client";
 
-import { Download } from "lucide-react";
+import { Download, X } from "lucide-react";
+import { useState } from "react";
 
 const lookbook = [
   {
@@ -45,6 +46,8 @@ const lookbook = [
 ];
 
 export default function DressCode() {
+  const [isLookbookOpen, setIsLookbookOpen] = useState(false);
+
   return (
     <section id="dress-code" className="py-24 px-4 bg-[#FDFBF7] overflow-hidden">
       <div className="max-w-6xl mx-auto">
@@ -73,14 +76,12 @@ export default function DressCode() {
             </div>
 
             <div className="flex items-center gap-6">
-              <a
-                href="/OLIVIA & IYANU'S WEDDING LOOKBOOK_20260729_195054_0000.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-[#0E5C52] hover:text-[#B23A6B] transition-colors pb-1 border-b border-[#0E5C52] hover:border-[#B23A6B]"
+              <button
+                onClick={() => setIsLookbookOpen(true)}
+                className="inline-flex items-center gap-2 text-sm font-semibold text-[#0E5C52] hover:text-[#B23A6B] transition-colors pb-1 border-b border-[#0E5C52] hover:border-[#B23A6B] cursor-pointer"
               >
                 View Lookbook
-              </a>
+              </button>
               <span className="text-[#E3D3DA]">|</span>
               <a
                 href="/OLIVIA & IYANU'S WEDDING LOOKBOOK_20260729_195054_0000.pdf"
@@ -135,6 +136,30 @@ export default function DressCode() {
           ))}
         </div>
       </div>
+
+      {/* Lookbook Modal */}
+      {isLookbookOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8 bg-black/80 backdrop-blur-sm">
+          <div className="relative w-full max-w-5xl h-[90vh] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-[#E3D3DA] bg-[#FDFBF7]">
+              <h3 className="font-serif text-xl text-[#0E5C52]">Fashion Lookbook</h3>
+              <button 
+                onClick={() => setIsLookbookOpen(false)}
+                className="p-2 bg-[#F5EFEF] rounded-full hover:bg-[#E3D3DA] transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5 text-[#6B5A63]" />
+              </button>
+            </div>
+            <div className="flex-1 w-full h-full bg-gray-100">
+              <iframe
+                src="/OLIVIA & IYANU'S WEDDING LOOKBOOK_20260729_195054_0000.pdf#view=FitH"
+                className="w-full h-full border-none"
+                title="Olivia & Iyanu Wedding Lookbook"
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       <style dangerouslySetInnerHTML={{
         __html: `
