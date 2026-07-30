@@ -62,13 +62,36 @@ export default function DressCode() {
             Scroll through for color inspiration and what we'd love to see on the day.
           </p>
 
-          <a
-            href="/lookbook.pdf"
-            download="Olivia_Iyanu_Lookbook.pdf"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-[#0E5C52] hover:text-[#B23A6B] transition-colors pb-1 border-b border-[#0E5C52] hover:border-[#B23A6B]"
-          >
-            Save as PDF <Download className="w-4 h-4" />
-          </a>
+          <div className="flex flex-col items-center gap-4 mb-8">
+            <div className="w-[200px] aspect-[4/3] bg-gray-100 border border-[#E3D3DA] shadow-md relative overflow-hidden group rounded-sm">
+              <iframe
+                src="/OLIVIA & IYANU'S WEDDING LOOKBOOK_20260729_195054_0000.pdf#page=1&toolbar=0&navpanes=0&scrollbar=0"
+                className="absolute top-0 left-0 w-full h-[500px] pointer-events-none scale-[0.5] origin-top-left"
+                title="Lookbook Cover"
+                tabIndex={-1}
+              />
+              <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors z-10 pointer-events-none" />
+            </div>
+            
+            <div className="flex items-center gap-6">
+              <a
+                href="/OLIVIA & IYANU'S WEDDING LOOKBOOK_20260729_195054_0000.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-[#0E5C52] hover:text-[#B23A6B] transition-colors pb-1 border-b border-[#0E5C52] hover:border-[#B23A6B]"
+              >
+                View Lookbook
+              </a>
+              <span className="text-[#E3D3DA]">|</span>
+              <a
+                href="/OLIVIA & IYANU'S WEDDING LOOKBOOK_20260729_195054_0000.pdf"
+                download="Olivia_Iyanu_Lookbook.pdf"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-[#0E5C52] hover:text-[#B23A6B] transition-colors pb-1 border-b border-[#0E5C52] hover:border-[#B23A6B]"
+              >
+                Save PDF <Download className="w-4 h-4" />
+              </a>
+            </div>
+          </div>
         </div>
 
         {/* Horizontal Scroll Container */}
