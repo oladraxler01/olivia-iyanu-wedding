@@ -1,7 +1,8 @@
 "use client";
 
 import { Download, X, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 
 const lookbook = [
   {
@@ -48,6 +49,11 @@ const lookbook = [
 export default function DressCode() {
   const [isLookbookOpen, setIsLookbookOpen] = useState(false);
   const [isPdfLoading, setIsPdfLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <section id="dress-code" className="py-24 px-4 bg-[#FDFBF7] overflow-hidden">
@@ -139,7 +145,7 @@ export default function DressCode() {
       </div>
 
       {/* Lookbook Modal */}
-      {isLookbookOpen && (
+      {mounted && isLookbookOpen && createPortal(
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8 bg-black/80 backdrop-blur-sm">
           <div className="relative w-full max-w-5xl h-[90vh] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden">
             <div className="flex items-center justify-between p-4 border-b border-[#E3D3DA] bg-[#FDFBF7]">
@@ -169,7 +175,8 @@ export default function DressCode() {
               />
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       <style dangerouslySetInnerHTML={{
