@@ -547,20 +547,20 @@ function MazeGame({ playerName, onClose, onNext, nextTitle }: { playerName: stri
       if (nr < 0 || nr >= mazeGrid.length || nc < 0 || nc >= mazeGrid[0].length) return;
       if (mazeGrid[nr][nc] === 1) return;
       setPos({ r: nr, c: nc });
-      setMoves((m) => m + 1);
+      setMoves((prev) => prev + 1);
       if (nr === mazeEnd.r && nc === mazeEnd.c) {
         setWon(true);
         if (startTime) {
           const timeMs = Date.now() - startTime;
           const cappedMs = Math.min(timeMs, 999999);
-          const scoreWithTime = (m + 1) + (cappedMs / 1000000);
+          const scoreWithTime = (moves + 1) + (cappedMs / 1000000);
           setFinalScore(scoreWithTime);
         } else {
-          setFinalScore(m + 1);
+          setFinalScore(moves + 1);
         }
       }
     },
-    [pos, won, startTime]
+    [pos, won, startTime, moves]
   );
 
   useEffect(() => {

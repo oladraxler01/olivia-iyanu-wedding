@@ -64,11 +64,10 @@ export default function DressCode() {
 
           <div className="flex flex-col items-center gap-4 mb-8">
             <div className="w-[200px] aspect-[4/3] bg-gray-100 border border-[#E3D3DA] shadow-md relative overflow-hidden group rounded-sm">
-              <iframe
-                src="/OLIVIA & IYANU'S WEDDING LOOKBOOK_20260729_195054_0000.pdf#page=1&toolbar=0&navpanes=0&scrollbar=0"
-                className="absolute top-0 left-0 w-full h-[500px] pointer-events-none scale-[0.5] origin-top-left"
-                title="Lookbook Cover"
-                tabIndex={-1}
+              <img
+                src="/images/image.png"
+                alt="Lookbook Cover"
+                className="absolute top-0 left-0 w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors z-10 pointer-events-none" />
             </div>

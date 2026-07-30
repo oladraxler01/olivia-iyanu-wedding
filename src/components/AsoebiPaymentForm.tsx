@@ -244,7 +244,7 @@ export default function AsoebiPaymentForm() {
 
               <div>
                 <label className="block text-xs text-[#6B5A63] mb-2">
-                  Delivery location <span className="italic text-[#B23A6B]">(Note: You are responsible for your asoebi delivery fee)</span>
+                  Delivery location <span className="italic text-[#B23A6B]">(Note: You are responsible for your asoebi delivery fee which will be communicated upon dispatch.)</span>
                 </label>
                 <textarea
                   rows={3}
