@@ -1,6 +1,6 @@
 "use client";
 
-import { Download, X } from "lucide-react";
+import { Download, X, Loader2 } from "lucide-react";
 import { useState } from "react";
 
 const lookbook = [
@@ -47,6 +47,7 @@ const lookbook = [
 
 export default function DressCode() {
   const [isLookbookOpen, setIsLookbookOpen] = useState(false);
+  const [isPdfLoading, setIsPdfLoading] = useState(true);
 
   return (
     <section id="dress-code" className="py-24 px-4 bg-[#FDFBF7] overflow-hidden">
@@ -144,17 +145,27 @@ export default function DressCode() {
             <div className="flex items-center justify-between p-4 border-b border-[#E3D3DA] bg-[#FDFBF7]">
               <h3 className="font-serif text-xl text-[#0E5C52]">Fashion Lookbook</h3>
               <button 
-                onClick={() => setIsLookbookOpen(false)}
+                onClick={() => {
+                  setIsLookbookOpen(false);
+                  setIsPdfLoading(true);
+                }}
                 className="p-2 bg-[#F5EFEF] rounded-full hover:bg-[#E3D3DA] transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5 text-[#6B5A63]" />
               </button>
             </div>
-            <div className="flex-1 w-full h-full bg-gray-100">
+            <div className="flex-1 w-full h-full bg-gray-100 relative">
+              {isPdfLoading && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-gray-100 gap-3">
+                  <Loader2 className="w-8 h-8 text-[#0E5C52] animate-spin" />
+                  <p className="text-[#6B5A63] text-sm font-medium animate-pulse">Loading Lookbook (16MB)...</p>
+                </div>
+              )}
               <iframe
                 src="/OLIVIA & IYANU'S WEDDING LOOKBOOK_20260729_195054_0000.pdf#view=FitH"
-                className="w-full h-full border-none"
+                className={`w-full h-full border-none relative z-20 ${isPdfLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-500'}`}
                 title="Olivia & Iyanu Wedding Lookbook"
+                onLoad={() => setIsPdfLoading(false)}
               />
             </div>
           </div>
