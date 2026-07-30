@@ -53,7 +53,7 @@ const triviaQuestions = [
   { q: "What city are they getting married in?", options: ["Abuja", "London", "Lagos", "Accra"], answer: 2 },
   { q: "Who is more likely to plan a spontaneous trip?", options: ["Obim", "Adesewa", "Both equally spontaneous", "Neither — they always plan ahead"], answer: 1 },
   { q: "What's their dream honeymoon destination?", options: ["Singapore", "Barbedos", "Santorini", "Bali"], answer: 0 },
-  { q: "Who is the better dancer?", options: ["Obim", "Adesewa", "They're evenly matched", "Neither dances to save a life"], answer: 1 },
+  { q: "Who is the better dancer?", options: ["Obim", "Adesewa", "They're evenly matched", "Neither dances to save a life"], answer: 3 },
 ];
 
 // ─── MEMORY MATCH DATA ────────────────────────────

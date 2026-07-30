@@ -6,7 +6,7 @@ const lookbook = [
   {
     id: "palette",
     title: "Our Palette",
-    desc: "Turquoise and teal green outfits, with a touch of silver and white for the perfect shine.",
+    desc: "Aqua green, emerald green and white with a touch of silver for the perfect shine.",
     colors: ["#30D5C8", "#0E5C52", "#C0C0C0", "#FFFFFF"],
     showImageSpace: false,
   },
@@ -22,7 +22,7 @@ const lookbook = [
   {
     id: "gentlemen",
     title: "Aso-Ebi Gentlemen",
-    desc: "White Agbada or a native two-piece with the provided fila cap.",
+    desc: "White Agbada or a native two-piece with the provided emerald green fila cap in velvet.",
     colors: ["#FFFFFF", "#0E5C52", "#C0C0C0"],
     showImageSpace: true,
     imageLabel: "Men's Fabric Material",
@@ -31,7 +31,7 @@ const lookbook = [
   {
     id: "guests",
     title: "General Guests",
-    desc: "Not wearing aso-ebi? Stick to the palette — turquoise, teal, silver, or white in any fabric you love.",
+    desc: "Not wearing aso-ebi? Stick to the palette —  Aqua green, emerald green,silver and white in any fabric you love.",
     colors: ["#30D5C8", "#0E5C52", "#C0C0C0", "#FFFFFF"],
     showImageSpace: false,
   },
@@ -72,7 +72,7 @@ export default function DressCode() {
               />
               <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors z-10 pointer-events-none" />
             </div>
-            
+
             <div className="flex items-center gap-6">
               <a
                 href="/OLIVIA & IYANU'S WEDDING LOOKBOOK_20260729_195054_0000.pdf"
