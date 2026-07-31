@@ -41,18 +41,7 @@ export default function VideoSection() {
     };
   }, []);
 
-  const toggleMute = () => {
-    if (!videoRef.current) return;
-    videoRef.current.muted = !isMuted;
-    setIsMuted(!isMuted);
-    if (isMuted) {
-      // If we are unmuting, dispatch event to fade out background music
-      window.dispatchEvent(new Event("fade-music-out"));
-    } else {
-      // If we are muting, dispatch event to fade in background music
-      window.dispatchEvent(new Event("fade-music-in"));
-    }
-  };
+
 
   const togglePlay = () => {
     if (!videoRef.current) return;
@@ -114,15 +103,6 @@ export default function VideoSection() {
               </span>
             </button>
 
-            <button
-              onClick={toggleMute}
-              className="flex items-center gap-2 bg-black/40 hover:bg-[#B23A6B]/80 backdrop-blur-md text-white px-4 py-2 sm:px-5 sm:py-3 rounded-full transition-all shadow-lg"
-            >
-              {isMuted ? <VolumeX className="w-4 h-4 sm:w-5 sm:h-5" /> : <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />}
-              <span className="text-xs sm:text-sm font-semibold tracking-wider uppercase">
-                {isMuted ? "Unmute" : "Mute"}
-              </span>
-            </button>
           </div>
           
         </div>
