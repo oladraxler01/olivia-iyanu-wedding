@@ -6,7 +6,7 @@ import { Flower2 } from "lucide-react";
 
 export default function EnvelopeLoader() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isUnmounting, setIsUnmounting] = useState(false);
+  const [step, setStep] = useState<"envelope" | "text" | "done">("envelope");
   const [isRemoved, setIsRemoved] = useState(false);
 
   useEffect(() => {
@@ -35,21 +35,49 @@ export default function EnvelopeLoader() {
     window.dispatchEvent(new Event("start-music"));
 
     setTimeout(() => {
-      setIsUnmounting(true);
+      setStep("text");
+    }, 1200);
+  };
+
+  useEffect(() => {
+    if (step === "text") {
+      setTimeout(() => {
+        setStep("done");
+      }, 4500); // Wait for typing animation + short pause
+    } else if (step === "done") {
       const main = document.querySelector("#main-content") as HTMLElement;
       if (main) {
         main.style.transform = "scale(1)";
         main.style.opacity = "1";
       }
-    }, 1200);
-
-    setTimeout(() => {
-      setIsRemoved(true);
-      document.body.style.overflow = "auto";
-    }, 2400); 
-  };
+      setTimeout(() => {
+        setIsRemoved(true);
+        document.body.style.overflow = "auto";
+      }, 1500); 
+    }
+  }, [step]);
 
   if (isRemoved) return null;
+
+  const text = "NOW AND ALWAYS";
+  const sentence = {
+    hidden: { opacity: 1 },
+    visible: {
+      opacity: 1,
+      transition: {
+        delay: 0.5,
+        staggerChildren: 0.15,
+      },
+    },
+  };
+  const letter = {
+    hidden: { opacity: 0, y: 10 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5, ease: "easeOut" }
+    },
+  };
 
   return (
     <div className="fixed inset-0 z-[9999] bg-[#F4F1EA] flex flex-col items-center justify-center overflow-hidden">
@@ -57,7 +85,32 @@ export default function EnvelopeLoader() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.6)_0%,transparent_100%)] pointer-events-none"></div>
 
       <AnimatePresence>
-        {!isUnmounting && (
+        {step === "text" && (
+          <motion.div
+            key="text-screen"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 1.5 } }}
+            className="absolute inset-0 flex items-center justify-center z-[9999] px-4"
+          >
+            <motion.h1 
+              variants={sentence}
+              initial="hidden"
+              animate="visible"
+              className="text-[#B23A6B] font-serif text-3xl md:text-5xl lg:text-7xl tracking-[0.3em] font-light text-center"
+            >
+              {text.split("").map((char, index) => (
+                <motion.span key={char + "-" + index} variants={letter} className="inline-block">
+                  {char === " " ? "\u00A0" : char}
+                </motion.span>
+              ))}
+            </motion.h1>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {step === "envelope" && (
           <motion.div
             key="envelope-wrapper"
             exit={{ y: "100vh", opacity: 0, scale: 0.9 }}
