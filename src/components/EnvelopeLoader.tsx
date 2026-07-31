@@ -59,7 +59,7 @@ export default function EnvelopeLoader() {
 
   if (isRemoved) return null;
 
-  const text = "NOW AND ALWAYS";
+  const text = "#LetsDoLifeTogether";
   const sentence = {
     hidden: { opacity: 1 },
     visible: {
@@ -98,7 +98,7 @@ export default function EnvelopeLoader() {
               initial="hidden"
               animate="visible"
               style={{ fontFamily: "var(--font-cormorant), cursive, serif" }}
-              className="text-[#B23A6B] text-4xl md:text-6xl lg:text-7xl tracking-[0.2em] italic font-light text-center drop-shadow-sm"
+              className="text-[#3A4A2C] text-3xl md:text-5xl lg:text-6xl tracking-[0.1em] italic font-light text-center drop-shadow-sm"
             >
               {text.split("").map((char, index) => (
                 <motion.span key={char + "-" + index} variants={letter} className="inline-block">

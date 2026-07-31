@@ -81,6 +81,7 @@ export default function LoveStory() {
   });
 
   useEffect(() => {
+    let observer: IntersectionObserver;
     import("@vimeo/player").then((PlayerModule) => {
       const Player = PlayerModule.default;
       const iframe = document.getElementById("story-vimeo-player") as HTMLIFrameElement;
@@ -89,8 +90,24 @@ export default function LoveStory() {
         player.on("play", () => {
           window.dispatchEvent(new Event("stop-music"));
         });
+
+        observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              player.play().catch(e => console.log("Autoplay prevented:", e));
+            } else {
+              player.pause();
+            }
+          });
+        }, { threshold: 0.5 });
+        
+        observer.observe(iframe);
       }
     }).catch(err => console.log("Failed to load Vimeo player", err));
+
+    return () => {
+      if (observer) observer.disconnect();
+    };
   }, []);
 
   useEffect(() => {
