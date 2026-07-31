@@ -13,7 +13,7 @@ const milestones = [
   },
   {
     icon: <Camera className="w-5 h-5 text-[#B23A6B]/50" />,
-    title: "creating memories",
+    title: "Creating Memories",
     desc: "A glimpse of the magic before the big day.",
     media: "vimeo"
   },
@@ -27,23 +27,26 @@ const milestones = [
   },
   {
     icon: <Users className="w-5 h-5 text-[#B23A6B]/50" />,
-    title: "The Bridal party Squad",
+    title: " The couple squad)",
     desc: "The crown doesn't stand alone — get ready to meet the ones who hold it up.",
-    media: "icon"
+    media: "image",
+    imageSrc: "/images/image copy.png"
   },
   {
     icon: <ImageIcon className="w-5 h-5 text-[#B23A6B]/50" />,
-    title: "Traditional engagement pictures",
+    title: " Traditional Engagement Experience",
     desc: "Two heritages, one love story — the traditional photos are almost here.",
     showCountdown: true,
     countdownDays: 75,
-    media: "loading"
+    media: "image",
+    imageSrc: "/images/image copy 2.png"
   },
   {
     icon: <Crown className="w-5 h-5 text-[#B23A6B]/50" />,
     title: "White wedding ceremony",
     desc: "Be Present to capture the moments.",
-    media: "icon"
+    media: "image",
+    imageSrc: "/images/image copy 3.png"
   },
 ];
 
@@ -207,14 +210,25 @@ export default function LoveStory() {
 
                   <div className="bg-[#FFFDFB] border border-[#E3D3DA] rounded-3xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow text-left">
 
-                    {m.media === "loading" ? (
+                    {m.media === "image" ? (
+                      <div
+                        onClick={() => setFullscreenMedia(
+                          <div className="flex flex-col items-center justify-center w-full h-full bg-[#F3E7EB]/20 p-4">
+                            <img src={m.imageSrc} alt={m.title} className="max-w-[90%] max-h-[90%] object-contain rounded-lg shadow-2xl" />
+                          </div>
+                        )}
+                        className="aspect-[16/9] w-full rounded-2xl bg-[#EAE1E1] border border-dashed border-[#E3D3DA] flex flex-col items-center justify-center mb-4 relative overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                      >
+                        <img src={m.imageSrc} alt={m.title} className="w-full h-full object-cover" />
+                      </div>
+                    ) : m.media === "loading" ? (
                       <div className="aspect-[16/9] w-full rounded-2xl border border-dashed border-[#E3D3DA] flex flex-col items-center justify-center gap-2 mb-4 relative overflow-hidden bg-[#EAE1E1]">
                         {/* Blurred background image to look like a placeholder */}
                         <img src="/images/IMG_2588.JPG" alt="Loading" className="absolute inset-0 w-full h-full object-cover blur-xl opacity-60 scale-110" />
                         <div className="absolute inset-0 bg-black/10 z-10"></div>
                         <div className="z-20 flex flex-col items-center gap-3">
-                           <Loader2 className="w-8 h-8 text-white animate-spin drop-shadow-md" />
-                           <span className="text-white text-xs font-semibold tracking-widest uppercase drop-shadow-md">Loading Image...</span>
+                          <Loader2 className="w-8 h-8 text-white animate-spin drop-shadow-md" />
+                          <span className="text-white text-xs font-semibold tracking-widest uppercase drop-shadow-md">Loading Image...</span>
                         </div>
                       </div>
                     ) : m.media === "vimeo" ? (
