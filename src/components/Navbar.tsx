@@ -42,7 +42,6 @@ export default function Navbar() {
     { name: "Wedding Lookbook", href: "#dress-code" },
     { name: "Fun Zone", href: "#games" },
     { name: "Registry", href: "#registry" },
-    { name: "RSVP", href: "#rsvp" },
   ];
 
   return (
