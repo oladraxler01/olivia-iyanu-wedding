@@ -5,9 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Flower2 } from "lucide-react";
 
 export default function EnvelopeLoader() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [step, setStep] = useState<"envelope" | "text" | "done">("envelope");
-  const [isRemoved, setIsRemoved] = useState(false);
+  const [stage, setStage] = useState<"resting" | "seal_lift" | "card_draw" | "done" | "removed">("resting");
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -28,264 +26,223 @@ export default function EnvelopeLoader() {
   }, []);
 
   const handleOpen = () => {
-    if (isOpen) return;
-    setIsOpen(true);
+    if (stage !== "resting") return;
+    setStage("seal_lift");
 
-    // Autoplay background music the exact second they open the envelope
+    // Autoplay background music
     window.dispatchEvent(new Event("start-music"));
 
     setTimeout(() => {
-      setStep("text");
-    }, 1200);
-  };
-
-  useEffect(() => {
-    if (step === "text") {
-      const main = document.querySelector("#main-content") as HTMLElement;
-      if (main) {
-        main.style.transform = "scale(1)";
-        main.style.opacity = "1";
-      }
+      setStage("card_draw");
+      
+      // After card is drawn (long smooth transition), move to done
       setTimeout(() => {
-        setStep("done");
-      }, 4500); // Wait for typing animation + short pause
-    } else if (step === "done") {
-      setTimeout(() => {
-        setIsRemoved(true);
-        document.body.style.overflow = "auto";
-      }, 1500);
-    }
-  }, [step]);
-
-  if (isRemoved) return null;
-
-  const text = "#LetsDoLifeTogether";
-  const sentence = {
-    hidden: { opacity: 1 },
-    visible: {
-      opacity: 1,
-      transition: {
-        delay: 0.5,
-        staggerChildren: 0.15,
-      },
-    },
+        const main = document.querySelector("#main-content") as HTMLElement;
+        if (main) {
+          main.style.transform = "scale(1)";
+          main.style.opacity = "1";
+        }
+        
+        setStage("done");
+        
+        // Finally remove from DOM
+        setTimeout(() => {
+          setStage("removed");
+          document.body.style.overflow = "auto";
+        }, 1500);
+      }, 3500);
+    }, 800);
   };
-  const letter = {
-    hidden: { opacity: 0, y: 10 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5, ease: "easeOut" }
-    },
-  };
+
+  if (stage === "removed") return null;
 
   return (
-    <div className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden transition-colors duration-[1500ms] ${step === "envelope" ? "bg-[#F4F1EA]" : "bg-transparent pointer-events-none"}`}>
-
+    <div className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden transition-colors duration-[1500ms] ${stage === "done" ? "bg-transparent pointer-events-none" : "bg-[#F4F1EA]"}`}>
+      
+      {/* Ambient background glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.6)_0%,transparent_100%)] pointer-events-none"></div>
 
       <AnimatePresence>
-        {step === "text" && (
-          <motion.div
-            key="text-screen"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, transition: { duration: 1.5 } }}
-            className="absolute inset-0 flex items-center justify-center z-[9999] px-4 bg-[#F4F1EA]/70 backdrop-blur-sm pointer-events-auto"
-          >
-            <motion.h1
-              variants={sentence}
-              initial="hidden"
-              animate="visible"
-              style={{ fontFamily: "var(--font-cormorant), cursive, serif" }}
-              className="text-[#3A4A2C] text-3xl md:text-5xl lg:text-6xl tracking-[0.1em] italic font-light text-center drop-shadow-sm"
-            >
-              {text.split("").map((char, index) => (
-                <motion.span key={char + "-" + index} variants={letter} className="inline-block">
-                  {char === " " ? "\u00A0" : char}
-                </motion.span>
-              ))}
-            </motion.h1>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {step === "envelope" && (
+        {stage !== "done" && (
           <motion.div
             key="envelope-wrapper"
             exit={{ y: "100vh", opacity: 0, scale: 0.9 }}
             transition={{ duration: 1.2, ease: [0.32, 0, 0.67, 0] }}
-            // Literally covers the ENTIRE SCREEN edge to edge
-            className="absolute inset-0 w-full h-full cursor-pointer"
+            className="relative w-full h-full flex items-center justify-center cursor-pointer"
             onClick={handleOpen}
           >
-
-            {/* Ambient Floating Animation */}
-            <motion.div
-              animate={isOpen ? { y: 0 } : { y: [0, -10, 0] }}
-              transition={{ duration: 4, repeat: isOpen ? 0 : Infinity, ease: "easeInOut" }}
-              className="relative w-full h-full z-10"
-            >
-
-              {/* Back of Envelope */}
-              <div className="absolute inset-0 bg-[#FCFAF8] shadow-2xl z-10"></div>
-
-              {/* SVG Flaps (Left, Right, Bottom) - Deep overlap exactly like reference */}
-              <svg className="absolute inset-0 w-full h-full pointer-events-none z-20" preserveAspectRatio="none" viewBox="0 0 100 100">
-                <defs>
-                  {/* Suede/Velvet texture filter */}
-                  <filter id="suede">
-                    <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" />
-                    <feColorMatrix type="matrix" values="1 0 0 0 0, 0 1 0 0 0, 0 0 1 0 0, 0 0 0 0.08 0" in="noise" result="coloredNoise" />
-                    <feBlend in="SourceGraphic" in2="coloredNoise" mode="multiply" />
-                  </filter>
-                  <filter id="shadow-left" x="-20%" y="-20%" width="140%" height="140%">
-                    <feDropShadow dx="3" dy="0" stdDeviation="4" floodOpacity="0.2" />
-                  </filter>
-                  <filter id="shadow-right" x="-20%" y="-20%" width="140%" height="140%">
-                    <feDropShadow dx="-3" dy="0" stdDeviation="4" floodOpacity="0.2" />
-                  </filter>
-                  <filter id="shadow-bottom" x="-20%" y="-20%" width="140%" height="140%">
-                    <feDropShadow dx="0" dy="-3" stdDeviation="4" floodOpacity="0.2" />
-                  </filter>
-                  <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#D4AF37" />
-                    <stop offset="50%" stopColor="#FFF2CD" />
-                    <stop offset="100%" stopColor="#AA7C11" />
-                  </linearGradient>
-                </defs>
-
-                {/* Left Flap (Goes deep to 55%) */}
-                <polygon points="0,0 50,55 0,100" fill="#EAE5DE" filter="url(#suede) url(#shadow-left)" />
-                {/* Triple Gold Edge Left */}
-                <polyline points="0,0 49.8,55 0,100" fill="none" stroke="url(#goldGradient)" strokeWidth="0.25" />
-                <polyline points="0,4 46,55 0,96" fill="none" stroke="url(#goldGradient)" strokeWidth="0.1" opacity="0.8" />
-                <polyline points="0,8 42,55 0,92" fill="none" stroke="url(#goldGradient)" strokeWidth="0.05" opacity="0.6" />
-
-                {/* Right Flap (Goes deep to 55%) */}
-                <polygon points="100,0 50,55 100,100" fill="#EAE5DE" filter="url(#suede) url(#shadow-right)" />
-                {/* Triple Gold Edge Right */}
-                <polyline points="100,0 50.2,55 100,100" fill="none" stroke="url(#goldGradient)" strokeWidth="0.25" />
-                <polyline points="100,4 54,55 100,96" fill="none" stroke="url(#goldGradient)" strokeWidth="0.1" opacity="0.8" />
-                <polyline points="100,8 58,55 100,92" fill="none" stroke="url(#goldGradient)" strokeWidth="0.05" opacity="0.6" />
-
-                {/* Bottom Flap (Goes up to 45%) */}
-                <polygon points="0,100 50,45 100,100" fill="#EAE5DE" filter="url(#suede) url(#shadow-bottom)" />
-                {/* Gold Edge Bottom */}
-                <polyline points="0,100 50,45.2 100,100" fill="none" stroke="url(#goldGradient)" strokeWidth="0.15" />
-              </svg>
-
-              {/* Realistic Embroidered Flowers Left and Right */}
-              <div className="absolute top-[35%] left-[5%] w-[40%] md:w-[35%] max-w-[350px] aspect-square pointer-events-none z-20 flex items-center justify-center transform -translate-y-1/2 drop-shadow-2xl">
-                <img src="/images/embroidered_roses.png" alt="Embroidery" className="w-full h-full object-contain" style={{ filter: "drop-shadow(2px 4px 6px rgba(0,0,0,0.4))", mixBlendMode: "multiply" }} />
-              </div>
-              <div className="absolute top-[35%] right-[5%] w-[40%] md:w-[35%] max-w-[350px] aspect-square pointer-events-none z-20 flex items-center justify-center transform -translate-y-1/2 scale-x-[-1] drop-shadow-2xl">
-                <img src="/images/embroidered_roses.png" alt="Embroidery" className="w-full h-full object-contain" style={{ filter: "drop-shadow(2px 4px 6px rgba(0,0,0,0.4))", mixBlendMode: "multiply" }} />
+            {/* The Envelope Container */}
+            <div className="relative w-full max-w-[800px] aspect-[3/4] sm:aspect-[4/3] md:aspect-[3/2] flex flex-col items-center justify-end">
+              
+              {/* Top Flap (Starts Open, pointing UP) */}
+              <div className="absolute bottom-[70%] w-[90%] md:w-[80%] h-[35%] sm:h-[45%] z-0 pointer-events-none flex items-end">
+                <svg className="w-full h-full drop-shadow-md" preserveAspectRatio="none" viewBox="0 0 100 100">
+                  <defs>
+                    <filter id="velvet-top">
+                      <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" />
+                      <feColorMatrix type="matrix" values="1 0 0 0 0, 0 1 0 0 0, 0 0 1 0 0, 0 0 0 0.05 0" in="noise" result="coloredNoise" />
+                      <feBlend in="SourceGraphic" in2="coloredNoise" mode="multiply" />
+                    </filter>
+                    <linearGradient id="gold-top" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#D4AF37" />
+                      <stop offset="50%" stopColor="#FFF2CD" />
+                      <stop offset="100%" stopColor="#AA7C11" />
+                    </linearGradient>
+                  </defs>
+                  <polygon points="0,100 50,0 100,100" fill="#FCFAF8" filter="url(#velvet-top)" />
+                  <polyline points="0,100 50,0 100,100" fill="none" stroke="url(#gold-top)" strokeWidth="0.3" />
+                  <polyline points="3,100 50,6 97,100" fill="none" stroke="url(#gold-top)" strokeWidth="0.15" opacity="0.6" />
+                </svg>
               </div>
 
-              {/* Top Flap (Rotates 180deg) */}
+              {/* Back of Envelope Pouch */}
+              <div className="absolute bottom-0 w-[90%] md:w-[80%] h-[70%] bg-[#FCFAF8] shadow-xl z-10 rounded-b-lg border-x border-b border-[#EAE5DE]">
+                {/* Velvet texture inside pouch */}
+                <svg className="absolute inset-0 w-full h-full opacity-30 pointer-events-none rounded-b-lg" preserveAspectRatio="none">
+                  <filter id="velvet-pouch">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" result="noise" />
+                    <feColorMatrix type="matrix" values="1 0 0 0 0, 0 1 0 0 0, 0 0 1 0 0, 0 0 0 0.05 0" />
+                  </filter>
+                  <rect width="100%" height="100%" filter="url(#velvet-pouch)" />
+                </svg>
+              </div>
+
+              {/* The Inner Card (Draws out upwards) */}
               <motion.div
-                initial={{ rotateX: 0 }}
-                animate={{ rotateX: isOpen ? 180 : 0 }}
-                transition={{ duration: 1.2, ease: [0.4, 0, 0.2, 1] }}
-                style={{ transformOrigin: "top", transformStyle: "preserve-3d" }}
-                className="absolute inset-0 z-30"
+                initial={{ y: "10%", scale: 1 }} // Hidden inside the pouch
+                animate={{ 
+                  y: stage === "card_draw" ? "-60%" : "10%",
+                  scale: stage === "card_draw" ? 1.05 : 1,
+                  boxShadow: stage === "card_draw" ? "0 25px 50px -12px rgba(0, 0, 0, 0.25)" : "0 0 0 rgba(0,0,0,0)"
+                }}
+                transition={{ duration: 3, ease: [0.16, 1, 0.3, 1] }} // Long smooth draw out
+                className="absolute bottom-0 w-[85%] md:w-[75%] h-[85%] bg-[#FFFDFB] rounded-md z-20 flex flex-col items-center justify-start pt-8 sm:pt-12 md:pt-16 px-4 sm:px-6 border border-[#EAE5DE]"
               >
-                {/* Front Face of Top Flap */}
-                <div className="absolute inset-0" style={{ backfaceVisibility: "hidden" }}>
-                  <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 100 100">
-                    <defs>
-                      <filter id="shadow-top" x="-20%" y="-20%" width="140%" height="140%">
-                        <feDropShadow dx="0" dy="5" stdDeviation="5" floodOpacity="0.12" />
-                      </filter>
-                    </defs>
-                    {/* Deep V-shaped Top Flap goes down to 65% height exactly like reference */}
-                    <polygon points="0,0 100,0 50,65" fill="#FDFCFB" filter="url(#suede) url(#shadow-top)" />
-                    {/* Triple Golden Edge */}
-                    <polyline points="0,0 50,64.8 100,0" fill="none" stroke="url(#goldGradient)" strokeWidth="0.25" />
-                    <polyline points="3,0 50,60 97,0" fill="none" stroke="url(#goldGradient)" strokeWidth="0.1" opacity="0.8" />
-                    <polyline points="6,0 50,55 94,0" fill="none" stroke="url(#goldGradient)" strokeWidth="0.05" opacity="0.5" />
-                  </svg>
+                {/* Fine linen texture for the card */}
+                <svg className="absolute inset-0 w-full h-full opacity-20 pointer-events-none rounded-md" preserveAspectRatio="none">
+                  <filter id="linen">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.01 0.2" numOctaves="2" />
+                    <feColorMatrix type="matrix" values="1 0 0 0 0, 0 1 0 0 0, 0 0 1 0 0, 0 0 0 0.05 0" />
+                  </filter>
+                  <rect width="100%" height="100%" filter="url(#linen)" />
+                </svg>
 
-                  {/* Typography on the Flap */}
-                  <div className="absolute top-[12%] md:top-[12%] left-0 w-full text-center flex flex-col items-center justify-start pointer-events-none px-4">
-
-                    {/* Top Ornament */}
-                    <div className="flex items-center justify-center gap-4 mb-4 w-full max-w-[240px] opacity-80">
-                      <div className="h-[1px] flex-grow bg-gradient-to-r from-transparent to-[#D4AF37]"></div>
-                      <div className="w-2 h-2 rotate-45 border border-[#D4AF37]"></div>
-                      <div className="h-[1px] flex-grow bg-gradient-to-l from-transparent to-[#D4AF37]"></div>
-                    </div>
-
-                    <p style={{ fontFamily: "var(--font-cormorant), cursive, serif" }} className="text-[#5C5056] text-xl sm:text-3xl md:text-4xl italic font-light mb-4 sm:mb-5">
-                      You are lovingly invited to the wedding of
-                    </p>
-
-                    <h1 className="text-[#1A1618] font-serif text-3xl sm:text-4xl md:text-5xl tracking-[0.2em] uppercase mb-4 leading-normal">
-                      OLIVIA <br /> <span className="text-xl sm:text-2xl font-light text-[#D4AF37]">AND</span> <br /> IYANU
-                    </h1>
-
-                    {/* Bottom Ornament */}
-                    <div className="flex items-center justify-center gap-3 mt-1 mb-3 w-full max-w-[120px] opacity-70">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></div>
-                      <div className="h-[1px] flex-grow bg-[#D4AF37]"></div>
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></div>
-                    </div>
-
-                    <p className="text-[#8B8086] text-sm sm:text-lg tracking-[0.4em] font-medium font-mono mt-1">
-                      30.10.2026
-                    </p>
+                {/* Typography on the Card */}
+                <div className="relative z-10 flex flex-col items-center text-center w-full">
+                  <div className="flex items-center justify-center gap-4 mb-4 sm:mb-6 w-full max-w-[180px] sm:max-w-[240px] opacity-80">
+                    <div className="h-[1px] flex-grow bg-gradient-to-r from-transparent to-[#D4AF37]"></div>
+                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rotate-45 border border-[#D4AF37]"></div>
+                    <div className="h-[1px] flex-grow bg-gradient-to-l from-transparent to-[#D4AF37]"></div>
                   </div>
-                </div>
 
-                {/* Back Face of Top Flap (visible when open) */}
-                <div className="absolute inset-0" style={{ transform: "rotateX(180deg)", backfaceVisibility: "hidden" }}>
-                  <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 100 100">
-                    <polygon points="0,0 100,0 50,65" fill="#EFECE6" />
-                  </svg>
+                  <p style={{ fontFamily: "var(--font-cormorant), cursive, serif" }} className="text-[#5C5056] text-lg sm:text-2xl md:text-3xl italic font-light mb-4 sm:mb-8">
+                    You are lovingly invited to the wedding of
+                  </p>
+
+                  <h1 className="text-[#1A1618] font-serif text-2xl sm:text-4xl md:text-5xl tracking-[0.2em] uppercase mb-4 sm:mb-6 leading-normal">
+                    OLIVIA <br /> <span className="text-sm sm:text-xl md:text-2xl font-light text-[#D4AF37] my-3 sm:my-4 block">AND</span> IYANU
+                  </h1>
+
+                  <div className="flex items-center justify-center gap-2 sm:gap-3 mt-2 sm:mt-4 mb-4 sm:mb-6 w-full max-w-[100px] sm:max-w-[120px] opacity-70">
+                    <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[#D4AF37]"></div>
+                    <div className="h-[1px] flex-grow bg-[#D4AF37]"></div>
+                    <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[#D4AF37]"></div>
+                  </div>
+
+                  <p className="text-[#8B8086] text-xs sm:text-sm md:text-lg tracking-[0.4em] font-medium font-mono">
+                    30.10.2026
+                  </p>
                 </div>
               </motion.div>
 
-              {/* Ultra-Realistic Botanical Pearl-White Wax Stamp */}
-              <AnimatePresence>
-                {!isOpen && (
-                  <motion.div
-                    exit={{ opacity: 0, scale: 0.5 }}
-                    transition={{ duration: 0.4, ease: "easeIn" }}
-                    className="absolute z-50 pointer-events-auto cursor-pointer flex items-center justify-center"
-                    // Placed EXACTLY over the tip of the top flap (65% down)
-                    style={{ top: "65%", left: "50%", transform: "translate(-50%, -50%)" }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleOpen();
-                    }}
-                  >
-                    <div className="relative w-36 h-36 md:w-44 md:h-44 flex items-center justify-center group">
+              {/* Front Flaps (Left, Right, Bottom) covering the card */}
+              <div className="absolute bottom-0 w-[90%] md:w-[80%] h-[70%] z-30 pointer-events-none">
+                <svg className="absolute inset-0 w-full h-full drop-shadow-2xl" preserveAspectRatio="none" viewBox="0 0 100 100">
+                  <defs>
+                    <filter id="velvet">
+                      <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" />
+                      <feColorMatrix type="matrix" values="1 0 0 0 0, 0 1 0 0 0, 0 0 1 0 0, 0 0 0 0.05 0" in="noise" result="coloredNoise" />
+                      <feBlend in="SourceGraphic" in2="coloredNoise" mode="multiply" />
+                    </filter>
+                    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#D4AF37" />
+                      <stop offset="50%" stopColor="#FFF2CD" />
+                      <stop offset="100%" stopColor="#AA7C11" />
+                    </linearGradient>
+                    <filter id="drop-left"><feDropShadow dx="2" dy="0" stdDeviation="3" floodOpacity="0.15" /></filter>
+                    <filter id="drop-right"><feDropShadow dx="-2" dy="0" stdDeviation="3" floodOpacity="0.15" /></filter>
+                    <filter id="drop-bottom"><feDropShadow dx="0" dy="-3" stdDeviation="3" floodOpacity="0.1" /></filter>
+                  </defs>
 
-                      {/* Organic Melted Wax Outer Blob */}
-                      <div
-                        className="absolute inset-0 bg-gradient-to-br from-[#E3C37A] via-[#D4AF37] to-[#AA7C11] shadow-[0_15px_35px_rgba(0,0,0,0.25),inset_0_-8px_20px_rgba(0,0,0,0.15),inset_0_8px_20px_rgba(255,255,255,0.4)] group-hover:scale-105 transition-transform duration-500"
-                        style={{ borderRadius: "52% 48% 55% 45% / 45% 55% 42% 58%" }}
-                      ></div>
+                  {/* Left Flap */}
+                  <polygon points="0,0 48,55 0,100" fill="#FDFCFB" filter="url(#velvet) url(#drop-left)" />
+                  <polyline points="0,0 48,55 0,100" fill="none" stroke="url(#gold)" strokeWidth="0.3" />
+                  <polyline points="0,3 44,55 0,97" fill="none" stroke="url(#gold)" strokeWidth="0.1" opacity="0.6" />
 
-                      {/* Inner Stamped Depression */}
-                      <div
-                        className="absolute inset-4 bg-gradient-to-br from-[#B58514] to-[#E3C37A] shadow-[inset_0_4px_10px_rgba(0,0,0,0.3),0_2px_5px_rgba(255,255,255,0.3)]"
-                        style={{ borderRadius: "48% 52% 45% 55% / 55% 45% 50% 50%" }}
-                      ></div>
+                  {/* Right Flap */}
+                  <polygon points="100,0 52,55 100,100" fill="#FDFCFB" filter="url(#velvet) url(#drop-right)" />
+                  <polyline points="100,0 52,55 100,100" fill="none" stroke="url(#gold)" strokeWidth="0.3" />
+                  <polyline points="100,3 56,55 100,97" fill="none" stroke="url(#gold)" strokeWidth="0.1" opacity="0.6" />
 
-                      {/* Floral Wreath Icon */}
-                      <Flower2 className="relative z-10 w-12 h-12 md:w-16 md:h-16 text-[#FBE3A1] drop-shadow-[0_2px_1px_rgba(0,0,0,0.4)]" strokeWidth={1.5} />
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                  {/* Bottom Flap */}
+                  <polygon points="0,100 50,45 100,100" fill="#FFFFFF" filter="url(#velvet) url(#drop-bottom)" />
+                  <polyline points="0,100 50,45 100,100" fill="none" stroke="url(#gold)" strokeWidth="0.2" />
+                </svg>
 
-            </motion.div>
+                {/* Left Rose Element (Color Reveal Animation) */}
+                <motion.div 
+                  className="absolute top-1/2 left-0 w-[45%] h-[80%] transform -translate-y-1/2 overflow-hidden flex items-center justify-start pointer-events-none mix-blend-multiply"
+                  initial={{ filter: "grayscale(100%) opacity(0.5) sepia(20%)" }}
+                  animate={{ filter: stage === "card_draw" ? "grayscale(0%) opacity(0.9) sepia(0%)" : "grayscale(100%) opacity(0.5) sepia(20%)" }}
+                  transition={{ duration: 2.5, ease: "easeInOut", delay: 0.5 }}
+                >
+                  {/* Using the user's existing rose.png asset, blended elegantly into the velvet */}
+                  <img src="/images/rose.png" alt="" className="w-[120%] h-[120%] object-contain object-left-center drop-shadow-md -translate-x-[10%]" />
+                </motion.div>
+
+                {/* Right Rose Element (Color Reveal Animation) */}
+                <motion.div 
+                  className="absolute top-1/2 right-0 w-[45%] h-[80%] transform -translate-y-1/2 overflow-hidden flex items-center justify-end pointer-events-none mix-blend-multiply"
+                  initial={{ filter: "grayscale(100%) opacity(0.5) sepia(20%)" }}
+                  animate={{ filter: stage === "card_draw" ? "grayscale(0%) opacity(0.9) sepia(0%)" : "grayscale(100%) opacity(0.5) sepia(20%)" }}
+                  transition={{ duration: 2.5, ease: "easeInOut", delay: 0.5 }}
+                >
+                  <img src="/images/rose.png" alt="" className="w-[120%] h-[120%] object-contain object-right-center scale-x-[-1] drop-shadow-md translate-x-[10%]" />
+                </motion.div>
+              </div>
+
+              {/* Wax Seal - Lifts and pulses before card draws */}
+              <motion.div
+                initial={{ scale: 1, y: 0, opacity: 1 }}
+                animate={
+                  stage === "resting" ? { scale: 1, y: 0, opacity: 1 } :
+                  stage === "seal_lift" ? { scale: 1.15, y: -15, filter: "drop-shadow(0 25px 20px rgba(0,0,0,0.4))", opacity: 1 } :
+                  { scale: 0.8, y: -5, opacity: 0 } // Fades away during card draw
+                }
+                transition={{ duration: 0.6, ease: "easeOut" }}
+                className="absolute z-50 pointer-events-none flex items-center justify-center"
+                style={{ bottom: "35%", left: "50%", transform: "translate(-50%, 50%)" }}
+              >
+                <div className="relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 flex items-center justify-center group cursor-pointer pointer-events-auto" onClick={(e) => { e.stopPropagation(); handleOpen(); }}>
+                  {/* Organic Melted Wax */}
+                  <div
+                    className="absolute inset-0 bg-gradient-to-br from-[#E3C37A] via-[#D4AF37] to-[#AA7C11] shadow-[0_15px_35px_rgba(0,0,0,0.25),inset_0_-8px_20px_rgba(0,0,0,0.15),inset_0_8px_20px_rgba(255,255,255,0.4)]"
+                    style={{ borderRadius: "52% 48% 55% 45% / 45% 55% 42% 58%" }}
+                  ></div>
+                  {/* Inner Stamped Depression */}
+                  <div
+                    className="absolute inset-3 sm:inset-4 bg-gradient-to-br from-[#B58514] to-[#E3C37A] shadow-[inset_0_4px_10px_rgba(0,0,0,0.3),0_2px_5px_rgba(255,255,255,0.3)]"
+                    style={{ borderRadius: "48% 52% 45% 55% / 55% 45% 50% 50%" }}
+                  ></div>
+                  <Flower2 className="relative z-10 w-8 h-8 sm:w-10 sm:h-10 text-[#FBE3A1] drop-shadow-[0_2px_1px_rgba(0,0,0,0.4)]" strokeWidth={1.5} />
+                </div>
+              </motion.div>
+
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
     </div>
   );
 }
+
