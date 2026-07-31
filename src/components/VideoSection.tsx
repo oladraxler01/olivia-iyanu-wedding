@@ -10,9 +10,35 @@ export default function VideoSection() {
   const [isPlaying, setIsPlaying] = useState(true);
 
   useEffect(() => {
+    let observer: IntersectionObserver;
+
     if (videoRef.current) {
-      videoRef.current.play().catch(e => console.log("Autoplay blocked:", e));
+      observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            if (videoRef.current) {
+              videoRef.current.muted = false;
+              setIsMuted(false);
+              videoRef.current.play().catch(e => console.log("Autoplay blocked:", e));
+              window.dispatchEvent(new Event("fade-music-out"));
+            }
+          } else {
+            if (videoRef.current) {
+              videoRef.current.muted = true;
+              setIsMuted(true);
+              videoRef.current.pause();
+              window.dispatchEvent(new Event("fade-music-in"));
+            }
+          }
+        });
+      }, { threshold: 0.6 });
+      
+      observer.observe(videoRef.current);
     }
+
+    return () => {
+      if (observer) observer.disconnect();
+    };
   }, []);
 
   const toggleMute = () => {
@@ -20,8 +46,11 @@ export default function VideoSection() {
     videoRef.current.muted = !isMuted;
     setIsMuted(!isMuted);
     if (isMuted) {
-      // If we are unmuting, dispatch event to stop background music
-      window.dispatchEvent(new Event("stop-music"));
+      // If we are unmuting, dispatch event to fade out background music
+      window.dispatchEvent(new Event("fade-music-out"));
+    } else {
+      // If we are muting, dispatch event to fade in background music
+      window.dispatchEvent(new Event("fade-music-in"));
     }
   };
 
