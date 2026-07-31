@@ -251,9 +251,9 @@ export default function LoveStory() {
                             <img src={m.imageSrc} alt={m.title} className="max-w-[90%] max-h-[90%] object-contain rounded-lg shadow-2xl" />
                           </div>
                         )}
-                        className="aspect-[4/5] w-full rounded-2xl bg-[#EAE1E1] border border-dashed border-[#E3D3DA] flex flex-col items-center justify-center mb-4 relative overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                        className="w-full rounded-2xl bg-[#EAE1E1] border border-dashed border-[#E3D3DA] flex flex-col items-center justify-center mb-4 relative overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
                       >
-                        <img src={m.imageSrc} alt={m.title} className="w-full h-full object-cover" />
+                        <img src={m.imageSrc} alt={m.title} className="w-full h-auto object-contain" />
                       </div>
                     ) : m.media === "loading" ? (
                       <div className="aspect-[16/9] w-full rounded-2xl border border-dashed border-[#E3D3DA] flex flex-col items-center justify-center gap-2 mb-4 relative overflow-hidden bg-[#EAE1E1]">
