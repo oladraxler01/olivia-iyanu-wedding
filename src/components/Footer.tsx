@@ -11,7 +11,7 @@ export default function Footer() {
         </h3>
 
         <div className="inline-block px-4 py-1 rounded-full bg-[#B23A6B]/20 border border-[#B23A6B]/40 text-[#E091B4] text-xs font-mono font-bold tracking-widest">
-          #OliviaAndIyanu2026
+          #LetsDoLifeTogether
         </div>
 
         <p className="text-xs text-[#E3D3DA]/70 font-light flex items-center justify-center gap-1">

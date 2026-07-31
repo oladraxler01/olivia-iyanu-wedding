@@ -216,8 +216,8 @@ export default function AsoebiPaymentForm() {
                         </span>
                         {item.id === "fila" && (
                           <div className="mt-3">
-                            <label className="block text-[10px] text-[#6B5A63] mb-1 italic">
-                              We're getting your fila made! Please measure around your head in inches:
+                            <label className="block text-sm font-semibold text-[#0E5C52] mb-1">
+                              We're getting the fila made. Please share your head measurement in inches below
                             </label>
                             <input
                               type="text"
