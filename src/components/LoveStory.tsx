@@ -88,18 +88,22 @@ export default function LoveStory() {
       if (iframe) {
         const player = new Player(iframe);
         player.on("play", () => {
-          window.dispatchEvent(new Event("stop-music"));
+          window.dispatchEvent(new Event("fade-music-out"));
+        });
+        player.on("pause", () => {
+          window.dispatchEvent(new Event("fade-music-in"));
         });
 
         observer = new IntersectionObserver((entries) => {
           entries.forEach(entry => {
             if (entry.isIntersecting) {
+              player.setVolume(1).catch(() => {});
               player.play().catch(e => console.log("Autoplay prevented:", e));
             } else {
-              player.pause();
+              player.pause().catch(() => {});
             }
           });
-        }, { threshold: 0.5 });
+        }, { threshold: 0.6 });
         
         observer.observe(iframe);
       }
