@@ -81,6 +81,19 @@ export default function LoveStory() {
   });
 
   useEffect(() => {
+    import("@vimeo/player").then((PlayerModule) => {
+      const Player = PlayerModule.default;
+      const iframe = document.getElementById("story-vimeo-player") as HTMLIFrameElement;
+      if (iframe) {
+        const player = new Player(iframe);
+        player.on("play", () => {
+          window.dispatchEvent(new Event("stop-music"));
+        });
+      }
+    }).catch(err => console.log("Failed to load Vimeo player", err));
+  }, []);
+
+  useEffect(() => {
     const updateTimer = () => {
       const now = new Date().getTime();
       const diff = targetDate - now;
@@ -217,9 +230,9 @@ export default function LoveStory() {
                             <img src={m.imageSrc} alt={m.title} className="max-w-[90%] max-h-[90%] object-contain rounded-lg shadow-2xl" />
                           </div>
                         )}
-                        className="w-full rounded-2xl bg-[#EAE1E1] border border-dashed border-[#E3D3DA] flex flex-col items-center justify-center mb-4 relative overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                        className="aspect-[4/5] w-full rounded-2xl bg-[#EAE1E1] border border-dashed border-[#E3D3DA] flex flex-col items-center justify-center mb-4 relative overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
                       >
-                        <img src={m.imageSrc} alt={m.title} className="w-full h-auto object-contain" />
+                        <img src={m.imageSrc} alt={m.title} className="w-full h-full object-cover" />
                       </div>
                     ) : m.media === "loading" ? (
                       <div className="aspect-[16/9] w-full rounded-2xl border border-dashed border-[#E3D3DA] flex flex-col items-center justify-center gap-2 mb-4 relative overflow-hidden bg-[#EAE1E1]">
@@ -234,6 +247,7 @@ export default function LoveStory() {
                     ) : m.media === "vimeo" ? (
                       <div className="w-full aspect-[9/16] rounded-2xl overflow-hidden bg-black mb-4 shadow-sm">
                         <iframe
+                          id="story-vimeo-player"
                           src="https://player.vimeo.com/video/1213738960?badge=0&autopause=0&player_id=0&app_id=58479&title=0&byline=0&portrait=0"
                           frameBorder="0"
                           allow="autoplay; fullscreen; picture-in-picture"
