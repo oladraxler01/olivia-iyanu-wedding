@@ -97,7 +97,7 @@ export default function LoveStory() {
         observer = new IntersectionObserver((entries) => {
           entries.forEach(entry => {
             if (entry.isIntersecting) {
-              player.setVolume(1).catch(() => {});
+              player.setVolume(0.5).catch(() => {});
               player.play().catch(e => console.log("Autoplay prevented:", e));
             } else {
               player.pause().catch(() => {});

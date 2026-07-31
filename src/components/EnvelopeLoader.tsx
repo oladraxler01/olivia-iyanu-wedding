@@ -134,14 +134,20 @@ export default function EnvelopeLoader() {
               {/* SVG Flaps (Left, Right, Bottom) - Deep overlap exactly like reference */}
               <svg className="absolute inset-0 w-full h-full pointer-events-none z-20" preserveAspectRatio="none" viewBox="0 0 100 100">
                 <defs>
+                  {/* Suede/Velvet texture filter */}
+                  <filter id="suede">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" />
+                    <feColorMatrix type="matrix" values="1 0 0 0 0, 0 1 0 0 0, 0 0 1 0 0, 0 0 0 0.08 0" in="noise" result="coloredNoise" />
+                    <feBlend in="SourceGraphic" in2="coloredNoise" mode="multiply" />
+                  </filter>
                   <filter id="shadow-left" x="-20%" y="-20%" width="140%" height="140%">
-                    <feDropShadow dx="2" dy="0" stdDeviation="2" floodOpacity="0.08" />
+                    <feDropShadow dx="3" dy="0" stdDeviation="4" floodOpacity="0.2" />
                   </filter>
                   <filter id="shadow-right" x="-20%" y="-20%" width="140%" height="140%">
-                    <feDropShadow dx="-2" dy="0" stdDeviation="2" floodOpacity="0.08" />
+                    <feDropShadow dx="-3" dy="0" stdDeviation="4" floodOpacity="0.2" />
                   </filter>
                   <filter id="shadow-bottom" x="-20%" y="-20%" width="140%" height="140%">
-                    <feDropShadow dx="0" dy="-3" stdDeviation="3" floodOpacity="0.1" />
+                    <feDropShadow dx="0" dy="-3" stdDeviation="4" floodOpacity="0.2" />
                   </filter>
                   <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stopColor="#D4AF37" />
@@ -151,57 +157,31 @@ export default function EnvelopeLoader() {
                 </defs>
 
                 {/* Left Flap (Goes deep to 55%) */}
-                <polygon points="0,0 50,55 0,100" fill="#FBF9F6" filter="url(#shadow-left)" />
-                {/* Gold Edge Left */}
-                <polyline points="0,0 49.8,55 0,100" fill="none" stroke="url(#goldGradient)" strokeWidth="0.15" />
+                <polygon points="0,0 50,55 0,100" fill="#EAE5DE" filter="url(#suede) url(#shadow-left)" />
+                {/* Triple Gold Edge Left */}
+                <polyline points="0,0 49.8,55 0,100" fill="none" stroke="url(#goldGradient)" strokeWidth="0.25" />
+                <polyline points="0,4 46,55 0,96" fill="none" stroke="url(#goldGradient)" strokeWidth="0.1" opacity="0.8" />
+                <polyline points="0,8 42,55 0,92" fill="none" stroke="url(#goldGradient)" strokeWidth="0.05" opacity="0.6" />
 
                 {/* Right Flap (Goes deep to 55%) */}
-                <polygon points="100,0 50,55 100,100" fill="#FBF9F6" filter="url(#shadow-right)" />
-                {/* Gold Edge Right */}
-                <polyline points="100,0 50.2,55 100,100" fill="none" stroke="url(#goldGradient)" strokeWidth="0.15" />
+                <polygon points="100,0 50,55 100,100" fill="#EAE5DE" filter="url(#suede) url(#shadow-right)" />
+                {/* Triple Gold Edge Right */}
+                <polyline points="100,0 50.2,55 100,100" fill="none" stroke="url(#goldGradient)" strokeWidth="0.25" />
+                <polyline points="100,4 54,55 100,96" fill="none" stroke="url(#goldGradient)" strokeWidth="0.1" opacity="0.8" />
+                <polyline points="100,8 58,55 100,92" fill="none" stroke="url(#goldGradient)" strokeWidth="0.05" opacity="0.6" />
 
-                {/* Bottom Flap (Goes up to 40%) */}
-                <polygon points="0,100 50,40 100,100" fill="#FFFFFF" filter="url(#shadow-bottom)" />
+                {/* Bottom Flap (Goes up to 45%) */}
+                <polygon points="0,100 50,45 100,100" fill="#EAE5DE" filter="url(#suede) url(#shadow-bottom)" />
                 {/* Gold Edge Bottom */}
-                <polyline points="0,100 50,40.2 100,100" fill="none" stroke="url(#goldGradient)" strokeWidth="0.15" />
+                <polyline points="0,100 50,45.2 100,100" fill="none" stroke="url(#goldGradient)" strokeWidth="0.15" />
               </svg>
 
-              {/* Corner Filigree Ornaments - Enhanced & Enlarged */}
-              <div className="absolute top-4 left-4 w-32 h-32 pointer-events-none z-20 opacity-80">
-                <svg viewBox="0 0 100 100" fill="none" stroke="url(#goldGradient)" strokeWidth="1.5" strokeLinecap="round">
-                  <path d="M0 0 Q 60 0 60 60 Q 60 0 100 0" />
-                  <path d="M0 0 Q 0 60 60 60 Q 0 60 0 100" />
-                  <circle cx="25" cy="25" r="2" fill="#D4AF37" stroke="none" />
-                  <circle cx="45" cy="15" r="1.5" fill="#D4AF37" stroke="none" />
-                  <circle cx="15" cy="45" r="1.5" fill="#D4AF37" stroke="none" />
-                </svg>
+              {/* Realistic Embroidered Flowers Left and Right */}
+              <div className="absolute top-[35%] left-[5%] w-[40%] md:w-[35%] max-w-[350px] aspect-square pointer-events-none z-20 flex items-center justify-center transform -translate-y-1/2 drop-shadow-2xl">
+                <img src="/images/embroidered_roses.png" alt="Embroidery" className="w-full h-full object-contain" style={{ filter: "drop-shadow(2px 4px 6px rgba(0,0,0,0.4))", mixBlendMode: "multiply" }} />
               </div>
-              <div className="absolute top-4 right-4 w-32 h-32 pointer-events-none z-20 opacity-80" style={{ transform: "scaleX(-1)" }}>
-                <svg viewBox="0 0 100 100" fill="none" stroke="url(#goldGradient)" strokeWidth="1.5" strokeLinecap="round">
-                  <path d="M0 0 Q 60 0 60 60 Q 60 0 100 0" />
-                  <path d="M0 0 Q 0 60 60 60 Q 0 60 0 100" />
-                  <circle cx="25" cy="25" r="2" fill="#D4AF37" stroke="none" />
-                  <circle cx="45" cy="15" r="1.5" fill="#D4AF37" stroke="none" />
-                  <circle cx="15" cy="45" r="1.5" fill="#D4AF37" stroke="none" />
-                </svg>
-              </div>
-              <div className="absolute bottom-4 left-4 w-32 h-32 pointer-events-none z-20 opacity-80" style={{ transform: "scaleY(-1)" }}>
-                <svg viewBox="0 0 100 100" fill="none" stroke="url(#goldGradient)" strokeWidth="1.5" strokeLinecap="round">
-                  <path d="M0 0 Q 60 0 60 60 Q 60 0 100 0" />
-                  <path d="M0 0 Q 0 60 60 60 Q 0 60 0 100" />
-                  <circle cx="25" cy="25" r="2" fill="#D4AF37" stroke="none" />
-                  <circle cx="45" cy="15" r="1.5" fill="#D4AF37" stroke="none" />
-                  <circle cx="15" cy="45" r="1.5" fill="#D4AF37" stroke="none" />
-                </svg>
-              </div>
-              <div className="absolute bottom-4 right-4 w-32 h-32 pointer-events-none z-20 opacity-80" style={{ transform: "scale(-1, -1)" }}>
-                <svg viewBox="0 0 100 100" fill="none" stroke="url(#goldGradient)" strokeWidth="1.5" strokeLinecap="round">
-                  <path d="M0 0 Q 60 0 60 60 Q 60 0 100 0" />
-                  <path d="M0 0 Q 0 60 60 60 Q 0 60 0 100" />
-                  <circle cx="25" cy="25" r="2" fill="#D4AF37" stroke="none" />
-                  <circle cx="45" cy="15" r="1.5" fill="#D4AF37" stroke="none" />
-                  <circle cx="15" cy="45" r="1.5" fill="#D4AF37" stroke="none" />
-                </svg>
+              <div className="absolute top-[35%] right-[5%] w-[40%] md:w-[35%] max-w-[350px] aspect-square pointer-events-none z-20 flex items-center justify-center transform -translate-y-1/2 scale-x-[-1] drop-shadow-2xl">
+                <img src="/images/embroidered_roses.png" alt="Embroidery" className="w-full h-full object-contain" style={{ filter: "drop-shadow(2px 4px 6px rgba(0,0,0,0.4))", mixBlendMode: "multiply" }} />
               </div>
 
               {/* Top Flap (Rotates 180deg) */}
@@ -221,12 +201,11 @@ export default function EnvelopeLoader() {
                       </filter>
                     </defs>
                     {/* Deep V-shaped Top Flap goes down to 65% height exactly like reference */}
-                    <polygon points="0,0 100,0 50,65" fill="#FDFCFB" filter="url(#shadow-top)" />
-                    {/* Golden Edge Main */}
+                    <polygon points="0,0 100,0 50,65" fill="#FDFCFB" filter="url(#suede) url(#shadow-top)" />
+                    {/* Triple Golden Edge */}
                     <polyline points="0,0 50,64.8 100,0" fill="none" stroke="url(#goldGradient)" strokeWidth="0.25" />
-                    {/* Inner Golden Double Lines */}
-                    <polyline points="2,0 50,62 98,0" fill="none" stroke="url(#goldGradient)" strokeWidth="0.1" opacity="0.8" />
-                    <polyline points="4,0 50,59 96,0" fill="none" stroke="url(#goldGradient)" strokeWidth="0.05" opacity="0.5" />
+                    <polyline points="3,0 50,60 97,0" fill="none" stroke="url(#goldGradient)" strokeWidth="0.1" opacity="0.8" />
+                    <polyline points="6,0 50,55 94,0" fill="none" stroke="url(#goldGradient)" strokeWidth="0.05" opacity="0.5" />
                   </svg>
 
                   {/* Typography on the Flap */}
