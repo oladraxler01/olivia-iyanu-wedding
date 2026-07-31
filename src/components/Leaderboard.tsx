@@ -7,10 +7,32 @@ import { Loader2, Trophy, Medal } from "lucide-react";
 
 // ─── API LOGIC ──────────────────────────────────────────
 export const saveScore = async (guest_name: string, game_type: string, score: number) => {
+  // First check if the user already played this game
+  const { data: existing, error: fetchError } = await supabase
+    .from("leaderboards")
+    .select("id")
+    .eq("guest_name", guest_name)
+    .eq("game_type", game_type)
+    .single();
+
+  if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+    throw new Error("Failed to verify existing score: " + fetchError.message);
+  }
+
+  if (existing) {
+    throw new Error("DUPLICATE");
+  }
+
   const { error } = await supabase.from("leaderboards").insert([
     { guest_name, game_type, score },
   ]);
-  if (error) throw new Error("Failed to save score: " + error.message);
+
+  if (error) {
+    if (error.code === '23505') {
+       throw new Error("DUPLICATE");
+    }
+    throw new Error("Failed to save score: " + error.message);
+  }
 };
 
 // ─── DISPLAY COMPONENT ──────────────────────────────────

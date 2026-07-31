@@ -681,17 +681,24 @@ function GameHeader({ title, onClose }: { title: string; onClose: () => void }) 
 // SHARED: SCORE FORM HELPER
 // ═══════════════════════════════════════════════════
 function AutoSaveScore({ gameType, score, playerName }: { gameType: string, score: number, playerName: string }) {
-  const [status, setStatus] = useState<"saving" | "saved" | "error">("saving");
+  const [status, setStatus] = useState<"saving" | "saved" | "error" | "duplicate">("saving");
 
   useEffect(() => {
     let isMounted = true;
     saveScore(playerName, gameType, score)
       .then(() => { if (isMounted) setStatus("saved"); })
-      .catch((err) => { if (isMounted) setStatus("error"); console.error(err); });
+      .catch((err) => { 
+        if (isMounted) {
+          if (err.message === "DUPLICATE") setStatus("duplicate");
+          else setStatus("error");
+        }
+        console.error(err); 
+      });
     return () => { isMounted = false; };
   }, [gameType, score, playerName]);
 
   if (status === "saving") return <p className="text-xs text-[#6B5A63] flex items-center justify-center gap-2 mt-4"><Loader2 className="w-3 h-3 animate-spin" /> Saving score to leaderboard...</p>;
+  if (status === "duplicate") return <p className="text-xs text-[#B23A6B] mt-4">You have already played this game. Your first score is recorded.</p>;
   if (status === "error") return <p className="text-xs text-red-500 mt-4">Failed to save score.</p>;
   return <p className="text-xs font-bold text-[#0E5C52] mt-4">Score saved to Leaderboard!</p>;
 }
