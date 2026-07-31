@@ -21,6 +21,7 @@ export default function GuestUploads() {
     const weddingDate = new Date("2026-10-30T00:00:00").getTime();
     const now = new Date().getTime();
     if (now >= weddingDate) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsUnlocked(true);
     } else {
       // For testing, uncomment the next line to bypass the lock

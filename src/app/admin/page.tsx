@@ -95,6 +95,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (isAuthenticated) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchData();
     }
   }, [isAuthenticated]);

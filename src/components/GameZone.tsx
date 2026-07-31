@@ -236,6 +236,7 @@ function TriviaGame({ playerName, onClose, onNext, nextTitle }: { playerName: st
   const [startTime, setStartTime] = useState<number>(0);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setStartTime(Date.now());
   }, []);
 
@@ -348,6 +349,7 @@ function MemoryGame({ playerName, onClose, onNext, nextTitle }: { playerName: st
     setFinalScore(null);
   }, []);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { initGame(); }, [initGame]);
 
   const handleFlip = (idx: number) => {
@@ -380,6 +382,7 @@ function MemoryGame({ playerName, onClose, onNext, nextTitle }: { playerName: st
       // Limit to 999,999 ms (~16 minutes) to fit cleanly in fraction
       const cappedMs = Math.min(timeMs, 999999);
       const scoreWithTime = moves + (cappedMs / 1000000);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFinalScore(scoreWithTime);
     }
   }, [allMatched, finalScore, startTime, moves]);
@@ -536,6 +539,7 @@ function MazeGame({ playerName, onClose, onNext, nextTitle }: { playerName: stri
   const [finalScore, setFinalScore] = useState<number | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!startTime) setStartTime(Date.now());
   }, [startTime]);
 

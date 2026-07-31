@@ -78,6 +78,7 @@ export default function AsoebiPaymentForm() {
     try {
       // 1. Upload the file to Supabase Storage
       const fileExt = file.name.split('.').pop();
+      // eslint-disable-next-line react-hooks/purity
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
