@@ -41,15 +41,15 @@ export default function EnvelopeLoader() {
 
   useEffect(() => {
     if (step === "text") {
-      setTimeout(() => {
-        setStep("done");
-      }, 4500); // Wait for typing animation + short pause
-    } else if (step === "done") {
       const main = document.querySelector("#main-content") as HTMLElement;
       if (main) {
         main.style.transform = "scale(1)";
         main.style.opacity = "1";
       }
+      setTimeout(() => {
+        setStep("done");
+      }, 4500); // Wait for typing animation + short pause
+    } else if (step === "done") {
       setTimeout(() => {
         setIsRemoved(true);
         document.body.style.overflow = "auto";
@@ -80,7 +80,7 @@ export default function EnvelopeLoader() {
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-[#F4F1EA] flex flex-col items-center justify-center overflow-hidden">
+    <div className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden transition-colors duration-[1500ms] ${step === "envelope" ? "bg-[#F4F1EA]" : "bg-transparent pointer-events-none"}`}>
       
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.6)_0%,transparent_100%)] pointer-events-none"></div>
 
@@ -91,13 +91,14 @@ export default function EnvelopeLoader() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, transition: { duration: 1.5 } }}
-            className="absolute inset-0 flex items-center justify-center z-[9999] px-4"
+            className="absolute inset-0 flex items-center justify-center z-[9999] px-4 bg-[#F4F1EA]/70 backdrop-blur-sm pointer-events-auto"
           >
             <motion.h1 
               variants={sentence}
               initial="hidden"
               animate="visible"
-              className="text-[#B23A6B] font-serif text-3xl md:text-5xl lg:text-7xl tracking-[0.3em] font-light text-center"
+              style={{ fontFamily: "var(--font-cormorant), cursive, serif" }}
+              className="text-[#B23A6B] text-4xl md:text-6xl lg:text-7xl tracking-[0.2em] italic font-light text-center drop-shadow-sm"
             >
               {text.split("").map((char, index) => (
                 <motion.span key={char + "-" + index} variants={letter} className="inline-block">
