@@ -80,10 +80,9 @@ export default function EnvelopeLoader() {
   };
 
   return (
-    <div className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden transition-colors duration-[1500ms] ${step === "envelope" ? "bg-[#1A0307]" : "bg-transparent pointer-events-none"}`}>
+    <div className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden transition-colors duration-[1500ms] ${step === "envelope" ? "bg-[#F4F1EA]" : "bg-transparent pointer-events-none"}`}>
 
-      {/* Ambient Radial Glow behind the envelope */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(210,20,58,0.15)_0%,transparent_100%)] pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.6)_0%,transparent_100%)] pointer-events-none"></div>
 
       <AnimatePresence>
         {step === "text" && (
@@ -115,67 +114,246 @@ export default function EnvelopeLoader() {
         {step === "envelope" && (
           <motion.div
             key="envelope-wrapper"
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 1.2, ease: "easeInOut" }}
-            className="absolute inset-0 w-full h-full cursor-pointer flex items-center justify-center overflow-hidden"
+            exit={{ y: "100vh", opacity: 0, scale: 0.9 }}
+            transition={{ duration: 1.2, ease: [0.32, 0, 0.67, 0] }}
+            // Literally covers the ENTIRE SCREEN edge to edge
+            className="absolute inset-0 w-full h-full cursor-pointer"
             onClick={handleOpen}
           >
-            {/* The Landscape Sleeve & Card Container (Full Screen) */}
-            <div className="absolute inset-0 w-full h-full flex flex-col items-center justify-end z-10">
-              {/* Back Red Sleeve (The solid backing of the pocket) */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#A80B23] to-[#6A0413] shadow-inner z-0"></div>
 
-              {/* Inner Cream Card - Slides UP and OUT */}
+            {/* Ambient Floating Animation */}
+            <motion.div
+              animate={isOpen ? { y: 0 } : { y: [0, -10, 0] }}
+              transition={{ duration: 4, repeat: isOpen ? 0 : Infinity, ease: "easeInOut" }}
+              className="relative w-full h-full z-10"
+            >
+
+              {/* Back of Envelope */}
+              <div className="absolute inset-0 bg-[#F2EDE4] shadow-[inset_0_0_50px_rgba(0,0,0,0.05)] z-10"></div>
+
+              {/* SVG Flaps (Left, Right, Bottom) - Deep overlap exactly like reference */}
+              <svg className="absolute inset-0 w-full h-full pointer-events-none z-20" preserveAspectRatio="none" viewBox="0 0 100 100">
+                <defs>
+                  {/* Highly realistic multi-layered shadow for paper depth (Ambient Occlusion) */}
+                  <filter id="shadow-left" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="3" dy="0" stdDeviation="4" floodColor="#3a2a22" floodOpacity="0.15" />
+                    <feDropShadow dx="1" dy="0" stdDeviation="1" floodColor="#3a2a22" floodOpacity="0.1" />
+                  </filter>
+                  <filter id="shadow-right" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="-3" dy="0" stdDeviation="4" floodColor="#3a2a22" floodOpacity="0.15" />
+                    <feDropShadow dx="-1" dy="0" stdDeviation="1" floodColor="#3a2a22" floodOpacity="0.1" />
+                  </filter>
+                  <filter id="shadow-bottom" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="-4" stdDeviation="5" floodColor="#3a2a22" floodOpacity="0.2" />
+                    <feDropShadow dx="0" dy="-1" stdDeviation="1.5" floodColor="#3a2a22" floodOpacity="0.1" />
+                  </filter>
+
+                  {/* Paper Lighting Gradients to simulate curved physical paper catching light */}
+                  <linearGradient id="paperLeft" x1="0%" y1="50%" x2="100%" y2="50%">
+                    <stop offset="0%" stopColor="#F8F6F0" />
+                    <stop offset="100%" stopColor="#FFFFFF" />
+                  </linearGradient>
+                  <linearGradient id="paperRight" x1="100%" y1="50%" x2="0%" y2="50%">
+                    <stop offset="0%" stopColor="#F8F6F0" />
+                    <stop offset="100%" stopColor="#FFFFFF" />
+                  </linearGradient>
+                  <linearGradient id="paperBottom" x1="50%" y1="100%" x2="50%" y2="0%">
+                    <stop offset="0%" stopColor="#F0EBE1" />
+                    <stop offset="100%" stopColor="#FFFFFF" />
+                  </linearGradient>
+
+                  {/* Metallic Gold Foil Gradient (Shimmering) */}
+                  <linearGradient id="goldFoil" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#B38B36" />
+                    <stop offset="25%" stopColor="#FFDF73" />
+                    <stop offset="50%" stopColor="#9C7726" />
+                    <stop offset="75%" stopColor="#FFECA8" />
+                    <stop offset="100%" stopColor="#B38B36" />
+                  </linearGradient>
+                </defs>
+
+                {/* Left Flap (Goes deep to 55%) */}
+                <polygon points="0,0 50,55 0,100" fill="url(#paperLeft)" filter="url(#shadow-left)" />
+                {/* Thick Gold Foil Edge Left */}
+                <polyline points="0,0 49.5,55 0,100" fill="none" stroke="url(#goldFoil)" strokeWidth="1.2" strokeLinejoin="round" />
+
+                {/* Right Flap (Goes deep to 55%) */}
+                <polygon points="100,0 50,55 100,100" fill="url(#paperRight)" filter="url(#shadow-right)" />
+                {/* Thick Gold Foil Edge Right */}
+                <polyline points="100,0 50.5,55 100,100" fill="none" stroke="url(#goldFoil)" strokeWidth="1.2" strokeLinejoin="round" />
+
+                {/* Bottom Flap (Goes up to 40%) */}
+                <polygon points="0,100 50,40 100,100" fill="url(#paperBottom)" filter="url(#shadow-bottom)" />
+                {/* Thick Gold Foil Edge Bottom */}
+                <polyline points="0,100 50,40.5 100,100" fill="none" stroke="url(#goldFoil)" strokeWidth="1.2" strokeLinejoin="round" />
+              </svg>
+
+              {/* Corner Filigree Ornaments - Styled as physical gold foil */}
+              <div className="absolute top-4 left-4 w-32 h-32 pointer-events-none z-20 drop-shadow-[1px_1px_2px_rgba(0,0,0,0.3)]">
+                <svg viewBox="0 0 100 100" fill="none" stroke="url(#goldFoil)" strokeWidth="2.5" strokeLinecap="round">
+                  <path d="M0 0 Q 60 0 60 60 Q 60 0 100 0" />
+                  <path d="M0 0 Q 0 60 60 60 Q 0 60 0 100" />
+                  <circle cx="25" cy="25" r="2.5" fill="#D4AF37" stroke="none" />
+                  <circle cx="45" cy="15" r="2" fill="#D4AF37" stroke="none" />
+                  <circle cx="15" cy="45" r="2" fill="#D4AF37" stroke="none" />
+                </svg>
+              </div>
+              <div className="absolute top-4 right-4 w-32 h-32 pointer-events-none z-20 drop-shadow-[1px_1px_2px_rgba(0,0,0,0.3)]" style={{ transform: "scaleX(-1)" }}>
+                <svg viewBox="0 0 100 100" fill="none" stroke="url(#goldFoil)" strokeWidth="2.5" strokeLinecap="round">
+                  <path d="M0 0 Q 60 0 60 60 Q 60 0 100 0" />
+                  <path d="M0 0 Q 0 60 60 60 Q 0 60 0 100" />
+                  <circle cx="25" cy="25" r="2.5" fill="#D4AF37" stroke="none" />
+                  <circle cx="45" cy="15" r="2" fill="#D4AF37" stroke="none" />
+                  <circle cx="15" cy="45" r="2" fill="#D4AF37" stroke="none" />
+                </svg>
+              </div>
+              <div className="absolute bottom-4 left-4 w-32 h-32 pointer-events-none z-20 drop-shadow-[1px_1px_2px_rgba(0,0,0,0.3)]" style={{ transform: "scaleY(-1)" }}>
+                <svg viewBox="0 0 100 100" fill="none" stroke="url(#goldFoil)" strokeWidth="2.5" strokeLinecap="round">
+                  <path d="M0 0 Q 60 0 60 60 Q 60 0 100 0" />
+                  <path d="M0 0 Q 0 60 60 60 Q 0 60 0 100" />
+                  <circle cx="25" cy="25" r="2.5" fill="#D4AF37" stroke="none" />
+                  <circle cx="45" cy="15" r="2" fill="#D4AF37" stroke="none" />
+                  <circle cx="15" cy="45" r="2" fill="#D4AF37" stroke="none" />
+                </svg>
+              </div>
+              <div className="absolute bottom-4 right-4 w-32 h-32 pointer-events-none z-20 drop-shadow-[1px_1px_2px_rgba(0,0,0,0.3)]" style={{ transform: "scale(-1, -1)" }}>
+                <svg viewBox="0 0 100 100" fill="none" stroke="url(#goldFoil)" strokeWidth="2.5" strokeLinecap="round">
+                  <path d="M0 0 Q 60 0 60 60 Q 60 0 100 0" />
+                  <path d="M0 0 Q 0 60 60 60 Q 0 60 0 100" />
+                  <circle cx="25" cy="25" r="2.5" fill="#D4AF37" stroke="none" />
+                  <circle cx="45" cy="15" r="2" fill="#D4AF37" stroke="none" />
+                  <circle cx="15" cy="45" r="2" fill="#D4AF37" stroke="none" />
+                </svg>
+              </div>
+
+              {/* Top Flap (Rotates 180deg) */}
               <motion.div
-                className="absolute top-0 bottom-0 left-0 right-0 md:top-2 md:bottom-2 md:left-2 md:right-2 bg-[#FDFBF7] shadow-[0_0_20px_rgba(0,0,0,0.25)] flex flex-col items-center justify-center p-6 sm:p-10 z-10 overflow-hidden"
-                initial={{ y: 0 }}
-                animate={{ y: isOpen ? "-100%" : "0%" }}
-                transition={{ duration: 1.5, ease: [0.32, 0, 0.67, 0] }}
+                initial={{ rotateX: 0 }}
+                animate={{ rotateX: isOpen ? 180 : 0 }}
+                transition={{ duration: 1.2, ease: [0.4, 0, 0.2, 1] }}
+                style={{ transformOrigin: "top", transformStyle: "preserve-3d" }}
+                className="absolute inset-0 z-30"
               >
-                {/* Subtle inner border on the cream card */}
-                <div className="absolute inset-2 border border-[#E8DFD5] opacity-50 pointer-events-none"></div>
+                {/* Front Face of Top Flap */}
+                <div className="absolute inset-0" style={{ backfaceVisibility: "hidden" }}>
+                  <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 100 100">
+                    <defs>
+                      <filter id="shadow-top" x="-20%" y="-20%" width="140%" height="140%">
+                        <feDropShadow dx="0" dy="6" stdDeviation="8" floodColor="#3a2a22" floodOpacity="0.25" />
+                        <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#3a2a22" floodOpacity="0.15" />
+                      </filter>
+                      <linearGradient id="paperTop" x1="50%" y1="0%" x2="50%" y2="100%">
+                        <stop offset="0%" stopColor="#FFFFFF" />
+                        <stop offset="100%" stopColor="#F0EBE1" />
+                      </linearGradient>
+                    </defs>
+                    {/* Deep V-shaped Top Flap goes down to 65% height exactly like reference */}
+                    <polygon points="0,0 100,0 50,65" fill="url(#paperTop)" filter="url(#shadow-top)" />
+                    {/* Thick Golden Foil Edge Main */}
+                    <polyline points="0,0 50,64.5 100,0" fill="none" stroke="url(#goldFoil)" strokeWidth="1.5" strokeLinejoin="round" />
+                    {/* Inner Golden Double Lines */}
+                    <polyline points="2,0 50,62 98,0" fill="none" stroke="url(#goldFoil)" strokeWidth="0.5" opacity="0.9" />
+                    <polyline points="4,0 50,59 96,0" fill="none" stroke="url(#goldFoil)" strokeWidth="0.25" opacity="0.6" />
+                  </svg>
 
-                {/* Elegant Couple Silhouette */}
-                <div className="mb-4 sm:mb-6 opacity-90 flex items-center justify-center">
-                  <svg width="45" height="65" viewBox="0 0 100 150" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-sm">
-                    {/* Groom Silhouette */}
-                    <path d="M30 40 C 20 40, 20 60, 25 70 L 35 140 L 45 140 L 40 70 C 45 60, 40 40, 30 40 Z" fill="#9B1B30" />
-                    <circle cx="30" cy="22" r="10" fill="#9B1B30" />
-                    
-                    {/* Bride Silhouette with flared dress */}
-                    <path d="M60 42 C 50 42, 45 52, 45 70 C 30 110, 15 140, 10 150 L 95 150 C 90 140, 75 110, 65 70 C 65 52, 70 42, 60 42 Z" fill="#C8102E" />
-                    <circle cx="60" cy="26" r="9" fill="#C8102E" />
+                  {/* Typography on the Flap */}
+                  <div className="absolute top-[12%] md:top-[12%] left-0 w-full text-center flex flex-col items-center justify-start pointer-events-none px-4">
+
+                    {/* Top Ornament */}
+                    <div className="flex items-center justify-center gap-4 mb-4 w-full max-w-[240px] opacity-80">
+                      <div className="h-[1px] flex-grow bg-gradient-to-r from-transparent to-[#D4AF37]"></div>
+                      <div className="w-2 h-2 rotate-45 border border-[#D4AF37]"></div>
+                      <div className="h-[1px] flex-grow bg-gradient-to-l from-transparent to-[#D4AF37]"></div>
+                    </div>
+
+                    <p style={{ fontFamily: "var(--font-cormorant), cursive, serif" }} className="text-[#5C5056] text-xl sm:text-3xl md:text-4xl italic font-light mb-4 sm:mb-5">
+                      You are lovingly invited to the wedding of
+                    </p>
+
+                    <h1 className="text-[#1A1618] font-serif text-3xl sm:text-4xl md:text-5xl tracking-[0.2em] uppercase mb-4 leading-normal">
+                      OLIVIA <br /> <span className="text-xl sm:text-2xl font-light text-[#D4AF37]">AND</span> <br /> IYANU
+                    </h1>
+
+                    {/* Bottom Ornament */}
+                    <div className="flex items-center justify-center gap-3 mt-1 mb-3 w-full max-w-[120px] opacity-70">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></div>
+                      <div className="h-[1px] flex-grow bg-[#D4AF37]"></div>
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></div>
+                    </div>
+
+                    <p className="text-[#8B8086] text-sm sm:text-lg tracking-[0.4em] font-medium font-mono mt-1">
+                      30.10.2026
+                    </p>
+                  </div>
+                </div>
+
+                {/* Back Face of Top Flap (visible when open) */}
+                <div className="absolute inset-0" style={{ transform: "rotateX(180deg)", backfaceVisibility: "hidden" }}>
+                  <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 100 100">
+                    <polygon points="0,0 100,0 50,65" fill="#EFECE6" />
                   </svg>
                 </div>
-                
-                <h2 style={{ fontFamily: "var(--font-cormorant), cursive, serif" }} className="text-[#8A0A1F] text-lg sm:text-2xl md:text-3xl italic font-light mb-2 sm:mb-3">
-                  Wedding Invitation
-                </h2>
-                
-                <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mb-4 sm:mb-6 opacity-60"></div>
-
-                <h1 className="text-[#1A1618] font-serif text-2xl sm:text-4xl md:text-5xl tracking-[0.2em] uppercase mb-4 text-center leading-normal">
-                  OLIVIA <br /> <span className="text-xl sm:text-2xl font-light text-[#D4AF37]">AND</span> <br /> IYANU
-                </h1>
-                
-                <p className="text-[#8B8086] text-xs sm:text-sm md:text-lg tracking-[0.4em] font-medium font-mono mt-2 sm:mt-4">
-                  30.10.2026
-                </p>
               </motion.div>
 
-              {/* Front Photorealistic Laser-Cut Red Filigree Pocket */}
-              <div 
-                className="absolute bottom-0 left-0 right-0 h-[70%] sm:h-[80%] z-20 pointer-events-none transition-opacity duration-1000"
-                style={{
-                  backgroundImage: `url('/images/laser-pocket.png')`,
-                  backgroundSize: '100% 100%',
-                  backgroundPosition: 'bottom',
-                  backgroundRepeat: 'no-repeat',
-                  mixBlendMode: 'multiply'
-                }}
-              ></div>
-              </div>
+              {/* Ultra-Realistic Botanical Pearl-White Wax Stamp */}
+              <AnimatePresence>
+                {!isOpen && (
+                  <motion.div
+                    exit={{ opacity: 0, scale: 0.5 }}
+                    transition={{ duration: 0.4, ease: "easeIn" }}
+                    className="absolute z-50 pointer-events-auto cursor-pointer flex items-center justify-center"
+                    // Placed EXACTLY over the tip of the top flap (65% down)
+                    style={{ top: "65%", left: "50%", transform: "translate(-50%, -50%)" }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOpen();
+                    }}
+                  >
+                    <div className="relative w-36 h-36 md:w-44 md:h-44 flex items-center justify-center group">
+                      
+                      {/* Deep cast shadow for the entire heavy wax seal */}
+                      <div className="absolute inset-2 bg-black/40 blur-md rounded-full translate-y-3 scale-95 group-hover:scale-100 transition-transform duration-500"></div>
+
+                      {/* Main Wax Blob Base */}
+                      <div
+                        className="absolute inset-0 bg-gradient-to-br from-[#E8CD82] to-[#996D12] group-hover:scale-105 transition-transform duration-500"
+                        style={{ 
+                          borderRadius: "52% 48% 55% 45% / 45% 55% 42% 58%",
+                          boxShadow: "inset 4px 4px 10px rgba(255, 245, 190, 0.8), inset -6px -6px 15px rgba(60, 40, 0, 0.9), 0 6px 15px rgba(0,0,0,0.4)"
+                        }}
+                      >
+                         {/* Specular highlight rim */}
+                         <div className="absolute inset-[2px] rounded-full border-[1.5px] border-white/50 blur-[1px] mix-blend-overlay"></div>
+                      </div>
+
+                      {/* Raised Rim of the Stamp */}
+                      <div
+                        className="absolute inset-[12%] bg-gradient-to-tl from-[#D4AF37] to-[#A37315]"
+                        style={{ 
+                          borderRadius: "48% 52% 45% 55% / 55% 45% 50% 50%",
+                          boxShadow: "inset -2px -2px 6px rgba(255,245,200,0.7), inset 3px 3px 8px rgba(40,20,0,0.8), 2px 2px 6px rgba(0,0,0,0.5)"
+                        }}
+                      ></div>
+
+                      {/* Inner Stamped Depression */}
+                      <div
+                        className="absolute inset-[20%] bg-gradient-to-br from-[#80550B] to-[#D1A635]"
+                        style={{ 
+                          borderRadius: "50%",
+                          boxShadow: "inset 4px 4px 10px rgba(30,15,0,0.95), inset -2px -2px 6px rgba(255,240,170,0.5)"
+                        }}
+                      >
+                        {/* Floral Wreath Icon with deep debossed shadow effect */}
+                        <Flower2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-14 md:h-14 text-[#EDD085]" style={{ filter: "drop-shadow(1px 1px 1px rgba(255,255,255,0.4)) drop-shadow(-1.5px -1.5px 2px rgba(30,15,0,0.9))" }} strokeWidth={1.5} />
+                      </div>
+
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
             </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
