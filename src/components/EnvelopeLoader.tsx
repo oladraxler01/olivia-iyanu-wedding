@@ -158,34 +158,75 @@ export default function EnvelopeLoader() {
               {/* Dynamic size: centered, completely hidden in pouch when resting, slides up to reveal full text */}
               {/* Layer 2 (Middle): Inner Card */}
               {/* Dynamic size: centered, completely hidden in pouch when resting, slides up to reveal full text */}
+              {/* Layer 2 (Middle): Inner Card */}
+              {/* Dynamic size: centered, completely hidden in pouch when resting, slides up to reveal full text */}
               <motion.div 
-                className="absolute left-1/2 w-[90%] sm:w-[80%] md:w-[65%] max-w-[700px] bg-[#FFFDFB] shadow-xl z-20 flex flex-col items-center justify-start py-6 sm:py-10 px-4 sm:px-10 rounded-lg border border-[#EAE5DE]"
+                className="absolute left-1/2 w-[90%] sm:w-[80%] md:w-[65%] max-w-[700px] bg-[radial-gradient(ellipse_at_center,_#931A24_0%,_#7A171E_50%,_#5A0F13_100%)] shadow-[0_20px_40px_rgba(0,0,0,0.4)] z-20 flex flex-col items-center justify-start py-6 sm:py-10 px-4 sm:px-10 rounded-lg border border-[#8C1E26] overflow-hidden"
                 style={{ x: "-50%" }}
                 initial={{ top: "60%" }}
                 animate={{ top: stage === "card_draw" ? "3%" : "60%" }}
                 transition={{ duration: 3.5, ease: [0.16, 1, 0.3, 1] }}
               >
-                <div className="flex items-center justify-center gap-4 mb-3 sm:mb-5 w-full max-w-[200px] opacity-80">
+                {/* Gold Corner Filigrees for the Inner Card */}
+                <div className="absolute top-3 left-3 w-16 h-16 sm:w-20 sm:h-20 pointer-events-none opacity-80">
+                  <svg viewBox="0 0 100 100" fill="none" stroke="url(#goldGradient)" strokeWidth="2" strokeLinecap="round">
+                    <path d="M0 0 Q 60 0 60 60 Q 60 0 100 0" />
+                    <path d="M0 0 Q 0 60 60 60 Q 0 60 0 100" />
+                    <circle cx="25" cy="25" r="3" fill="#D4AF37" stroke="none" />
+                    <circle cx="45" cy="15" r="2" fill="#D4AF37" stroke="none" />
+                    <circle cx="15" cy="45" r="2" fill="#D4AF37" stroke="none" />
+                  </svg>
+                </div>
+                <div className="absolute top-3 right-3 w-16 h-16 sm:w-20 sm:h-20 pointer-events-none opacity-80" style={{ transform: "scaleX(-1)" }}>
+                  <svg viewBox="0 0 100 100" fill="none" stroke="url(#goldGradient)" strokeWidth="2" strokeLinecap="round">
+                    <path d="M0 0 Q 60 0 60 60 Q 60 0 100 0" />
+                    <path d="M0 0 Q 0 60 60 60 Q 0 60 0 100" />
+                    <circle cx="25" cy="25" r="3" fill="#D4AF37" stroke="none" />
+                    <circle cx="45" cy="15" r="2" fill="#D4AF37" stroke="none" />
+                    <circle cx="15" cy="45" r="2" fill="#D4AF37" stroke="none" />
+                  </svg>
+                </div>
+                <div className="absolute bottom-3 left-3 w-16 h-16 sm:w-20 sm:h-20 pointer-events-none opacity-80" style={{ transform: "scaleY(-1)" }}>
+                  <svg viewBox="0 0 100 100" fill="none" stroke="url(#goldGradient)" strokeWidth="2" strokeLinecap="round">
+                    <path d="M0 0 Q 60 0 60 60 Q 60 0 100 0" />
+                    <path d="M0 0 Q 0 60 60 60 Q 0 60 0 100" />
+                    <circle cx="25" cy="25" r="3" fill="#D4AF37" stroke="none" />
+                    <circle cx="45" cy="15" r="2" fill="#D4AF37" stroke="none" />
+                    <circle cx="15" cy="45" r="2" fill="#D4AF37" stroke="none" />
+                  </svg>
+                </div>
+                <div className="absolute bottom-3 right-3 w-16 h-16 sm:w-20 sm:h-20 pointer-events-none opacity-80" style={{ transform: "scale(-1, -1)" }}>
+                  <svg viewBox="0 0 100 100" fill="none" stroke="url(#goldGradient)" strokeWidth="2" strokeLinecap="round">
+                    <path d="M0 0 Q 60 0 60 60 Q 60 0 100 0" />
+                    <path d="M0 0 Q 0 60 60 60 Q 0 60 0 100" />
+                    <circle cx="25" cy="25" r="3" fill="#D4AF37" stroke="none" />
+                    <circle cx="45" cy="15" r="2" fill="#D4AF37" stroke="none" />
+                    <circle cx="15" cy="45" r="2" fill="#D4AF37" stroke="none" />
+                  </svg>
+                </div>
+
+                {/* Card Content */}
+                <div className="flex items-center justify-center gap-4 mb-3 sm:mb-5 w-full max-w-[200px] opacity-90 z-10">
                   <div className="h-[1px] flex-grow bg-gradient-to-r from-transparent to-[#D4AF37]"></div>
                   <div className="w-2 h-2 rotate-45 border border-[#D4AF37]"></div>
                   <div className="h-[1px] flex-grow bg-gradient-to-l from-transparent to-[#D4AF37]"></div>
                 </div>
 
-                <p style={{ fontFamily: "var(--font-cormorant), cursive, serif" }} className="text-[#5C5056] text-lg sm:text-2xl md:text-3xl italic font-light mb-3 sm:mb-4 text-center">
+                <p style={{ fontFamily: "var(--font-cormorant), cursive, serif" }} className="text-[#F4F1EA] text-lg sm:text-2xl md:text-3xl italic font-light mb-3 sm:mb-4 text-center z-10 drop-shadow-md">
                   You are lovingly invited to the wedding of
                 </p>
 
-                <h1 className="text-[#1A1618] font-serif text-2xl sm:text-3xl md:text-5xl tracking-[0.2em] uppercase mb-3 sm:mb-4 leading-normal text-center">
+                <h1 className="text-[#FFFFFF] font-serif text-2xl sm:text-3xl md:text-5xl tracking-[0.2em] uppercase mb-3 sm:mb-4 leading-normal text-center z-10 drop-shadow-lg">
                   OLIVIA <br /> <span className="text-lg sm:text-xl font-light text-[#D4AF37]">AND</span> <br /> IYANU
                 </h1>
 
-                <div className="flex items-center justify-center gap-3 mt-1 mb-3 sm:mb-5 w-full max-w-[100px] opacity-70">
+                <div className="flex items-center justify-center gap-3 mt-1 mb-3 sm:mb-5 w-full max-w-[100px] opacity-90 z-10">
                   <div className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></div>
                   <div className="h-[1px] flex-grow bg-[#D4AF37]"></div>
                   <div className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></div>
                 </div>
 
-                <p className="text-[#8B8086] text-xs sm:text-base tracking-[0.4em] font-medium font-mono text-center">
+                <p className="text-[#EAE5DE] text-xs sm:text-base tracking-[0.4em] font-medium font-mono text-center z-10 drop-shadow-md">
                   30.10.2026
                 </p>
               </motion.div>
