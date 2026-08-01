@@ -257,31 +257,31 @@ export default function EnvelopeLoader() {
                   </svg>
 
                   {/* Typography on the Flap */}
-                  <div className="absolute top-[6%] sm:top-[8%] md:top-[10%] left-1/2 -translate-x-1/2 w-[82%] sm:w-[70%] md:w-full max-w-sm sm:max-w-md md:max-w-lg text-center flex flex-col items-center justify-start pointer-events-none px-2 sm:px-4">
+                  <div className="absolute top-[5%] sm:top-[7%] md:top-[9%] left-1/2 -translate-x-1/2 w-[86%] sm:w-[75%] md:w-full max-w-sm sm:max-w-md md:max-w-lg text-center flex flex-col items-center justify-start pointer-events-none px-2 sm:px-4">
 
                     {/* Top Ornament */}
-                    <div className="flex items-center justify-center gap-3 sm:gap-4 mb-2 sm:mb-3 w-full max-w-[180px] sm:max-w-[240px] opacity-85">
+                    <div className="flex items-center justify-center gap-3 sm:gap-4 mb-2 sm:mb-3 w-full max-w-[200px] sm:max-w-[260px] opacity-85">
                       <div className="h-[1px] flex-grow bg-gradient-to-r from-transparent to-[#D4AF37]"></div>
                       <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rotate-45 border border-[#D4AF37]"></div>
                       <div className="h-[1px] flex-grow bg-gradient-to-l from-transparent to-[#D4AF37]"></div>
                     </div>
 
-                    <p style={{ fontFamily: "var(--font-cormorant), cursive, serif" }} className="text-[#4A4045] text-base sm:text-2xl md:text-3xl italic font-light mb-2 sm:mb-3 max-w-[260px] sm:max-w-none leading-snug sm:leading-normal">
+                    <p style={{ fontFamily: "var(--font-cormorant), cursive, serif" }} className="text-[#4A4045] text-lg sm:text-2xl md:text-3xl italic font-light mb-2.5 sm:mb-4 max-w-[300px] sm:max-w-none leading-snug sm:leading-normal">
                       You are lovingly invited to the wedding of
                     </p>
 
-                    <h1 className="text-[#1A1618] font-serif text-[26px] sm:text-4xl md:text-5xl tracking-[0.16em] sm:tracking-[0.2em] uppercase mb-2 sm:mb-3 leading-tight sm:leading-normal">
-                      OLIVIA <br /> <span className="text-base sm:text-xl font-light text-[#D4AF37] tracking-[0.2em]">AND</span> <br /> IYANU
+                    <h1 className="text-[#1A1618] font-serif text-[30px] sm:text-4xl md:text-5xl tracking-[0.16em] sm:tracking-[0.2em] uppercase mb-2.5 sm:mb-4 leading-tight sm:leading-normal">
+                      OLIVIA <br /> <span className="text-lg sm:text-xl font-light text-[#D4AF37] tracking-[0.2em]">AND</span> <br /> IYANU
                     </h1>
 
                     {/* Bottom Ornament */}
-                    <div className="flex items-center justify-center gap-2 sm:gap-3 my-1.5 sm:my-2 w-full max-w-[100px] sm:max-w-[130px] opacity-75">
+                    <div className="flex items-center justify-center gap-2.5 sm:gap-3 my-1.5 sm:my-2 w-full max-w-[110px] sm:max-w-[140px] opacity-75">
                       <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[#D4AF37]"></div>
                       <div className="h-[1px] flex-grow bg-[#D4AF37]"></div>
                       <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[#D4AF37]"></div>
                     </div>
 
-                    <p className="text-[#6E646A] text-xs sm:text-base tracking-[0.35em] sm:tracking-[0.4em] font-medium font-mono">
+                    <p className="text-[#6E646A] text-sm sm:text-base tracking-[0.35em] sm:tracking-[0.4em] font-medium font-mono">
                       30.10.2026
                     </p>
                   </div>
