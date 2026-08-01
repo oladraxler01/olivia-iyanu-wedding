@@ -10,7 +10,7 @@ const milestones = [
     title: "Lunch/Dinner dates",
     desc: "From first dates to forever — the dinner diaries are here.",
     media: "image",
-    imageSrc: "/images/IMG-20260722-WA0013.jpg"
+    imageSrc: "/images/IMG-20260722-WA0011.jpg"
   },
   {
     icon: <Camera className="w-5 h-5 text-[#B23A6B]/50" />,
