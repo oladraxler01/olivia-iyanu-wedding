@@ -8,7 +8,7 @@ import { supabase } from "@/lib/supabase";
 const priceList = [
   { id: "ladies_3", name: "Aso-ebi fabric — Ladies (3 yards)", price: 24000 },
   { id: "ladies_4", name: "Aso-ebi fabric — Ladies (4 yards)", price: 32000 },
-  { id: "men", name: "Aso-ebi fabric — Men (native wear length)", price: 28000 },
+  { id: "ladies_5", name: "Aso-ebi fabric — Ladies (5 yards)", price: 40000 },
   { id: "gele", name: "Sego Gele (head wrap)", price: 16000 },
   { id: "fila", name: "Men's cap (fila)", price: 10000 },
 ];
@@ -17,7 +17,7 @@ export default function AsoebiPaymentForm() {
   const [quantities, setQuantities] = useState<{ [key: string]: number | "" }>({
     ladies_3: 0,
     ladies_4: 0,
-    men: 0,
+    ladies_5: 0,
     gele: 0,
     fila: 0,
   });
@@ -324,7 +324,7 @@ export default function AsoebiPaymentForm() {
                   setPhone("");
                   setDeliveryLocation("");
                   setFile(null);
-                  setQuantities({ ladies_3: 0, ladies_4: 0, men: 0, gele: 0, fila: 0 });
+                  setQuantities({ ladies_3: 0, ladies_4: 0, ladies_5: 0, gele: 0, fila: 0 });
                   setFilaMeasurement("");
                   setSubmitted(false);
                 }}
