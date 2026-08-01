@@ -53,7 +53,7 @@ export default function EnvelopeLoader() {
             document.body.style.overflow = "auto";
           }, 1500);
         }, 4000);
-      }, 3500);
+      }, 4000);
     }, 800);
   };
 
@@ -155,27 +155,29 @@ export default function EnvelopeLoader() {
               </motion.div>
 
               {/* Layer 2 (Middle): Inner Card */}
+              {/* Dynamic size: centered, completely hidden in pouch when resting, slides up to reveal full text */}
               <motion.div 
-                className="absolute inset-x-4 sm:inset-x-12 md:inset-x-32 top-12 sm:top-24 bottom-12 bg-[#FFFDFB] shadow-xl z-20 flex flex-col items-center justify-start pt-12 sm:pt-20 px-6 sm:px-12 rounded-lg border border-[#EAE5DE]"
-                initial={{ y: "30%" }}
-                animate={{ y: stage === "card_draw" ? "2%" : "30%" }}
-                transition={{ duration: 3, ease: [0.16, 1, 0.3, 1] }}
+                className="absolute left-1/2 w-[90%] sm:w-[80%] md:w-[65%] max-w-[700px] bg-[#FFFDFB] shadow-xl z-20 flex flex-col items-center justify-start py-8 sm:py-12 px-6 sm:px-12 rounded-lg border border-[#EAE5DE]"
+                style={{ x: "-50%" }}
+                initial={{ top: "60%" }}
+                animate={{ top: stage === "card_draw" ? "10%" : "60%" }}
+                transition={{ duration: 3.5, ease: [0.16, 1, 0.3, 1] }}
               >
-                <div className="flex items-center justify-center gap-4 mb-6 w-full max-w-[240px] opacity-80">
+                <div className="flex items-center justify-center gap-4 mb-4 sm:mb-6 w-full max-w-[240px] opacity-80">
                   <div className="h-[1px] flex-grow bg-gradient-to-r from-transparent to-[#D4AF37]"></div>
                   <div className="w-2 h-2 rotate-45 border border-[#D4AF37]"></div>
                   <div className="h-[1px] flex-grow bg-gradient-to-l from-transparent to-[#D4AF37]"></div>
                 </div>
 
-                <p style={{ fontFamily: "var(--font-cormorant), cursive, serif" }} className="text-[#5C5056] text-xl sm:text-3xl md:text-4xl italic font-light mb-6 text-center">
+                <p style={{ fontFamily: "var(--font-cormorant), cursive, serif" }} className="text-[#5C5056] text-xl sm:text-3xl md:text-4xl italic font-light mb-4 sm:mb-5 text-center">
                   You are lovingly invited to the wedding of
                 </p>
 
-                <h1 className="text-[#1A1618] font-serif text-3xl sm:text-5xl md:text-6xl tracking-[0.2em] uppercase mb-6 leading-normal text-center">
-                  OLIVIA <br /> <span className="text-xl sm:text-3xl font-light text-[#D4AF37] my-4 block">AND</span> IYANU
+                <h1 className="text-[#1A1618] font-serif text-3xl sm:text-4xl md:text-5xl tracking-[0.2em] uppercase mb-4 sm:mb-5 leading-normal text-center">
+                  OLIVIA <br /> <span className="text-xl sm:text-2xl font-light text-[#D4AF37]">AND</span> <br /> IYANU
                 </h1>
 
-                <div className="flex items-center justify-center gap-3 mt-4 mb-6 w-full max-w-[120px] opacity-70">
+                <div className="flex items-center justify-center gap-3 mt-2 mb-4 sm:mb-6 w-full max-w-[120px] opacity-70">
                   <div className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></div>
                   <div className="h-[1px] flex-grow bg-[#D4AF37]"></div>
                   <div className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></div>
@@ -218,21 +220,28 @@ export default function EnvelopeLoader() {
                 </svg>
 
                 {/* Rose Asset Clippers - Using clipPath to strictly contain them within flap bounds */}
-                <div className="absolute inset-0 overflow-hidden" style={{ clipPath: "polygon(0% 0%, 50% 55%, 0% 100%)" }}>
+                {/* Note: Animating opacity from 0.3 (subtle texture) to 1 (full vibrant color) per user constraints */}
+                <div className="absolute inset-0 overflow-hidden mix-blend-multiply" style={{ clipPath: "polygon(0% 0%, 50% 55%, 0% 100%)" }}>
                   <motion.img 
                     src="/images/rose.png" 
-                    className="absolute top-1/2 left-0 w-[45%] h-[70%] transform -translate-y-1/2 object-contain object-left scale-110 opacity-50 mix-blend-multiply"
-                    initial={{ filter: "grayscale(100%)" }}
-                    animate={{ filter: stage === "card_draw" ? "grayscale(0%)" : "grayscale(100%)" }}
+                    className="absolute top-1/2 left-0 w-[50%] h-[75%] transform -translate-y-1/2 object-contain object-left scale-110"
+                    initial={{ filter: "grayscale(100%)", opacity: 0.3 }}
+                    animate={{ 
+                      filter: stage === "card_draw" ? "grayscale(0%)" : "grayscale(100%)",
+                      opacity: stage === "card_draw" ? 1 : 0.3 
+                    }}
                     transition={{ duration: 2.5, ease: "easeInOut" }}
                   />
                 </div>
-                <div className="absolute inset-0 overflow-hidden" style={{ clipPath: "polygon(100% 0%, 50% 55%, 100% 100%)" }}>
+                <div className="absolute inset-0 overflow-hidden mix-blend-multiply" style={{ clipPath: "polygon(100% 0%, 50% 55%, 100% 100%)" }}>
                   <motion.img 
                     src="/images/rose.png" 
-                    className="absolute top-1/2 right-0 w-[45%] h-[70%] transform -translate-y-1/2 object-contain object-right scale-110 scale-x-[-1] opacity-50 mix-blend-multiply"
-                    initial={{ filter: "grayscale(100%)" }}
-                    animate={{ filter: stage === "card_draw" ? "grayscale(0%)" : "grayscale(100%)" }}
+                    className="absolute top-1/2 right-0 w-[50%] h-[75%] transform -translate-y-1/2 object-contain object-right scale-110 scale-x-[-1]"
+                    initial={{ filter: "grayscale(100%)", opacity: 0.3 }}
+                    animate={{ 
+                      filter: stage === "card_draw" ? "grayscale(0%)" : "grayscale(100%)",
+                      opacity: stage === "card_draw" ? 1 : 0.3 
+                    }}
                     transition={{ duration: 2.5, ease: "easeInOut" }}
                   />
                 </div>
