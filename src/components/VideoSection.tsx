@@ -6,8 +6,33 @@ import { Volume2, VolumeX, Play, Pause } from "lucide-react";
 
 export default function VideoSection() {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isMuted, setIsMuted] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const isIntersectingRef = useRef(false);
+
+  const startVideoPlayback = () => {
+    if (!videoRef.current) return;
+    videoRef.current.muted = false;
+    setIsMuted(false);
+    videoRef.current.play().then(() => {
+      setIsPlaying(true);
+      window.dispatchEvent(new Event("fade-music-out"));
+    }).catch(() => {
+      // If unmuted autoplay blocked by browser policy, try playing muted first
+      if (videoRef.current) {
+        videoRef.current.muted = true;
+        setIsMuted(true);
+        videoRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+      }
+    });
+  };
+
+  const stopVideoPlayback = () => {
+    if (!videoRef.current) return;
+    videoRef.current.pause();
+    setIsPlaying(false);
+    window.dispatchEvent(new Event("fade-music-in"));
+  };
 
   useEffect(() => {
     let observer: IntersectionObserver;
@@ -16,22 +41,14 @@ export default function VideoSection() {
       observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
-            if (videoRef.current) {
-              videoRef.current.muted = false;
-              setIsMuted(false);
-              videoRef.current.play().catch(e => console.log("Autoplay blocked:", e));
-              window.dispatchEvent(new Event("fade-music-out"));
-            }
+            isIntersectingRef.current = true;
+            startVideoPlayback();
           } else {
-            if (videoRef.current) {
-              videoRef.current.muted = true;
-              setIsMuted(true);
-              videoRef.current.pause();
-              window.dispatchEvent(new Event("fade-music-in"));
-            }
+            isIntersectingRef.current = false;
+            stopVideoPlayback();
           }
         });
-      }, { threshold: 0.6 });
+      }, { threshold: 0.25 });
       
       observer.observe(videoRef.current);
     }
@@ -41,14 +58,22 @@ export default function VideoSection() {
     };
   }, []);
 
+  const handleMouseEnter = () => {
+    startVideoPlayback();
+  };
 
+  const handleMouseLeave = () => {
+    if (!isIntersectingRef.current) {
+      stopVideoPlayback();
+    }
+  };
 
   const togglePlay = () => {
     if (!videoRef.current) return;
     if (isPlaying) {
-      videoRef.current.pause();
+      stopVideoPlayback();
     } else {
-      videoRef.current.play();
+      startVideoPlayback();
     }
   };
 
@@ -73,7 +98,9 @@ export default function VideoSection() {
       >
         {/* Massive Visually Curved Video Container */}
         <div
-          className="relative w-full max-w-[1800px] aspect-[4/5] sm:aspect-[18/9] bg-black shadow-[0_30px_60px_rgba(0,0,0,0.3)] overflow-hidden flex items-center justify-center border-[4px] sm:border-[12px] border-[#FFFDFB] group"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          className="relative w-full max-w-[1800px] aspect-[4/5] sm:aspect-[18/9] bg-black shadow-[0_30px_60px_rgba(0,0,0,0.3)] overflow-hidden flex items-center justify-center border-[4px] sm:border-[12px] border-[#FFFDFB] group cursor-pointer"
           style={{
             borderRadius: "40px / 80px",
           }}
@@ -83,7 +110,6 @@ export default function VideoSection() {
             ref={videoRef}
             src="/images/IMG_1797.MP4"
             className="absolute top-0 left-0 w-full h-full object-cover"
-            autoPlay
             loop
             muted={isMuted}
             playsInline
@@ -92,17 +118,19 @@ export default function VideoSection() {
           ></video>
 
           {/* Custom Controls Overlay - Shows on Hover */}
-          <div className="absolute bottom-6 sm:bottom-8 left-0 right-0 px-8 sm:px-12 flex items-center justify-between z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div className="absolute bottom-6 sm:bottom-8 left-0 right-0 px-8 sm:px-12 flex items-center justify-between z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-auto">
             <button
-              onClick={togglePlay}
-              className="flex items-center gap-2 bg-black/40 hover:bg-[#B23A6B]/80 backdrop-blur-md text-white px-4 py-2 sm:px-5 sm:py-3 rounded-full transition-all shadow-lg"
+              onClick={(e) => {
+                e.stopPropagation();
+                togglePlay();
+              }}
+              className="flex items-center gap-2 bg-black/40 hover:bg-[#B23A6B]/80 backdrop-blur-md text-white px-4 py-2 sm:px-5 sm:py-3 rounded-full transition-all shadow-lg cursor-pointer"
             >
               {isPlaying ? <Pause className="w-4 h-4 sm:w-5 sm:h-5" /> : <Play className="w-4 h-4 sm:w-5 sm:h-5" />}
               <span className="text-xs sm:text-sm font-semibold tracking-wider uppercase">
                 {isPlaying ? "Pause" : "Play"}
               </span>
             </button>
-
           </div>
           
         </div>

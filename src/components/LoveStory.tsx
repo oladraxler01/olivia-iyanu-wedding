@@ -83,9 +83,10 @@ export default function LoveStory() {
               player.play().catch(e => console.log("Autoplay prevented:", e));
             } else {
               player.pause().catch(() => {});
+              window.dispatchEvent(new Event("fade-music-in"));
             }
           });
-        }, { threshold: 0.6 });
+        }, { threshold: 0.3 });
         
         observer.observe(iframe);
       }
