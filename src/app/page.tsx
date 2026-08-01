@@ -4,6 +4,7 @@ import EnvelopeLoader from "@/components/EnvelopeLoader";
 import CurvedGallery from "@/components/CurvedGallery";
 import VideoSection from "@/components/VideoSection";
 import CountdownSection from "@/components/CountdownSection";
+import OurStory from "@/components/OurStory";
 import LoveStory from "@/components/LoveStory";
 import GameZone from "@/components/GameZone";
 import MasonryGallery from "@/components/MasonryGallery";
@@ -24,20 +25,21 @@ export default function Home() {
       <EnvelopeLoader />
       <main id="main-content" className="min-h-screen bg-[#FDFBF7] text-[#241B22] overflow-x-hidden">
         <Navbar />
-      <Hero />
-      <CurvedGallery />
-      <VideoSection />
-      <CountdownSection />
-      <LoveStory />
-      <GameZone />
-      <PreviewSection />
-      <GuestUploads />
-      <RSVP />
-      <DressCode />
-      <AsoebiPaymentForm />
-      <GiftRegistry />
-      <VenueMap />
-      <MasonryGallery />
+        <Hero />
+        <CurvedGallery />
+        <OurStory />
+        <VideoSection />
+        <CountdownSection />
+        <LoveStory />
+        <GameZone />
+        <PreviewSection />
+        <GuestUploads />
+        <RSVP />
+        <DressCode />
+        <AsoebiPaymentForm />
+        <GiftRegistry />
+        <VenueMap />
+        <MasonryGallery />
         <Footer />
       </main>
     </>

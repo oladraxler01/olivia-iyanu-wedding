@@ -33,7 +33,7 @@ export default function CountdownSection() {
   }, [targetDate]);
 
   return (
-    <section className="py-16 px-4 bg-[#FDFBF7] text-center">
+    <section id="save-the-date" className="py-16 px-4 bg-[#FDFBF7] text-center">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}

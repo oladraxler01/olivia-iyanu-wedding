@@ -8,6 +8,8 @@ import { supabase } from "@/lib/supabase";
 
 export default function RSVP() {
   const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [attending, setAttending] = useState<"yes" | "no">("yes");
   const [song, setSong] = useState("");
   const [comments, setComments] = useState("");
@@ -24,7 +26,8 @@ export default function RSVP() {
     setError(null);
 
     try {
-      const combinedNotes = song.trim() + (comments.trim() ? `\n\nNotes: ${comments.trim()}` : "");
+      const contactInfo = `Email: ${email.trim() || 'N/A'} | Phone: ${phone.trim() || 'N/A'}`;
+      const combinedNotes = contactInfo + (song.trim() ? `\n\nSong: ${song.trim()}` : "") + (comments.trim() ? `\n\nNotes: ${comments.trim()}` : "");
       
       const { error: supabaseError } = await supabase
         .from('rsvps')
@@ -121,6 +124,36 @@ export default function RSVP() {
               </div>
 
               <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#093F38] mb-2">
+                  Email Address *
+                </label>
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="e.g. guest@example.com"
+                  className="w-full px-4 py-3 rounded-xl border border-[#E3D3DA] bg-[#FDFBF7] text-sm focus:outline-none focus:border-[#B23A6B]"
+                  disabled={isSubmitting}
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#093F38] mb-2">
+                  Contact No *
+                </label>
+                <input
+                  type="tel"
+                  required
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="e.g. 08012345678"
+                  className="w-full px-4 py-3 rounded-xl border border-[#E3D3DA] bg-[#FDFBF7] text-sm focus:outline-none focus:border-[#B23A6B]"
+                  disabled={isSubmitting}
+                />
+              </div>
+
+              <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-[#093F38] mb-3">
                   Attendance *
                 </label>
@@ -209,6 +242,8 @@ export default function RSVP() {
               <button 
                 onClick={() => {
                   setFullName("");
+                  setEmail("");
+                  setPhone("");
                   setSong("");
                   setComments("");
                   setAttending("yes");

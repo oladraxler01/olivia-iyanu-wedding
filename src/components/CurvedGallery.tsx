@@ -14,7 +14,7 @@ interface CardItem {
 
 const cards: CardItem[] = [
   { id: 1, image: "/images/IMG_0355.jpg", label: "The Genesis", sub: "Where our forever began" },
-  { id: 2, image: "/images/soul_connection.jpg", label: "Soul Connection", sub: "Lost in the magic of us" },
+  { id: 2, image: "/images/IMG-20260722-WA0013.jpg", label: "Soul Connection", sub: "Lost in the magic of us" },
   { id: 3, image: "/images/The Silly side of love.jpg", label: "The Silly Side of Love", sub: "Silly Together, Serious About Forever" },
   { id: 4, image: "/images/Radiant_LOVE.jpg", label: "Radiant Love", sub: "The purest kind of happiness" },
   { id: 5, image: "/images/IMG_2545.jpg", label: "Timeless Romance", sub: "A love written in the stars" },

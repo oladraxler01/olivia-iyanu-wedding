@@ -36,11 +36,12 @@ export default function Navbar() {
   };
 
   const navLinks = [
-    { name: "Our Story", href: "#story" },
     { name: "Curved Gallery", href: "#gallery" },
-    { name: "Asoebi Shop", href: "#asoebi" },
-    { name: "Wedding Lookbook", href: "#dress-code" },
+    { name: "Save the Date", href: "#save-the-date" },
+    { name: "Our Story", href: "#story" },
     { name: "Fun Zone", href: "#games" },
+    { name: "Wedding Lookbook", href: "#dress-code" },
+    { name: "Asoebi Shop", href: "#asoebi" },
     { name: "Registry", href: "#registry" },
   ];
 
