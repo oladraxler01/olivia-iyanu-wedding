@@ -120,20 +120,16 @@ export default function EnvelopeLoader() {
             className="absolute inset-0 w-full h-full cursor-pointer flex items-center justify-center overflow-hidden"
             onClick={handleOpen}
           >
-            {/* The Landscape Sleeve & Card Container */}
-            <motion.div
-              animate={isOpen ? { scale: 1.05 } : { y: [0, -5, 0] }}
-              transition={{ duration: isOpen ? 1.5 : 4, repeat: isOpen ? 0 : Infinity, ease: "easeInOut" }}
-              className="relative w-[92vw] max-w-[850px] aspect-[1.3/1] sm:aspect-[1.5/1] md:aspect-[1.6/1] flex flex-col items-center justify-end drop-shadow-[0_20px_40px_rgba(0,0,0,0.5)] z-10"
-            >
+            {/* The Landscape Sleeve & Card Container (Full Screen) */}
+            <div className="absolute inset-0 w-full h-full flex flex-col items-center justify-end z-10">
               {/* Back Red Sleeve (The solid backing of the pocket) */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#A80B23] to-[#6A0413] shadow-inner z-0 border border-[#4A020C]"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-[#A80B23] to-[#6A0413] shadow-inner z-0"></div>
 
               {/* Inner Cream Card - Slides UP and OUT */}
               <motion.div
-                className="absolute top-2 bottom-2 left-2 right-2 bg-[#FDFBF7] shadow-[0_0_20px_rgba(0,0,0,0.15)] flex flex-col items-center justify-center p-6 sm:p-10 z-10 overflow-hidden"
+                className="absolute top-0 bottom-0 left-0 right-0 md:top-2 md:bottom-2 md:left-2 md:right-2 bg-[#FDFBF7] shadow-[0_0_20px_rgba(0,0,0,0.25)] flex flex-col items-center justify-center p-6 sm:p-10 z-10 overflow-hidden"
                 initial={{ y: 0 }}
-                animate={{ y: isOpen ? "-95%" : "0%" }}
+                animate={{ y: isOpen ? "-100%" : "0%" }}
                 transition={{ duration: 1.5, ease: [0.32, 0, 0.67, 0] }}
               >
                 {/* Subtle inner border on the cream card */}
@@ -216,8 +212,8 @@ export default function EnvelopeLoader() {
                   <path d="M 0,280 C 180,380 320,460 500,550 C 680,460 820,380 1000,280" fill="none" stroke="url(#pocketGradient)" strokeWidth="8" strokeLinecap="round" />
                 </svg>
               </div>
+              </div>
             </motion.div>
-          </motion.div>
         )}
       </AnimatePresence>
     </div>
