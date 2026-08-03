@@ -108,6 +108,23 @@ export default function GameZone() {
   const [activeGame, setActiveGame] = useState<GameId>(null);
   const [playerName, setPlayerName] = useState("");
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedName = localStorage.getItem("olivia_iyanu_player_name");
+      if (savedName) setPlayerName(savedName);
+    }
+  }, []);
+
+  const handleSetPlayerName = (name: string) => {
+    const trimmed = name.trim();
+    if (trimmed) {
+      setPlayerName(trimmed);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("olivia_iyanu_player_name", trimmed);
+      }
+    }
+  };
+
   const games: { id: GameId; icon: React.ReactNode; title: string; sub: string }[] = [
     { id: "trivia", icon: <QuestionIcon />, title: "Couple Trivia", sub: "how well do you know us?" },
     { id: "memory", icon: <CardsIcon />, title: "Memory Match", sub: "flip the wedding icons" },
@@ -192,7 +209,7 @@ export default function GameZone() {
                   e.preventDefault();
                   const fd = new FormData(e.currentTarget);
                   const name = fd.get("player_name") as string;
-                  if (name.trim()) setPlayerName(name.trim());
+                  if (name.trim()) handleSetPlayerName(name);
                 }}>
                   <input type="text" name="player_name" placeholder="Your Name" required className="w-full px-4 py-3 border border-[#E3D3DA] rounded-xl text-center focus:outline-none focus:border-[#0E5C52] mb-4" />
                   <button type="submit" className="w-full py-3 bg-[#0E5C52] text-white text-sm font-bold rounded-xl hover:bg-[#0A4A42] transition-colors cursor-pointer">Start Game</button>
@@ -219,7 +236,7 @@ export default function GameZone() {
         </AnimatePresence>
 
         {/* Leaderboard embedded inside GameZone */}
-        <Leaderboard />
+        <Leaderboard currentPlayerName={playerName} />
       </div>
     </section>
   );
@@ -686,7 +703,14 @@ function AutoSaveScore({ gameType, score, playerName }: { gameType: string, scor
   useEffect(() => {
     let isMounted = true;
     saveScore(playerName, gameType, score)
-      .then(() => { if (isMounted) setStatus("saved"); })
+      .then(() => {
+        if (isMounted) {
+          setStatus("saved");
+          if (typeof window !== "undefined") {
+            window.dispatchEvent(new CustomEvent("wedding_score_saved", { detail: { guest_name: playerName, game_type: gameType, score } }));
+          }
+        }
+      })
       .catch((err) => { 
         if (isMounted) {
           if (err.message === "DUPLICATE") setStatus("duplicate");
@@ -698,7 +722,12 @@ function AutoSaveScore({ gameType, score, playerName }: { gameType: string, scor
   }, [gameType, score, playerName]);
 
   if (status === "saving") return <p className="text-xs text-[#6B5A63] flex items-center justify-center gap-2 mt-4"><Loader2 className="w-3 h-3 animate-spin" /> Saving score to leaderboard...</p>;
-  if (status === "duplicate") return <p className="text-xs text-[#B23A6B] mt-4">You have already played this game. Your first score is recorded.</p>;
+  if (status === "duplicate") return <p className="text-xs text-[#B23A6B] mt-4 font-medium">You have already played this game. Your first score is recorded on the leaderboard.</p>;
   if (status === "error") return <p className="text-xs text-red-500 mt-4">Failed to save score.</p>;
-  return <p className="text-xs font-bold text-[#0E5C52] mt-4">Score saved to Leaderboard!</p>;
+  return (
+    <div className="mt-4 text-center">
+      <p className="text-xs font-bold text-[#0E5C52]">✨ Score safely saved to Leaderboard!</p>
+      <p className="text-[11px] text-[#6B5A63] mt-0.5">Scroll down to the Hall of Fame below to check your exact standing.</p>
+    </div>
+  );
 }
