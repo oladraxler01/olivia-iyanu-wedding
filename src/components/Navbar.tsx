@@ -1,4 +1,3 @@
-"use me";
 "use client";
 
 import { useState, useEffect } from "react";
@@ -36,8 +35,8 @@ export default function Navbar() {
   };
 
   const navLinks = [
-    { name: "Curved Gallery", href: "#gallery" },
     { name: "Save the Date", href: "#save-the-date" },
+    { name: "Curved Gallery", href: "#gallery" },
     { name: "Our Story", href: "#story" },
     { name: "Fun Zone", href: "#games" },
     { name: "Wedding Lookbook", href: "#dress-code" },

@@ -9,7 +9,7 @@ const priceList = [
   { id: "ladies_3", name: "Aso-ebi fabric — Ladies (3 yards)", price: 24000 },
   { id: "ladies_4", name: "Aso-ebi fabric — Ladies (4 yards)", price: 32000 },
   { id: "ladies_5", name: "Aso-ebi fabric — Ladies (5 yards)", price: 40000 },
-  { id: "gele", name: "Sego Gele (head wrap)", price: 9600 },
+  { id: "gele", name: "Sego Gele (head wrap)", price: 10200 },
   { id: "fila", name: "Men's cap (fila)", price: 10000 },
 ];
 

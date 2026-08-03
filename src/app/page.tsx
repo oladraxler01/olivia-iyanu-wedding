@@ -26,10 +26,10 @@ export default function Home() {
       <main id="main-content" className="min-h-screen bg-[#FDFBF7] text-[#241B22] overflow-x-hidden">
         <Navbar />
         <Hero />
+        <CountdownSection />
         <CurvedGallery />
         <OurStory />
         <VideoSection />
-        <CountdownSection />
         <LoveStory />
         <GameZone />
         <PreviewSection />
