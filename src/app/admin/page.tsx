@@ -35,7 +35,8 @@ import {
   ChevronRight,
   Award,
   Zap,
-  CheckCheck
+  CheckCheck,
+  CreditCard,
 } from "lucide-react";
 
 // ─── TYPES ──────────────────────────────────────────────────────────
@@ -187,8 +188,10 @@ export interface ItemizedLine {
 export function parseAsoebiItems(rawItems: any): {
   lineItems: ItemizedLine[];
   filaMeasurement: string | null;
+  orderType: "pay_now" | "interest" | "unknown";
+  notes: string | null;
 } {
-  if (!rawItems) return { lineItems: [], filaMeasurement: null };
+  if (!rawItems) return { lineItems: [], filaMeasurement: null, orderType: "unknown", notes: null };
 
   let parsed: Record<string, any> = {};
 
@@ -198,12 +201,14 @@ export function parseAsoebiItems(rawItems: any): {
     try {
       parsed = JSON.parse(rawItems);
     } catch {
-      return { lineItems: [], filaMeasurement: null };
+      return { lineItems: [], filaMeasurement: null, orderType: "unknown", notes: null };
     }
   }
 
   const lineItems: ItemizedLine[] = [];
   let filaMeasurement: string | null = null;
+  let orderType: "pay_now" | "interest" | "unknown" = parsed.order_type || parsed.type || "unknown";
+  let notes: string | null = parsed.notes || parsed.comment || null;
 
   Object.entries(parsed).forEach(([key, val]) => {
     if (key === "fila_measurement" || key === "filaMeasurement" || key === "cap_measurement") {
@@ -213,7 +218,16 @@ export function parseAsoebiItems(rawItems: any): {
       return;
     }
 
-    if (key === "notes" || key === "comment") return;
+    if (
+      key === "notes" ||
+      key === "comment" ||
+      key === "order_type" ||
+      key === "type" ||
+      key === "payment_deadline" ||
+      key === "submitted_at"
+    ) {
+      return;
+    }
 
     if (ASOEBI_CATALOG[key]) {
       const catalogItem = ASOEBI_CATALOG[key];
@@ -244,7 +258,16 @@ export function parseAsoebiItems(rawItems: any): {
     }
   });
 
-  return { lineItems, filaMeasurement };
+  return { lineItems, filaMeasurement, orderType, notes };
+}
+
+export function isOrderPaid(order: AsoebiOrder): boolean {
+  const url = (order.proof_of_payment_url || "").trim();
+  if (url && url !== "INTEREST_RESERVATION" && url !== "null" && url.startsWith("http")) {
+    return true;
+  }
+  const { orderType } = parseAsoebiItems(order.items);
+  return orderType === "pay_now";
 }
 
 export default function AdminDashboard() {
@@ -265,6 +288,7 @@ export default function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [rsvpFilter, setRsvpFilter] = useState<"all" | "yes" | "no">("all");
   const [asoebiItemFilter, setAsoebiItemFilter] = useState<string>("all");
+  const [asoebiStatusFilter, setAsoebiStatusFilter] = useState<"all" | "paid" | "interest">("all");
   
   // Games Sub-Tab State
   const [gameSubTab, setGameSubTab] = useState<"overall" | "trivia" | "memory" | "timeline" | "maze" | "raw">("overall");
@@ -348,6 +372,22 @@ export default function AdminDashboard() {
   const totalDeclining = useMemo(
     () => rsvps.filter((r) => r.attending === false).length,
     [rsvps]
+  );
+  const paidOrders = useMemo(
+    () => asoebiOrders.filter((order) => isOrderPaid(order)),
+    [asoebiOrders]
+  );
+  const interestOrders = useMemo(
+    () => asoebiOrders.filter((order) => !isOrderPaid(order)),
+    [asoebiOrders]
+  );
+  const totalPaidRevenue = useMemo(
+    () => paidOrders.reduce((sum, order) => sum + (Number(order.total_amount) || 0), 0),
+    [paidOrders]
+  );
+  const totalProjectedInterest = useMemo(
+    () => interestOrders.reduce((sum, order) => sum + (Number(order.total_amount) || 0), 0),
+    [interestOrders]
   );
   const totalRevenue = useMemo(
     () => asoebiOrders.reduce((sum, order) => sum + (Number(order.total_amount) || 0), 0),
@@ -525,14 +565,19 @@ export default function AdminDashboard() {
         (order.phone || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
         (order.delivery_location || "").toLowerCase().includes(searchQuery.toLowerCase());
 
-      if (asoebiItemFilter === "all") return matchesSearch;
+      const paid = isOrderPaid(order);
+      const matchesStatus =
+        asoebiStatusFilter === "all" ||
+        (asoebiStatusFilter === "paid" && paid) ||
+        (asoebiStatusFilter === "interest" && !paid);
+
+      if (!matchesSearch || !matchesStatus) return false;
+      if (asoebiItemFilter === "all") return true;
 
       const { lineItems } = parseAsoebiItems(order.items);
-      const hasItem = lineItems.some((item) => item.id === asoebiItemFilter);
-
-      return matchesSearch && hasItem;
+      return lineItems.some((item) => item.id === asoebiItemFilter);
     });
-  }, [asoebiOrders, searchQuery, asoebiItemFilter]);
+  }, [asoebiOrders, searchQuery, asoebiItemFilter, asoebiStatusFilter]);
 
   // Filtered Game Players (Overall)
   const filteredOverallPlayers = useMemo(() => {
@@ -554,6 +599,7 @@ export default function AdminDashboard() {
       "Full Name",
       "Phone",
       "Delivery Location",
+      "Payment Status",
       "Ladies 3yds Qty",
       "Ladies 4yds Qty",
       "Ladies 5yds Qty",
@@ -567,6 +613,7 @@ export default function AdminDashboard() {
 
     const rows = filteredAsoebiOrders.map((order) => {
       const { lineItems, filaMeasurement } = parseAsoebiItems(order.items);
+      const paid = isOrderPaid(order);
       const ladies3 = lineItems.find((i) => i.id === "ladies_3")?.qty || 0;
       const ladies4 = lineItems.find((i) => i.id === "ladies_4")?.qty || 0;
       const ladies5 = lineItems.find((i) => i.id === "ladies_5")?.qty || 0;
@@ -582,6 +629,7 @@ export default function AdminDashboard() {
         `"${(order.full_name || "").replace(/"/g, '""')}"`,
         `"${(order.phone || "").replace(/"/g, '""')}"`,
         `"${(order.delivery_location || "").replace(/"/g, '""')}"`,
+        paid ? "Paid (Confirmed)" : "Interest Only (Pending by Aug 31)",
         ladies3,
         ladies4,
         ladies5,
@@ -769,14 +817,33 @@ export default function AdminDashboard() {
 
         {/* Global KPI Metrics */}
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-          <div className="bg-white p-5 rounded-2xl border border-[#E3D3DA] shadow-sm">
+          <div className="bg-white p-5 rounded-2xl border border-[#0E5C52]/30 shadow-sm">
             <div className="flex items-center justify-between text-[#6B5A63] mb-2">
-              <span className="text-xs font-medium uppercase tracking-wider">Aso-Ebi Orders</span>
-              <ShoppingBag className="w-4 h-4 text-[#0E5C52]" />
+              <span className="text-xs font-medium uppercase tracking-wider text-[#0E5C52]">
+                Confirmed Paid
+              </span>
+              <CreditCard className="w-4 h-4 text-[#0E5C52]" />
             </div>
-            <p className="text-2xl font-bold text-[#0E5C52]">{asoebiOrders.length}</p>
+            <p className="text-2xl font-bold text-[#0E5C52]">
+              ₦{totalPaidRevenue.toLocaleString()}
+            </p>
             <p className="text-[11px] text-[#6B5A63] mt-1">
-              ₦{totalRevenue.toLocaleString()} volume
+              {paidOrders.length} confirmed orders with proof
+            </p>
+          </div>
+
+          <div className="bg-white p-5 rounded-2xl border border-[#D4AF37]/50 shadow-sm">
+            <div className="flex items-center justify-between text-[#6B5A63] mb-2">
+              <span className="text-xs font-medium uppercase tracking-wider text-[#B88A2E]">
+                Interest (Pending)
+              </span>
+              <Clock className="w-4 h-4 text-[#B88A2E]" />
+            </div>
+            <p className="text-2xl font-bold text-[#B88A2E]">
+              ₦{totalProjectedInterest.toLocaleString()}
+            </p>
+            <p className="text-[11px] text-[#6B5A63] mt-1">
+              {interestOrders.length} awaiting payment by Aug 31
             </p>
           </div>
 
@@ -788,17 +855,6 @@ export default function AdminDashboard() {
             <p className="text-2xl font-bold text-[#241B22]">{rsvps.length}</p>
             <p className="text-[11px] text-[#6B5A63] mt-1">
               {totalAttending} Yes · {totalDeclining} No
-            </p>
-          </div>
-
-          <div className="bg-white p-5 rounded-2xl border border-[#E3D3DA] shadow-sm">
-            <div className="flex items-center justify-between text-[#6B5A63] mb-2">
-              <span className="text-xs font-medium uppercase tracking-wider">Game Players</span>
-              <Trophy className="w-4 h-4 text-yellow-600" />
-            </div>
-            <p className="text-2xl font-bold text-yellow-600">{overallRankedList.length}</p>
-            <p className="text-[11px] text-[#6B5A63] mt-1">
-              {leaderboardEntries.length} total game plays
             </p>
           </div>
 
@@ -977,22 +1033,39 @@ export default function AdminDashboard() {
 
           {/* Contextual Filters */}
           {activeTab === "asoebi" && (
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-[#6B5A63] font-medium flex items-center gap-1">
-                <Filter className="w-3 h-3" /> Item:
-              </span>
-              <select
-                value={asoebiItemFilter}
-                onChange={(e) => setAsoebiItemFilter(e.target.value)}
-                className="text-xs bg-[#FDFBF7] border border-[#E3D3DA] rounded-lg px-2.5 py-1.5 text-[#241B22] focus:outline-none"
-              >
-                <option value="all">All Items</option>
-                <option value="ladies_3">Ladies (3 yds)</option>
-                <option value="ladies_4">Ladies (4 yds)</option>
-                <option value="ladies_5">Ladies (5 yds)</option>
-                <option value="gele">Sego Gele</option>
-                <option value="fila">Men's Fila</option>
-              </select>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs text-[#6B5A63] font-medium flex items-center gap-1">
+                  <Filter className="w-3 h-3" /> Status:
+                </span>
+                <select
+                  value={asoebiStatusFilter}
+                  onChange={(e) => setAsoebiStatusFilter(e.target.value as any)}
+                  className="text-xs bg-[#FDFBF7] border border-[#E3D3DA] rounded-lg px-2.5 py-1.5 text-[#241B22] focus:outline-none"
+                >
+                  <option value="all">All Submissions ({asoebiOrders.length})</option>
+                  <option value="paid">🟢 Confirmed Paid ({paidOrders.length})</option>
+                  <option value="interest">🟡 Interest / Pending ({interestOrders.length})</option>
+                </select>
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs text-[#6B5A63] font-medium flex items-center gap-1">
+                  <Filter className="w-3 h-3" /> Item:
+                </span>
+                <select
+                  value={asoebiItemFilter}
+                  onChange={(e) => setAsoebiItemFilter(e.target.value)}
+                  className="text-xs bg-[#FDFBF7] border border-[#E3D3DA] rounded-lg px-2.5 py-1.5 text-[#241B22] focus:outline-none"
+                >
+                  <option value="all">All Items</option>
+                  <option value="ladies_3">Ladies (3 yds)</option>
+                  <option value="ladies_4">Ladies (4 yds)</option>
+                  <option value="ladies_5">Ladies (5 yds)</option>
+                  <option value="gele">Sego Gele</option>
+                  <option value="fila">Men's Fila</option>
+                </select>
+              </div>
             </div>
           )}
 
@@ -1070,11 +1143,11 @@ export default function AdminDashboard() {
                 <table className="w-full text-left text-xs sm:text-sm">
                   <thead className="bg-[#FDFBF7] text-[#6B5A63] uppercase text-[10px] sm:text-xs font-bold tracking-wider border-b border-[#E3D3DA]">
                     <tr>
-                      <th className="py-4 px-4 sm:px-6">Customer & Phone</th>
-                      <th className="py-4 px-4">Itemized Purchases & Prices</th>
+                      <th className="py-4 px-4 sm:px-6">Customer &amp; Phone</th>
+                      <th className="py-4 px-4">Itemized Purchases &amp; Prices</th>
                       <th className="py-4 px-4">Total Amount</th>
                       <th className="py-4 px-4">Delivery Location</th>
-                      <th className="py-4 px-4 text-center">Payment Proof</th>
+                      <th className="py-4 px-4 text-center">Status &amp; Payment Proof</th>
                       <th className="py-4 px-4 text-right">Actions</th>
                     </tr>
                   </thead>
@@ -1094,8 +1167,9 @@ export default function AdminDashboard() {
                       </tr>
                     ) : (
                       filteredAsoebiOrders.map((order) => {
-                        const { lineItems, filaMeasurement } = parseAsoebiItems(order.items);
+                        const { lineItems, filaMeasurement, notes } = parseAsoebiItems(order.items);
                         const cleanPhone = (order.phone || "").replace(/\D/g, "");
+                        const isPaid = isOrderPaid(order);
 
                         return (
                           <tr
@@ -1151,6 +1225,11 @@ export default function AdminDashboard() {
                                   minute: "2-digit",
                                 })}
                               </div>
+                              {notes && (
+                                <div className="mt-2 p-2 bg-[#F3ECE6] rounded-lg text-[11px] text-[#5C4D55] italic">
+                                  <strong>Note:</strong> &ldquo;{notes}&rdquo;
+                                </div>
+                              )}
                             </td>
 
                             {/* Itemized Breakdown Table */}
@@ -1226,38 +1305,68 @@ export default function AdminDashboard() {
                               )}
                             </td>
 
-                            {/* Payment Proof */}
+                            {/* Status & Payment Proof */}
                             <td className="py-4 px-4 text-center whitespace-nowrap">
-                              {order.proof_of_payment_url ? (
-                                <div className="flex flex-col items-center gap-1">
-                                  <button
-                                    onClick={() =>
-                                      setSelectedProofUrl(order.proof_of_payment_url)
-                                    }
-                                    className="group relative w-12 h-12 rounded-xl overflow-hidden border border-[#E3D3DA] shadow-xs cursor-pointer"
-                                  >
-                                    <img
-                                      src={order.proof_of_payment_url}
-                                      alt="Proof"
-                                      className="w-full h-full object-cover group-hover:scale-110 transition-transform"
-                                    />
-                                    <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white">
-                                      <Eye className="w-4 h-4" />
+                              {isPaid ? (
+                                <div className="flex flex-col items-center gap-1.5">
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-green-100 text-green-800 border border-green-200">
+                                    <CheckCircle2 className="w-3 h-3" /> Paid &amp; Confirmed
+                                  </span>
+
+                                  {order.proof_of_payment_url &&
+                                  order.proof_of_payment_url !== "INTEREST_RESERVATION" &&
+                                  order.proof_of_payment_url.startsWith("http") ? (
+                                    <div className="flex flex-col items-center gap-1 mt-1">
+                                      <button
+                                        onClick={() =>
+                                          setSelectedProofUrl(order.proof_of_payment_url)
+                                        }
+                                        className="group relative w-12 h-12 rounded-xl overflow-hidden border border-[#E3D3DA] shadow-xs cursor-pointer"
+                                      >
+                                        <img
+                                          src={order.proof_of_payment_url}
+                                          alt="Proof"
+                                          className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                                        />
+                                        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white">
+                                          <Eye className="w-4 h-4" />
+                                        </div>
+                                      </button>
+                                      <button
+                                        onClick={() =>
+                                          setSelectedProofUrl(order.proof_of_payment_url)
+                                        }
+                                        className="text-[11px] font-semibold text-[#0E5C52] hover:underline cursor-pointer"
+                                      >
+                                        Inspect Receipt
+                                      </button>
                                     </div>
-                                  </button>
-                                  <button
-                                    onClick={() =>
-                                      setSelectedProofUrl(order.proof_of_payment_url)
-                                    }
-                                    className="text-[11px] font-semibold text-[#0E5C52] hover:underline cursor-pointer"
-                                  >
-                                    Inspect Receipt
-                                  </button>
+                                  ) : (
+                                    <span className="text-[11px] text-[#6B5A63]">Direct Transfer</span>
+                                  )}
                                 </div>
                               ) : (
-                                <span className="text-xs text-[#8C7A84] italic">
-                                  No proof uploaded
-                                </span>
+                                <div className="flex flex-col items-center gap-1.5">
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200">
+                                    <Clock className="w-3 h-3" /> Interest (Pending)
+                                  </span>
+                                  <span className="text-[11px] text-[#8C7A84]">
+                                    Due: Aug 31, 2026
+                                  </span>
+                                  {order.phone && (
+                                    <a
+                                      href={`https://wa.me/${cleanPhone.startsWith("0") ? "234" + cleanPhone.slice(1) : cleanPhone}?text=${encodeURIComponent(
+                                        `Hello ${order.full_name || ""}, thank you for indicating interest in Olivia & Iyanu's Aso-Ebi! Kindly remember the payment cut-off is August 31st (₦${(order.total_amount || 0).toLocaleString()}) to Providus Bank 6506784864.`
+                                      )}`}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="inline-flex items-center gap-1 text-[11px] font-semibold text-green-700 bg-green-50 px-2 py-1 rounded-lg border border-green-200 hover:bg-green-100 mt-1"
+                                    >
+                                      <span>Remind</span>
+                                      <ExternalLink className="w-3 h-3" />
+                                    </a>
+                                  )}
+                                </div>
                               )}
                             </td>
 
@@ -1927,6 +2036,20 @@ export default function AdminDashboard() {
             </div>
 
             <div className="space-y-4 text-xs">
+              {/* Status Header */}
+              <div className="flex items-center justify-between p-3 rounded-2xl border bg-[#FAF7F2]">
+                <span className="text-[#6B5A63] font-semibold">Order Status:</span>
+                {isOrderPaid(selectedOrder) ? (
+                  <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full font-bold text-xs">
+                    ✓ Paid &amp; Confirmed
+                  </span>
+                ) : (
+                  <span className="px-3 py-1 bg-amber-100 text-amber-800 rounded-full font-bold text-xs">
+                    ⏳ Interest Indicated (Awaiting Payment by Aug 31)
+                  </span>
+                )}
+              </div>
+
               {/* Buyer Info */}
               <div className="bg-[#FDFBF7] p-3.5 rounded-2xl border border-[#E3D3DA] space-y-1.5">
                 <div className="flex justify-between">
@@ -1954,11 +2077,11 @@ export default function AdminDashboard() {
               {/* Items Breakdown */}
               <div>
                 <h4 className="font-bold text-xs uppercase tracking-wider text-[#6B5A63] mb-2">
-                  Purchased Items
+                  Requested Items
                 </h4>
                 <div className="space-y-2">
                   {(() => {
-                    const { lineItems, filaMeasurement } = parseAsoebiItems(selectedOrder.items);
+                    const { lineItems, filaMeasurement, notes } = parseAsoebiItems(selectedOrder.items);
                     return (
                       <>
                         {lineItems.map((item, idx) => (
@@ -1986,6 +2109,12 @@ export default function AdminDashboard() {
                             Cap Head Measurement: <strong>{filaMeasurement}</strong>
                           </div>
                         )}
+
+                        {notes && (
+                          <div className="p-2.5 bg-[#F3ECE6] rounded-xl text-[#5C4D55] text-xs">
+                            <strong>Note:</strong> &ldquo;{notes}&rdquo;
+                          </div>
+                        )}
                       </>
                     );
                   })()}
@@ -2001,18 +2130,20 @@ export default function AdminDashboard() {
               </div>
 
               {/* Proof Image in modal */}
-              {selectedOrder.proof_of_payment_url && (
-                <div>
-                  <h4 className="font-bold text-xs uppercase tracking-wider text-[#6B5A63] mb-2">
-                    Payment Receipt
-                  </h4>
-                  <img
-                    src={selectedOrder.proof_of_payment_url}
-                    alt="Receipt"
-                    className="w-full max-h-48 object-contain rounded-xl border border-[#E3D3DA] bg-[#FDFBF7]"
-                  />
-                </div>
-              )}
+              {selectedOrder.proof_of_payment_url &&
+                selectedOrder.proof_of_payment_url !== "INTEREST_RESERVATION" &&
+                selectedOrder.proof_of_payment_url.startsWith("http") && (
+                  <div>
+                    <h4 className="font-bold text-xs uppercase tracking-wider text-[#6B5A63] mb-2">
+                      Payment Receipt
+                    </h4>
+                    <img
+                      src={selectedOrder.proof_of_payment_url}
+                      alt="Receipt"
+                      className="w-full max-h-48 object-contain rounded-xl border border-[#E3D3DA] bg-[#FDFBF7]"
+                    />
+                  </div>
+                )}
             </div>
           </div>
         </div>

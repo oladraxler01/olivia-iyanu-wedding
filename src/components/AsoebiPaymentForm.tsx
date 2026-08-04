@@ -1,20 +1,84 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Loader2,
+  CheckCircle2,
+  AlertCircle,
+  Clock,
+  Calendar,
+  CreditCard,
+  FileCheck,
+  Copy,
+  Check,
+  Plus,
+  Minus,
+  ShoppingBag,
+  Sparkles,
+  ArrowRight,
+  Info,
+  ShieldCheck,
+} from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
-const priceList = [
-  { id: "ladies_3", name: "Aso-ebi fabric — Ladies (3 yards)", price: 24000 },
-  { id: "ladies_4", name: "Aso-ebi fabric — Ladies (4 yards)", price: 32000 },
-  { id: "ladies_5", name: "Aso-ebi fabric — Ladies (5 yards)", price: 40000 },
-  { id: "gele", name: "Sego Gele (head wrap)", price: 10200 },
-  { id: "fila", name: "Men's cap (fila)", price: 10000 },
+export interface PriceItem {
+  id: string;
+  name: string;
+  shortName: string;
+  price: number;
+  category: "fabric" | "accessory";
+  description?: string;
+}
+
+export const priceList: PriceItem[] = [
+  {
+    id: "ladies_3",
+    name: "Aso-ebi fabric — Ladies (3 yards)",
+    shortName: "Ladies (3 yards)",
+    price: 24000,
+    category: "fabric",
+    description: "Ideal for wrapper & blouse or simple dress cuts",
+  },
+  {
+    id: "ladies_4",
+    name: "Aso-ebi fabric — Ladies (4 yards)",
+    shortName: "Ladies (4 yards)",
+    price: 32000,
+    category: "fabric",
+    description: "Perfect for full gowns with flare & sleeves",
+  },
+  {
+    id: "ladies_5",
+    name: "Aso-ebi fabric — Ladies (5 yards)",
+    shortName: "Ladies (5 yards)",
+    price: 40000,
+    category: "fabric",
+    description: "Complete luxury length for elaborate styles",
+  },
+  {
+    id: "gele",
+    name: "Sego Gele (head wrap)",
+    shortName: "Sego Gele",
+    price: 10200,
+    category: "accessory",
+    description: "Premium metallic luster headwrap to complete the look",
+  },
+  {
+    id: "fila",
+    name: "Men's cap (fila)",
+    shortName: "Men's Fila Cap",
+    price: 10000,
+    category: "accessory",
+    description: "Custom tailored cap made to your specific head size",
+  },
 ];
 
 export default function AsoebiPaymentForm() {
-  const [quantities, setQuantities] = useState<{ [key: string]: number | "" }>({
+  // Submission Mode: "interest" (Reserve without paying now) | "pay_now" (Ready to pay with receipt)
+  const [mode, setMode] = useState<"interest" | "pay_now">("interest");
+
+  const [quantities, setQuantities] = useState<{ [key: string]: number }>({
     ladies_3: 0,
     ladies_4: 0,
     ladies_5: 0,
@@ -22,31 +86,33 @@ export default function AsoebiPaymentForm() {
     fila: 0,
   });
 
-  const [filaMeasurement, setFilaMeasurement] = useState("");
-
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [deliveryLocation, setDeliveryLocation] = useState("");
+  const [notes, setNotes] = useState("");
   const [file, setFile] = useState<File | null>(null);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [submittedMode, setSubmittedMode] = useState<"interest" | "pay_now" | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [copiedBankField, setCopiedBankField] = useState<string | null>(null);
 
-  const totalAmount = priceList.reduce(
-    (sum, item) => {
-      const q = quantities[item.id];
-      const val = typeof q === 'number' ? q : 0;
-      return sum + item.price * val;
-    },
-    0
-  );
+  const totalAmount = priceList.reduce((sum, item) => {
+    const q = quantities[item.id] || 0;
+    return sum + item.price * q;
+  }, 0);
 
-  const handleQuantityChange = (id: string, val: string) => {
-    if (val === "") {
-      setQuantities((prev) => ({ ...prev, [id]: "" }));
-      return;
-    }
+  const totalItemsCount = Object.values(quantities).reduce((a, b) => a + b, 0);
+
+  const updateQuantity = (id: string, delta: number) => {
+    setQuantities((prev) => {
+      const current = prev[id] || 0;
+      const next = Math.max(0, current + delta);
+      return { ...prev, [id]: next };
+    });
+  };
+
+  const handleManualQuantity = (id: string, val: string) => {
     const parsed = parseInt(val, 10);
     setQuantities((prev) => ({
       ...prev,
@@ -60,280 +126,583 @@ export default function AsoebiPaymentForm() {
     }
   };
 
+  const copyToClipboard = (text: string, field: string) => {
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+      setCopiedBankField(field);
+      setTimeout(() => setCopiedBankField(null), 2000);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fullName.trim() || !phone.trim() || !deliveryLocation.trim() || !file) {
-      setError("Please fill out all fields and attach proof of payment.");
+    setError(null);
+
+    if (!fullName.trim()) {
+      setError("Please provide your full name.");
+      return;
+    }
+    if (!phone.trim()) {
+      setError("Please provide your phone / WhatsApp number.");
+      return;
+    }
+    if (!deliveryLocation.trim()) {
+      setError("Please provide your delivery location (city and state).");
       return;
     }
 
-    if (totalAmount <= 0) {
-      setError("Please select at least one item before submitting.");
+    if (totalAmount <= 0 || totalItemsCount === 0) {
+      setError("Please select at least 1 Aso-Ebi item or fabric length.");
+      return;
+    }
+
+    if (mode === "pay_now" && !file) {
+      setError("Please upload your transfer receipt / proof of payment.");
       return;
     }
 
     setIsSubmitting(true);
-    setError(null);
 
     try {
-      // 1. Upload the file to Supabase Storage
-      const fileExt = file.name.split('.').pop();
-      // eslint-disable-next-line react-hooks/purity
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
+      let proofUrl = "INTEREST_RESERVATION";
 
-      const { error: uploadError } = await supabase.storage
-        .from("payment-proofs")
-        .upload(fileName, file, { cacheControl: "3600", upsert: false });
+      // If paying now, upload proof to Supabase Storage
+      if (mode === "pay_now" && file) {
+        const fileExt = file.name.split(".").pop();
+        const fileName = `receipt-${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
 
-      if (uploadError) throw new Error("Failed to upload image: " + uploadError.message);
+        const { error: uploadError } = await supabase.storage
+          .from("payment-proofs")
+          .upload(fileName, file, { cacheControl: "3600", upsert: false });
 
-      // 2. Retrieve Public URL
-      const { data: publicUrlData } = supabase.storage
-        .from("payment-proofs")
-        .getPublicUrl(fileName);
+        if (uploadError) {
+          throw new Error("Receipt upload failed: " + uploadError.message);
+        }
 
-      const proofUrl = publicUrlData.publicUrl;
+        const { data: publicUrlData } = supabase.storage
+          .from("payment-proofs")
+          .getPublicUrl(fileName);
 
-      // 3. Insert into Database
+        proofUrl = publicUrlData.publicUrl;
+      }
+
+      // Payload matching Supabase table schema
+      const orderPayload = {
+        full_name: fullName.trim(),
+        phone: phone.trim(),
+        delivery_location: deliveryLocation.trim(),
+        items: {
+          ...quantities,
+          order_type: mode, // "interest" | "pay_now"
+          notes: notes.trim(),
+          payment_deadline: "August 31, 2026",
+          submitted_at: new Date().toISOString(),
+        },
+        total_amount: totalAmount,
+        proof_of_payment_url: proofUrl,
+      };
+
       const { error: dbError } = await supabase
         .from("asoebi_orders")
-        .insert([
-          {
-            full_name: fullName.trim(),
-            phone: phone.trim(),
-            delivery_location: deliveryLocation.trim(),
-            items: { ...quantities, fila_measurement: filaMeasurement.trim() },
-            total_amount: totalAmount,
-            proof_of_payment_url: proofUrl,
-          }
-        ]);
+        .insert([orderPayload]);
 
-      if (dbError) throw new Error("Failed to save order: " + dbError.message);
+      if (dbError) {
+        throw new Error("Failed to record order: " + dbError.message);
+      }
 
-      setSubmitted(true);
+      setSubmittedMode(mode);
     } catch (err: any) {
-      console.error(err);
+      console.error("Asoebi submission error:", err);
       setError(err.message || "An unexpected error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const handleReset = () => {
+    setFullName("");
+    setPhone("");
+    setDeliveryLocation("");
+    setNotes("");
+    setFile(null);
+    setQuantities({ ladies_3: 0, ladies_4: 0, ladies_5: 0, gele: 0, fila: 0 });
+    setSubmittedMode(null);
+    setError(null);
+  };
+
   return (
-    <section id="asoebi" className="py-24 px-4 bg-[#F5EFEF]">
-      <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-12">
-          <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#B23A6B] mb-3">
-            Dress With Us
-          </p>
+    <section id="asoebi" className="py-20 px-4 bg-[#F7F3EE] relative overflow-hidden">
+      {/* Subtle background glow */}
+      <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#D4AF37]/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-[#B23A6B]/5 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="max-w-4xl mx-auto relative z-10">
+        {/* Section Header */}
+        <div className="text-center max-w-2xl mx-auto mb-10">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0E5C52]/10 text-[#0E5C52] text-xs font-bold uppercase tracking-[0.25em] mb-3">
+            <ShoppingBag className="w-3.5 h-3.5 text-[#B23A6B]" />
+            Aso-Ebi &amp; Cultural Attire
+          </div>
           <h2
             style={{ fontFamily: "var(--font-cormorant), Georgia, serif" }}
-            className="text-4xl sm:text-5xl font-light text-[#0E5C52] mb-4"
+            className="text-4xl sm:text-5xl md:text-6xl font-light text-[#0E5C52] mb-3 tracking-tight"
           >
-            Aso-Ebi Interest & Payment
+            Celebrate In Style With Us
           </h2>
-          <p className="text-sm sm:text-base text-[#6B5A63]">
-            Let us know what you'd like, where to send it, and share your proof of payment below.
+          <p className="text-sm sm:text-base text-[#6B5A63] font-light leading-relaxed">
+            Indicate your interest or finalize your payment for our curated wedding fabric and accessories.
           </p>
         </div>
 
-        {/* Price List Box */}
-        <div className="bg-white p-8 mb-8 border border-[#E3D3DA]">
-          <p className="text-xs font-bold uppercase tracking-widest text-[#B23A6B]/70 mb-6">
-            Price List
-          </p>
-          <div className="space-y-4">
-            {priceList.map((item) => (
-              <div
-                key={item.id}
-                className="flex justify-between items-center text-sm border-b border-[#F3E7EB] pb-3 last:border-0 last:pb-0"
-              >
-                <span className="text-[#241B22]">{item.name}</span>
-                <span className="text-[#6B5A63]">
-                  ₦{item.price.toLocaleString()}
-                </span>
-              </div>
-            ))}
+        {/* 🚨 PAYMENT & ORDER DEADLINE BANNER */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="mb-8 p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-[#FFFDF9] via-[#FAF3E7] to-[#FFF8EE] border-2 border-[#D4AF37]/50 shadow-md flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left"
+        >
+          <div className="w-12 h-12 rounded-2xl bg-[#D4AF37]/15 border border-[#D4AF37]/30 flex items-center justify-center flex-shrink-0 text-[#B88A2E] shadow-xs">
+            <Clock className="w-6 h-6 animate-pulse" />
           </div>
-        </div>
+          <div className="flex-1">
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">
+              <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#B23A6B] text-white">
+                Important Deadline
+              </span>
+              <span className="text-sm sm:text-base font-serif font-bold text-[#0E5C52]">
+                Payment &amp; Order Cut-off: August 31st, 2026
+              </span>
+            </div>
+            <p className="text-xs sm:text-sm text-[#5C4D55] leading-relaxed">
+              To guarantee fabric allocation and give our custom tailors ample time for preparation, please <strong>indicate your interest</strong> or <strong>complete your payment</strong> on or before <strong>August 31, 2026</strong>.
+            </p>
+          </div>
+        </motion.div>
 
-        {/* Form Box */}
-        <div className="bg-white p-8 border border-[#E3D3DA]">
-          {!submitted ? (
-            <form className="space-y-6" onSubmit={handleSubmit}>
-
-              {error && (
-                <div className="bg-red-50 text-red-600 p-4 rounded-sm border border-red-100 flex items-start gap-3 text-sm">
-                  <AlertCircle className="w-5 h-5 shrink-0" />
-                  <p>{error}</p>
-                </div>
-              )}
-
-              <div>
-                <label className="block text-xs text-[#6B5A63] mb-2">
-                  Full name
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Your full name"
-                  className="w-full px-4 py-3 border border-[#E3D3DA] rounded-sm text-sm focus:outline-none focus:border-[#0E5C52]"
-                  disabled={isSubmitting}
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs text-[#6B5A63] mb-2">
-                  Phone / WhatsApp number
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="e.g. 080X XXX XXXX"
-                  className="w-full px-4 py-3 border border-[#E3D3DA] rounded-sm text-sm focus:outline-none focus:border-[#0E5C52]"
-                  disabled={isSubmitting}
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs text-[#6B5A63] mb-4">
-                  What would you like?
-                </label>
-                <div className="space-y-4">
-                  {priceList.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex sm:items-center flex-col sm:flex-row justify-between gap-2 border-b border-[#F3E7EB] pb-3 last:border-0 last:pb-0"
-                    >
-                      <span className="text-sm text-[#241B22] flex-1">
-                        {item.name} <br className="hidden sm:block" />
-                        <span className="text-[#6B5A63] text-xs">
-                          (₦{item.price.toLocaleString()})
-                        </span>
-                        {item.id === "fila" && (
-                          <div className="mt-3">
-                            <label className="block text-sm font-semibold text-[#0E5C52] mb-1">
-                              We're getting the fila made. Please share your head measurement in inches below
-                            </label>
-                            <input
-                              type="text"
-                              value={filaMeasurement}
-                              onChange={(e) => setFilaMeasurement(e.target.value)}
-                              placeholder="e.g. 22 inches"
-                              className="w-full sm:w-48 px-3 py-1.5 border border-[#E3D3DA] rounded-sm text-xs focus:outline-none focus:border-[#0E5C52]"
-                              disabled={isSubmitting}
-                            />
-                          </div>
-                        )}
-                      </span>
-                      <input
-                        type="number"
-                        min="0"
-                        value={quantities[item.id]}
-                        onChange={(e) => handleQuantityChange(item.id, e.target.value)}
-                        className="w-full sm:w-24 px-4 py-2 text-center border border-[#E3D3DA] rounded-sm text-sm focus:outline-none focus:border-[#0E5C52]"
-                        disabled={isSubmitting}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs text-[#6B5A63] mb-2">
-                  Delivery location <span className="italic text-[#B23A6B]">(Note: You are responsible for your asoebi delivery fee which will be communicated upon dispatch.)</span>
-                </label>
-                <textarea
-                  rows={3}
-                  required
-                  value={deliveryLocation}
-                  onChange={(e) => setDeliveryLocation(e.target.value)}
-                  placeholder="Full delivery address, including city and state"
-                  className="w-full px-4 py-3 border border-[#E3D3DA] rounded-sm text-sm focus:outline-none focus:border-[#0E5C52]"
-                  disabled={isSubmitting}
-                ></textarea>
-              </div>
-
-              {/* Payment Details */}
-              <div className="bg-[#EFE0E5]/60 p-6 rounded-sm text-sm text-[#241B22]">
-                <p className="text-xs font-semibold uppercase tracking-widest text-[#6B5A63] mb-4">
-                  Payment details
-                </p>
-                <p className="mb-2">Bank: Providus Bank</p>
-                <p className="mb-2">Account name: Olutunmbi Iyanuoluwa</p>
-                <p className="mb-4">Account number: 6506784864</p>
-                <p className="font-bold text-[#B23A6B]">
-                  Amount due: ₦{totalAmount.toLocaleString()}
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-xs text-[#6B5A63] mb-2">
-                  Upload proof of payment
-                </label>
-                <input
-                  type="file"
-                  required
-                  accept="image/png, image/jpeg, image/jpg"
-                  onChange={handleFileChange}
-                  className="text-sm text-[#6B5A63] file:mr-4 file:py-1 file:px-3 file:border file:border-[#E3D3DA] file:bg-[#FDFBF7] file:text-sm hover:file:bg-[#F3E7EB]"
-                  disabled={isSubmitting}
-                />
-                <p className="text-xs text-[#6B5A63] mt-3 leading-relaxed">
-                  If your upload doesn't go through, please also send your proof of
-                  payment directly to +234 9075708080 on WhatsApp.
-                </p>
-              </div>
-
+        {/* Main Card */}
+        <div className="bg-white rounded-3xl border border-[#E3D3DA] shadow-xl overflow-hidden">
+          {/* Top Mode Selector Tabs */}
+          {!submittedMode && (
+            <div className="grid grid-cols-2 p-2 bg-[#F3ECE6] border-b border-[#E3D3DA] gap-2">
               <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full px-6 py-4 bg-[#0E5C52] text-white text-sm font-medium rounded-sm hover:bg-[#0A4A42] transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                type="button"
+                onClick={() => {
+                  setMode("interest");
+                  setError(null);
+                }}
+                className={`py-3.5 px-3 sm:px-6 rounded-2xl font-medium text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer ${
+                  mode === "interest"
+                    ? "bg-white text-[#0E5C52] font-bold shadow-sm border border-[#D4AF37]/40"
+                    : "text-[#6B5A63] hover:text-[#0E5C52]"
+                }`}
               >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" /> Processing Order...
-                  </>
-                ) : (
-                  "Submit my order"
-                )}
+                <FileCheck className="w-4 h-4 text-[#0E5C52]" />
+                <span className="text-center">
+                  <strong className="block text-xs sm:text-sm">1. Indicate Interest</strong>
+                  <span className="hidden sm:inline text-[11px] font-normal text-[#6B5A63]">
+                    Reserve now (Pay by Aug 31)
+                  </span>
+                </span>
               </button>
 
-              <p className="text-[10px] text-[#6B5A63] leading-relaxed mt-2 text-center">
-                This form is convenient, not a secure payment gateway — please treat
-                your account details as confidential and only pay into the account
-                listed above.
-              </p>
-            </form>
-          ) : (
-            <div className="text-center py-12 space-y-4">
-              <CheckCircle2 className="w-16 h-16 text-[#0E5C52] mx-auto" />
-              <h3 className="text-2xl font-light text-[#0E5C52]" style={{ fontFamily: "var(--font-cormorant), Georgia, serif" }}>
-                Order Successfully Received!
-              </h3>
-              <p className="text-sm text-[#6B5A63] leading-relaxed">
-                Thank you, <strong>{fullName}</strong>. We have received your order details and payment proof safely. We'll be in touch shortly regarding your delivery!
-              </p>
               <button
+                type="button"
                 onClick={() => {
-                  setFullName("");
-                  setPhone("");
-                  setDeliveryLocation("");
-                  setFile(null);
-                  setQuantities({ ladies_3: 0, ladies_4: 0, ladies_5: 0, gele: 0, fila: 0 });
-                  setFilaMeasurement("");
-                  setSubmitted(false);
+                  setMode("pay_now");
+                  setError(null);
                 }}
-                className="mt-6 px-6 py-2 rounded-sm border border-[#E3D3DA] text-sm font-semibold text-[#0E5C52] hover:bg-[#F5EFEF] transition-colors"
+                className={`py-3.5 px-3 sm:px-6 rounded-2xl font-medium text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer ${
+                  mode === "pay_now"
+                    ? "bg-[#0E5C52] text-white font-bold shadow-md"
+                    : "text-[#6B5A63] hover:text-[#0E5C52]"
+                }`}
               >
-                Submit another order
+                <CreditCard className="w-4 h-4 text-[#D4AF37]" />
+                <span className="text-center">
+                  <strong className="block text-xs sm:text-sm">2. Ready To Pay</strong>
+                  <span className="hidden sm:inline text-[11px] font-normal opacity-85">
+                    Transfer &amp; upload receipt
+                  </span>
+                </span>
               </button>
             </div>
           )}
+
+          {/* Form Content */}
+          <div className="p-6 sm:p-10">
+            {!submittedMode ? (
+              <form onSubmit={handleSubmit} className="space-y-8">
+                {/* Mode description header */}
+                <div className="p-4 rounded-2xl bg-[#FAF7F2] border border-[#E8DFC8]/60 flex items-start gap-3 text-xs sm:text-sm text-[#5C4D55]">
+                  <Info className="w-5 h-5 text-[#B88A2E] flex-shrink-0 mt-0.5" />
+                  <div>
+                    {mode === "interest" ? (
+                      <p>
+                        <strong>Reserving without immediate payment:</strong> Select the items and quantities you plan to buy. We will record your reservation and reach out before <strong>August 31st</strong> to finalize payment.
+                      </p>
+                    ) : (
+                      <p>
+                        <strong>Immediate payment:</strong> Review our official bank account below, make your transfer, and attach your receipt/screenshot for instant order confirmation.
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Error Banner */}
+                {error && (
+                  <div className="bg-red-50 text-red-700 p-4 rounded-2xl border border-red-200 flex items-start gap-3 text-sm">
+                    <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                    <p>{error}</p>
+                  </div>
+                )}
+
+                {/* Step 1: Customer Info */}
+                <div>
+                  <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-[#B23A6B] mb-4 flex items-center gap-2">
+                    <span>1. Contact Details</span>
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-[#4A3E45] mb-1.5">
+                        Full Name <span className="text-[#B23A6B]">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        placeholder="e.g. Adeola Johnson"
+                        className="w-full px-4 py-3 bg-[#FDFBF9] border border-[#E3D3DA] rounded-xl text-sm text-[#241B22] focus:outline-none focus:border-[#0E5C52] focus:ring-1 focus:ring-[#0E5C52]"
+                        disabled={isSubmitting}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-[#4A3E45] mb-1.5">
+                        Phone / WhatsApp Number <span className="text-[#B23A6B]">*</span>
+                      </label>
+                      <input
+                        type="tel"
+                        required
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="e.g. 0803 123 4567"
+                        className="w-full px-4 py-3 bg-[#FDFBF9] border border-[#E3D3DA] rounded-xl text-sm text-[#241B22] focus:outline-none focus:border-[#0E5C52] focus:ring-1 focus:ring-[#0E5C52]"
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 2: Item Selection & Quantities */}
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-[#B23A6B] flex items-center gap-2">
+                      <span>2. Select Your Aso-Ebi &amp; Items</span>
+                    </h3>
+                    <span className="text-xs text-[#6B5A63]">
+                      {totalItemsCount} item{totalItemsCount !== 1 ? "s" : ""} selected
+                    </span>
+                  </div>
+
+                  <div className="space-y-3">
+                    {priceList.map((item) => {
+                      const qty = quantities[item.id] || 0;
+                      const isSelected = qty > 0;
+
+                      return (
+                        <div
+                          key={item.id}
+                          className={`p-4 rounded-2xl border transition-all duration-200 ${
+                            isSelected
+                              ? "bg-[#FFFDF9] border-[#0E5C52]/50 shadow-sm"
+                              : "bg-[#FAF7F2] border-[#E3D3DA]/70 hover:border-[#E3D3DA]"
+                          }`}
+                        >
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            {/* Item Details */}
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="font-semibold text-sm sm:text-base text-[#241B22]">
+                                  {item.name}
+                                </span>
+                              </div>
+                              {item.description && (
+                                <p className="text-xs text-[#6B5A63] mt-0.5">
+                                  {item.description}
+                                </p>
+                              )}
+                              <p className="text-xs font-bold text-[#0E5C52] font-mono mt-1">
+                                ₦{item.price.toLocaleString()} per piece
+                              </p>
+                            </div>
+
+                            {/* Counter Stepper */}
+                            <div className="flex items-center gap-2 self-end sm:self-center">
+                              <button
+                                type="button"
+                                onClick={() => updateQuantity(item.id, -1)}
+                                disabled={qty === 0 || isSubmitting}
+                                className="w-8 h-8 rounded-xl bg-white border border-[#E3D3DA] text-[#6B5A63] hover:text-[#241B22] hover:bg-[#F3E7EB] flex items-center justify-center transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                              >
+                                <Minus className="w-3.5 h-3.5" />
+                              </button>
+
+                              <input
+                                type="number"
+                                min="0"
+                                value={qty}
+                                onChange={(e) => handleManualQuantity(item.id, e.target.value)}
+                                className="w-14 text-center py-1.5 bg-white border border-[#E3D3DA] rounded-xl font-bold text-sm text-[#0E5C52] focus:outline-none focus:border-[#0E5C52]"
+                                disabled={isSubmitting}
+                              />
+
+                              <button
+                                type="button"
+                                onClick={() => updateQuantity(item.id, 1)}
+                                disabled={isSubmitting}
+                                className="w-8 h-8 rounded-xl bg-white border border-[#E3D3DA] text-[#6B5A63] hover:text-[#241B22] hover:bg-[#F3E7EB] flex items-center justify-center transition-colors disabled:opacity-30 cursor-pointer"
+                              >
+                                <Plus className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Step 3: Delivery Location & Notes */}
+                <div>
+                  <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-[#B23A6B] mb-4 flex items-center gap-2">
+                    <span>3. Delivery Information</span>
+                  </h3>
+                  <div>
+                    <label className="block text-xs font-semibold text-[#4A3E45] mb-1.5">
+                      Delivery Address / City &amp; State <span className="text-[#B23A6B]">*</span>
+                    </label>
+                    <textarea
+                      rows={2}
+                      required
+                      value={deliveryLocation}
+                      onChange={(e) => setDeliveryLocation(e.target.value)}
+                      placeholder="e.g. 15 Lekki Phase 1, Lagos State (or Pickup in Lagos)"
+                      className="w-full px-4 py-3 bg-[#FDFBF9] border border-[#E3D3DA] rounded-xl text-sm text-[#241B22] focus:outline-none focus:border-[#0E5C52] focus:ring-1 focus:ring-[#0E5C52]"
+                      disabled={isSubmitting}
+                    />
+                    <p className="text-[11px] text-[#8C7A84] italic mt-1">
+                      Note: Delivery fees will be communicated individually upon parcel dispatch.
+                    </p>
+                  </div>
+
+                  <div className="mt-4">
+                    <label className="block text-xs font-semibold text-[#4A3E45] mb-1.5">
+                      Additional Notes / Requests (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      placeholder="Any special instructions for the couple"
+                      className="w-full px-4 py-2.5 bg-[#FDFBF9] border border-[#E3D3DA] rounded-xl text-xs text-[#241B22] focus:outline-none focus:border-[#0E5C52]"
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </div>
+
+                {/* Step 4: Summary & Payment Info */}
+                <div className="p-5 sm:p-6 rounded-2xl bg-[#FAF3EA] border border-[#E5D7C5]">
+                  <div className="flex items-center justify-between pb-3 border-b border-[#E0D0BC]">
+                    <span className="text-xs uppercase font-bold tracking-wider text-[#6B5A63]">
+                      Estimated Sum Total
+                    </span>
+                    <span className="font-serif text-2xl sm:text-3xl font-bold text-[#0E5C52]">
+                      ₦{totalAmount.toLocaleString()}
+                    </span>
+                  </div>
+
+                  {/* Mode 2 Specific: Bank Transfer Details */}
+                  {mode === "pay_now" && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      className="mt-4 pt-2 space-y-4"
+                    >
+                      <p className="text-xs font-semibold text-[#6B5A63] uppercase tracking-wider">
+                        Official Payment Account
+                      </p>
+
+                      <div className="p-4 bg-white rounded-xl border border-[#D4AF37]/50 shadow-xs space-y-2 text-xs sm:text-sm">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[#6B5A63]">Bank Name:</span>
+                          <strong className="text-[#241B22]">Providus Bank</strong>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <span className="text-[#6B5A63]">Account Name:</span>
+                          <strong className="text-[#241B22]">Olutunmbi Iyanuoluwa</strong>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-1 border-t border-[#F3E7EB]">
+                          <span className="text-[#6B5A63]">Account Number:</span>
+                          <div className="flex items-center gap-2">
+                            <strong className="font-mono text-sm sm:text-base text-[#0E5C52] tracking-wider">
+                              6506784864
+                            </strong>
+                            <button
+                              type="button"
+                              onClick={() => copyToClipboard("6506784864", "account_no")}
+                              className="p-1 text-[#0E5C52] hover:bg-[#0E5C52]/10 rounded-md transition-colors cursor-pointer"
+                              title="Copy Account Number"
+                            >
+                              {copiedBankField === "account_no" ? (
+                                <Check className="w-4 h-4 text-green-600" />
+                              ) : (
+                                <Copy className="w-4 h-4" />
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Proof of payment upload */}
+                      <div>
+                        <label className="block text-xs font-semibold text-[#4A3E45] mb-1.5">
+                          Upload Proof of Payment / Receipt <span className="text-[#B23A6B]">*</span>
+                        </label>
+                        <input
+                          type="file"
+                          required={mode === "pay_now"}
+                          accept="image/png, image/jpeg, image/jpg, application/pdf"
+                          onChange={handleFileChange}
+                          className="w-full text-xs text-[#6B5A63] file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border file:border-[#D4AF37] file:bg-[#FFFDF9] file:text-xs file:font-semibold file:text-[#0E5C52] hover:file:bg-[#F3E7EB] cursor-pointer"
+                          disabled={isSubmitting}
+                        />
+                        <p className="text-[11px] text-[#8C7A84] mt-1.5 leading-relaxed">
+                          Accepted formats: JPG, PNG, PDF. You can also message proof to +234 9075708080 on WhatsApp.
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={isSubmitting || totalAmount <= 0}
+                  className={`w-full py-4 px-6 rounded-2xl font-semibold text-sm sm:text-base transition-all duration-300 shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
+                    mode === "interest"
+                      ? "bg-[#0E5C52] text-white hover:bg-[#0A4A42]"
+                      : "bg-[#B23A6B] text-white hover:bg-[#962F59]"
+                  }`}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <span>Recording details...</span>
+                    </>
+                  ) : mode === "interest" ? (
+                    <>
+                      <FileCheck className="w-4 h-4 text-[#D4AF37]" />
+                      <span>Submit Interest &amp; Reserve Items</span>
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="w-4 h-4 text-[#FFE082]" />
+                      <span>Submit Confirmed Payment (₦{totalAmount.toLocaleString()})</span>
+                    </>
+                  )}
+                </button>
+
+                <p className="text-[11px] text-center text-[#8C7A84]">
+                  All fabrics and accessory orders must be finalized by <strong>August 31st, 2026</strong>.
+                </p>
+              </form>
+            ) : (
+              /* Success Screen */
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="text-center py-10 px-4 space-y-6"
+              >
+                <div className="w-20 h-20 rounded-full bg-[#0E5C52]/10 border-2 border-[#0E5C52] flex items-center justify-center mx-auto text-[#0E5C52]">
+                  <CheckCircle2 className="w-10 h-10" />
+                </div>
+
+                <div className="space-y-2">
+                  <h3
+                    style={{ fontFamily: "var(--font-cormorant), Georgia, serif" }}
+                    className="text-3xl sm:text-4xl font-light text-[#0E5C52]"
+                  >
+                    {submittedMode === "interest"
+                      ? "Interest Successfully Recorded!"
+                      : "Payment & Order Confirmed!"}
+                  </h3>
+                  <p className="text-sm text-[#5C4D55] max-w-md mx-auto leading-relaxed">
+                    Thank you, <strong>{fullName}</strong>! We have recorded your requested items and delivery location.
+                  </p>
+                </div>
+
+                {/* Submission Details Card */}
+                <div className="max-w-md mx-auto p-5 rounded-2xl bg-[#FAF7F2] border border-[#E3D3DA] text-left text-xs space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-[#6B5A63]">Submission Type:</span>
+                    <strong className="text-[#0E5C52] uppercase font-bold">
+                      {submittedMode === "interest" ? "Reservation (Interest Only)" : "Paid Order (Proof Uploaded)"}
+                    </strong>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[#6B5A63]">Phone / WhatsApp:</span>
+                    <strong className="text-[#241B22]">{phone}</strong>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[#6B5A63]">Delivery Location:</span>
+                    <strong className="text-[#241B22]">{deliveryLocation}</strong>
+                  </div>
+                  <div className="flex justify-between pt-2 border-t border-[#E3D3DA]">
+                    <span className="text-[#6B5A63]">Estimated Sum Total:</span>
+                    <strong className="font-bold text-sm text-[#0E5C52]">
+                      ₦{totalAmount.toLocaleString()}
+                    </strong>
+                  </div>
+                  {submittedMode === "interest" && (
+                    <div className="p-3 bg-[#FAF3E7] rounded-xl border border-[#D4AF37]/40 text-[#8C6D1F] mt-2">
+                      <p className="font-semibold flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5" /> Reminder:
+                      </p>
+                      <p className="text-[11px] mt-0.5">
+                        Kindly complete your payment by <strong>August 31st, 2026</strong> into Providus Bank (6506784864) to finalize fabric cut and delivery.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                  {submittedMode === "interest" && (
+                    <button
+                      onClick={() => {
+                        setMode("pay_now");
+                        setSubmittedMode(null);
+                      }}
+                      className="px-6 py-2.5 rounded-xl bg-[#0E5C52] text-white text-xs font-semibold hover:bg-[#0A4A42] transition-colors flex items-center gap-2 cursor-pointer"
+                    >
+                      <CreditCard className="w-3.5 h-3.5" />
+                      <span>Ready to Pay Now?</span>
+                    </button>
+                  )}
+
+                  <button
+                    onClick={handleReset}
+                    className="px-5 py-2.5 rounded-xl border border-[#E3D3DA] text-xs font-semibold text-[#6B5A63] hover:text-[#0E5C52] hover:bg-[#F5EFEF] transition-colors cursor-pointer"
+                  >
+                    Submit another response
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </div>
         </div>
       </div>
     </section>

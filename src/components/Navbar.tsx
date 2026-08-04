@@ -35,12 +35,11 @@ export default function Navbar() {
   };
 
   const navLinks = [
-    { name: "Save the Date", href: "#save-the-date" },
-    { name: "Curved Gallery", href: "#gallery" },
     { name: "Our Story", href: "#story" },
+    { name: "Save the Date", href: "#save-the-date" },
     { name: "Fun Zone", href: "#games" },
-    { name: "Wedding Lookbook", href: "#dress-code" },
-    { name: "Asoebi Shop", href: "#asoebi" },
+    { name: "RSVP", href: "#rsvp" },
+    { name: "Lookbook & Asoebi", href: "#dress-code" },
     { name: "Registry", href: "#registry" },
   ];
 
