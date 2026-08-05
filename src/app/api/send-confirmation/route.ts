@@ -3,17 +3,15 @@ import { NextResponse } from "next/server";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const {
-      email,
-      fullName,
-      phone,
-      mode,
-      lineItems = [],
-      totalAmount = 0,
-      deliveryLocation = "",
-      filaMeasurement = "",
-      notes = "",
-    } = body;
+    const email = body.email || body.recipient_email || "";
+    const fullName = body.fullName || body.customer_name || "Valued Guest";
+    const phone = body.phone || "";
+    const mode = body.mode || body.order_type || "interest";
+    const lineItems = body.lineItems || body.items || [];
+    const totalAmount = body.totalAmount ?? body.total_amount ?? 0;
+    const deliveryLocation = body.deliveryLocation || body.location || "";
+    const filaMeasurement = body.filaMeasurement || body.fila_measurement || "";
+    const notes = body.notes || body.comments || "";
 
     // Email is optional; if not provided, simply acknowledge
     if (!email || typeof email !== "string" || !email.includes("@")) {
