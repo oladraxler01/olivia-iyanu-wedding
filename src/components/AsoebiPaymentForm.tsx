@@ -75,8 +75,8 @@ export const priceList: PriceItem[] = [
 ];
 
 export default function AsoebiPaymentForm() {
-  // Submission Mode: "interest" (Reserve without paying now) | "pay_now" (Ready to pay with receipt)
-  const [mode, setMode] = useState<"interest" | "pay_now">("interest");
+  // Submission Mode: "pay_now" (Ready to pay with receipt) | "interest" (Reservation to pay by Aug 31)
+  const [mode, setMode] = useState<"pay_now" | "interest">("pay_now");
 
   const [quantities, setQuantities] = useState<{ [key: string]: number }>({
     ladies_3: 0,
@@ -86,6 +86,7 @@ export default function AsoebiPaymentForm() {
     fila: 0,
   });
 
+  const [filaMeasurement, setFilaMeasurement] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [deliveryLocation, setDeliveryLocation] = useState("");
@@ -193,7 +194,8 @@ export default function AsoebiPaymentForm() {
         delivery_location: deliveryLocation.trim(),
         items: {
           ...quantities,
-          order_type: mode, // "interest" | "pay_now"
+          fila_measurement: filaMeasurement.trim() || undefined,
+          order_type: mode, // "pay_now" | "interest"
           notes: notes.trim(),
           payment_deadline: "August 31, 2026",
           submitted_at: new Date().toISOString(),
@@ -223,6 +225,7 @@ export default function AsoebiPaymentForm() {
     setFullName("");
     setPhone("");
     setDeliveryLocation("");
+    setFilaMeasurement("");
     setNotes("");
     setFile(null);
     setQuantities({ ladies_3: 0, ladies_4: 0, ladies_5: 0, gele: 0, fila: 0 });
@@ -250,7 +253,7 @@ export default function AsoebiPaymentForm() {
             Celebrate In Style With Us
           </h2>
           <p className="text-sm sm:text-base text-[#6B5A63] font-light leading-relaxed">
-            Indicate your interest or finalize your payment for our curated wedding fabric and accessories.
+            Order your official fabric &amp; accessories or reserve your allocation for the wedding celebration.
           </p>
         </div>
 
@@ -275,7 +278,7 @@ export default function AsoebiPaymentForm() {
               </span>
             </div>
             <p className="text-xs sm:text-sm text-[#5C4D55] leading-relaxed">
-              To guarantee fabric allocation and give our custom tailors ample time for preparation, please <strong>indicate your interest</strong> or <strong>complete your payment</strong> on or before <strong>August 31, 2026</strong>.
+              To guarantee fabric and Aso-Ebi availability, and to give our custom tailors ample time for preparation, please note that <strong>all fabric allocations and reservations must be paid for on or before August 31, 2026</strong>.
             </p>
           </div>
         </motion.div>
@@ -285,27 +288,6 @@ export default function AsoebiPaymentForm() {
           {/* Top Mode Selector Tabs */}
           {!submittedMode && (
             <div className="grid grid-cols-2 p-2 bg-[#F3ECE6] border-b border-[#E3D3DA] gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setMode("interest");
-                  setError(null);
-                }}
-                className={`py-3.5 px-3 sm:px-6 rounded-2xl font-medium text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer ${
-                  mode === "interest"
-                    ? "bg-white text-[#0E5C52] font-bold shadow-sm border border-[#D4AF37]/40"
-                    : "text-[#6B5A63] hover:text-[#0E5C52]"
-                }`}
-              >
-                <FileCheck className="w-4 h-4 text-[#0E5C52]" />
-                <span className="text-center">
-                  <strong className="block text-xs sm:text-sm">1. Indicate Interest</strong>
-                  <span className="hidden sm:inline text-[11px] font-normal text-[#6B5A63]">
-                    Reserve now (Pay by Aug 31)
-                  </span>
-                </span>
-              </button>
-
               <button
                 type="button"
                 onClick={() => {
@@ -320,9 +302,30 @@ export default function AsoebiPaymentForm() {
               >
                 <CreditCard className="w-4 h-4 text-[#D4AF37]" />
                 <span className="text-center">
-                  <strong className="block text-xs sm:text-sm">2. Ready To Pay</strong>
+                  <strong className="block text-xs sm:text-sm">1. Ready To Pay</strong>
                   <span className="hidden sm:inline text-[11px] font-normal opacity-85">
                     Transfer &amp; upload receipt
+                  </span>
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setMode("interest");
+                  setError(null);
+                }}
+                className={`py-3.5 px-3 sm:px-6 rounded-2xl font-medium text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer ${
+                  mode === "interest"
+                    ? "bg-white text-[#0E5C52] font-bold shadow-sm border border-[#D4AF37]/40"
+                    : "text-[#6B5A63] hover:text-[#0E5C52]"
+                }`}
+              >
+                <FileCheck className="w-4 h-4 text-[#0E5C52]" />
+                <span className="text-center">
+                  <strong className="block text-xs sm:text-sm">2. Reservation</strong>
+                  <span className="hidden sm:inline text-[11px] font-normal text-[#6B5A63]">
+                    Reserve now (Pay by Aug 31)
                   </span>
                 </span>
               </button>
@@ -468,6 +471,26 @@ export default function AsoebiPaymentForm() {
                               </button>
                             </div>
                           </div>
+
+                          {/* Men's Fila Cap Head Measurement Box */}
+                          {item.id === "fila" && (
+                            <div className="mt-3 pt-3 border-t border-[#E3D3DA]/70">
+                              <label className="block text-xs font-semibold text-[#4A3E45] mb-1">
+                                Cap Size / Head Measurement <span className="text-[#8C7A84] font-normal">(e.g. 22.5 inches, 57cm, or Size 7¼)</span>
+                              </label>
+                              <input
+                                type="text"
+                                value={filaMeasurement}
+                                onChange={(e) => setFilaMeasurement(e.target.value)}
+                                placeholder="e.g. 22.5 inches (or leave blank if standard size)"
+                                className="w-full px-3.5 py-2.5 bg-white border border-[#E3D3DA] rounded-xl text-xs text-[#241B22] focus:outline-none focus:border-[#0E5C52] focus:ring-1 focus:ring-[#0E5C52]"
+                                disabled={isSubmitting}
+                              />
+                              <p className="text-[10.5px] text-[#8C7A84] italic mt-1">
+                                Your cap will be tailored specifically to this head measurement.
+                              </p>
+                            </div>
+                          )}
                         </div>
                       );
                     })}
