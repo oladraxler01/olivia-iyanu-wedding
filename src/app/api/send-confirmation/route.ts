@@ -224,7 +224,7 @@ export async function POST(request: Request) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: "Olivia & Iyanu Wedding <wedding@updates.resend.dev>",
+            from: "Olivia & Iyanu Wedding <onboarding@resend.dev>",
             to: [recipientEmail],
             subject,
             html: htmlEmail,
@@ -232,9 +232,13 @@ export async function POST(request: Request) {
         });
 
         const resendData = await resendRes.json();
+        console.log("Resend API response:", resendData);
+        if (!resendRes.ok) {
+          console.error("Resend send failed:", resendData);
+        }
         return NextResponse.json({
-          success: true,
-          emailSent: true,
+          success: resendRes.ok,
+          emailSent: resendRes.ok,
           provider: "resend",
           data: resendData,
         });
