@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import confetti from "canvas-confetti";
-import { Heart, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
+import { Heart, CheckCircle2, Loader2, AlertCircle, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 
@@ -16,11 +16,36 @@ export default function RSVP() {
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [savedRsvp, setSavedRsvp] = useState<{
+    fullName: string;
+    attending: "yes" | "no";
+    email?: string;
+    submittedAt: string;
+  } | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Check if this guest already submitted an RSVP on this device
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("olivia_iyanu_rsvp");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed && parsed.fullName) {
+          setSavedRsvp(parsed);
+          setFullName(parsed.fullName);
+          setAttending(parsed.attending || "yes");
+          if (parsed.email) setEmail(parsed.email);
+          setSubmitted(true);
+        }
+      }
+    } catch (e) {
+      console.warn("Could not read stored RSVP:", e);
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fullName.trim()) return;
+    if (!fullName.trim() || submitted) return;
     
     setIsSubmitting(true);
     setError(null);
@@ -63,6 +88,20 @@ export default function RSVP() {
         }
       }
 
+      const rsvpData = {
+        fullName: fullName.trim(),
+        attending,
+        email: email.trim(),
+        submittedAt: new Date().toISOString(),
+      };
+
+      try {
+        localStorage.setItem("olivia_iyanu_rsvp", JSON.stringify(rsvpData));
+      } catch (storageErr) {
+        console.warn("Could not save RSVP to localStorage:", storageErr);
+      }
+
+      setSavedRsvp(rsvpData);
       setSubmitted(true);
       
       try {
@@ -254,34 +293,39 @@ export default function RSVP() {
               </button>
             </form>
           ) : (
-            <div className="text-center py-12 space-y-4">
-              <CheckCircle2 className="w-16 h-16 text-[#093F38] mx-auto" />
-              <h3 className="font-serif text-3xl font-bold text-[#093F38]">
-                RSVP Confirmed!
-              </h3>
-              <p className="text-sm text-[#6B5A63]">
-                Thank you, <strong>{fullName}</strong>! We look forward to celebrating together.
+            <div className="text-center py-10 space-y-5">
+              <div className="w-16 h-16 rounded-full bg-[#0E5C52]/10 text-[#0E5C52] flex items-center justify-center mx-auto border border-[#0E5C52]/20">
+                <ShieldCheck className="w-9 h-9 text-[#0E5C52]" />
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#B23A6B] mb-1">
+                  Response Recorded
+                </p>
+                <h3 className="font-serif text-3xl sm:text-4xl font-light text-[#093F38]">
+                  RSVP Confirmed
+                </h3>
+              </div>
+              <p className="text-sm text-[#6B5A63] max-w-md mx-auto leading-relaxed">
+                Thank you, <strong className="text-[#241B22]">{savedRsvp?.fullName || fullName}</strong>! Your RSVP has been received and safely registered.
               </p>
-              {email.trim() && (
-                <p className="text-xs text-[#093F38] bg-[#F4FAF8] py-2 px-4 rounded-full inline-block border border-[#093F38]/20">
-                  ✉️ A confirmation has been sent to <strong>{email.trim()}</strong>
+              
+              <div className="inline-flex items-center gap-2 bg-[#F4FAF8] border border-[#0E5C52]/20 rounded-full px-5 py-2 text-xs font-medium text-[#093F38]">
+                <span>Your Decision:</span>
+                <span className="font-bold">
+                  {(savedRsvp?.attending || attending) === "yes" ? "✨ Joyfully Attending" : "Regretfully Declining"}
+                </span>
+              </div>
+
+              {(savedRsvp?.email || email.trim()) && (
+                <p className="text-xs text-[#6B5A63] block">
+                  ✉️ Confirmation email sent to <strong className="text-[#093F38]">{savedRsvp?.email || email.trim()}</strong>
                 </p>
               )}
-              <div className="pt-4">
-                <button 
-                  onClick={() => {
-                    setFullName("");
-                    setEmail("");
-                    setPhone("");
-                    setSong("");
-                    setComments("");
-                    setAttending("yes");
-                    setSubmitted(false);
-                  }}
-                  className="px-6 py-2 rounded-full border border-[#E3D3DA] text-sm font-semibold text-[#093F38] hover:bg-[#FDFBF7] transition-colors"
-                >
-                  Submit another RSVP
-                </button>
+
+              <div className="pt-6 border-t border-[#E3D3DA]/70 mt-6">
+                <p className="text-xs text-[#8C827A] italic">
+                  Need to change your response or update your details? Please reach out directly to the couple.
+                </p>
               </div>
             </div>
           )}
