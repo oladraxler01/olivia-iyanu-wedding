@@ -42,6 +42,27 @@ export default function RSVP() {
 
       if (supabaseError) throw supabaseError;
 
+      // Dispatch automated confirmation email if email was provided
+      if (email.trim() && email.includes("@")) {
+        try {
+          await fetch("/api/send-confirmation", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              mode: "rsvp",
+              email: email.trim(),
+              fullName: fullName.trim(),
+              attending,
+              phone: phone.trim(),
+              notes: comments.trim(),
+              song: song.trim(),
+            }),
+          });
+        } catch (emailErr) {
+          console.warn("Could not dispatch RSVP confirmation email:", emailErr);
+        }
+      }
+
       setSubmitted(true);
       
       try {
@@ -124,12 +145,14 @@ export default function RSVP() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#093F38] mb-2">
-                  Email Address *
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#093F38]">
+                    Email Address <span className="text-[11px] font-normal lowercase text-[#8C827A]">(optional)</span>
+                  </label>
+                  <span className="text-[11px] text-[#8C827A]">For email confirmation</span>
+                </div>
                 <input
                   type="email"
-                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="e.g. guest@example.com"
@@ -239,20 +262,27 @@ export default function RSVP() {
               <p className="text-sm text-[#6B5A63]">
                 Thank you, <strong>{fullName}</strong>! We look forward to celebrating together.
               </p>
-              <button 
-                onClick={() => {
-                  setFullName("");
-                  setEmail("");
-                  setPhone("");
-                  setSong("");
-                  setComments("");
-                  setAttending("yes");
-                  setSubmitted(false);
-                }}
-                className="mt-6 px-6 py-2 rounded-full border border-[#E3D3DA] text-sm font-semibold text-[#093F38] hover:bg-[#FDFBF7] transition-colors"
-              >
-                Submit another RSVP
-              </button>
+              {email.trim() && (
+                <p className="text-xs text-[#093F38] bg-[#F4FAF8] py-2 px-4 rounded-full inline-block border border-[#093F38]/20">
+                  ✉️ A confirmation has been sent to <strong>{email.trim()}</strong>
+                </p>
+              )}
+              <div className="pt-4">
+                <button 
+                  onClick={() => {
+                    setFullName("");
+                    setEmail("");
+                    setPhone("");
+                    setSong("");
+                    setComments("");
+                    setAttending("yes");
+                    setSubmitted(false);
+                  }}
+                  className="px-6 py-2 rounded-full border border-[#E3D3DA] text-sm font-semibold text-[#093F38] hover:bg-[#FDFBF7] transition-colors"
+                >
+                  Submit another RSVP
+                </button>
+              </div>
             </div>
           )}
         </div>
