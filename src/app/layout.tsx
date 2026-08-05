@@ -17,6 +17,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.oliviawedsiyanu.xyz"),
   title: "Olivia & Iyanu — The Wedding Experience | Friday, October 30, 2026",
   description:
     "Join us in celebrating the union of Olivia & Iyanu. Explore our love story, curved gallery, Asoebi attire shop, fun zone, and submit your RSVP.",

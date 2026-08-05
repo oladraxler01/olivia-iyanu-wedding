@@ -3,11 +3,13 @@
 import { useState, useEffect, useRef } from "react";
 
 export default function AudioPlayer() {
+  const [mounted, setMounted] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const shouldPlayRef = useRef<boolean>(false);
 
   useEffect(() => {
+    setMounted(true);
     let fadeInterval: NodeJS.Timeout;
 
     const playAudio = () => {
@@ -131,6 +133,8 @@ export default function AudioPlayer() {
       clearInterval(fadeInterval);
     };
   }, []);
+
+  if (!mounted) return null;
 
   return (
     <audio
