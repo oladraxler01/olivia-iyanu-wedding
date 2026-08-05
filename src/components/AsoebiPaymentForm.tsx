@@ -677,6 +677,27 @@ export default function AsoebiPaymentForm() {
                             </button>
                           </div>
                         </div>
+
+                        <div className="flex items-center justify-between pt-1 border-t border-[#F3E7EB]">
+                          <span className="text-[#6B5A63]">Transfer Narration / Remark:</span>
+                          <div className="flex items-center gap-2">
+                            <strong className="font-medium text-xs sm:text-sm text-[#B23A6B] bg-[#FFF2F6] px-2.5 py-0.5 rounded-md border border-[#B23A6B]/20">
+                              Wedding asoebi
+                            </strong>
+                            <button
+                              type="button"
+                              onClick={() => copyToClipboard("Wedding asoebi", "narration")}
+                              className="p-1 text-[#B23A6B] hover:bg-[#B23A6B]/10 rounded-md transition-colors cursor-pointer"
+                              title="Copy Transfer Narration"
+                            >
+                              {copiedBankField === "narration" ? (
+                                <Check className="w-4 h-4 text-green-600" />
+                              ) : (
+                                <Copy className="w-4 h-4" />
+                              )}
+                            </button>
+                          </div>
+                        </div>
                       </div>
 
                       {/* Proof of payment upload */}
@@ -801,7 +822,7 @@ export default function AsoebiPaymentForm() {
                         <Clock className="w-3.5 h-3.5" /> Reminder:
                       </p>
                       <p className="text-[11px] mt-0.5">
-                        Kindly complete your payment by <strong>August 31st, 2026</strong> into Providus Bank (6506784864) to finalize fabric cut and delivery.
+                        Kindly complete your payment by <strong>August 31st, 2026</strong> into Providus Bank (6506784864) with transfer narration <strong>&quot;Wedding asoebi&quot;</strong> to finalize fabric cut and delivery.
                       </p>
                     </div>
                   )}

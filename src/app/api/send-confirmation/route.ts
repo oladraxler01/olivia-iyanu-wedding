@@ -265,6 +265,10 @@ export async function POST(request: Request) {
                         <td style="padding: 3px 0; color: #6B5A63;">Account Number:</td>
                         <td style="padding: 3px 0; font-weight: bold; font-family: monospace; font-size: 15px; color: #0E5C52;">6506784864</td>
                       </tr>
+                      <tr>
+                        <td style="padding: 3px 0; color: #6B5A63;">Transfer Narration:</td>
+                        <td style="padding: 3px 0; font-weight: bold; color: #B23A6B;">Wedding asoebi</td>
+                      </tr>
                     </table>
                   </div>
                   `
