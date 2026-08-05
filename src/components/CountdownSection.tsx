@@ -45,7 +45,7 @@ export default function CountdownSection() {
         <div className="inline-flex flex-wrap items-center justify-center gap-3 text-xs sm:text-sm text-[#241B22]/80 font-medium mb-8 bg-[#FFFDFB] border border-[#E3D3DA] px-6 py-2.5 rounded-full shadow-2xs">
           <span className="flex items-center gap-1.5 text-[#0E5C52] font-semibold">
             <Calendar className="w-4 h-4 text-[#B23A6B]" />
-            30 October 2026
+            Friday, 30 October 2026
           </span>
           <span className="text-[#E3D3DA]">•</span>
           <span className="flex items-center gap-1.5">

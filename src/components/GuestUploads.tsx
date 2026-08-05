@@ -109,7 +109,7 @@ export default function GuestUploads() {
             Digital Disposable Camera
           </h2>
           <p className="text-[#6B5A63] text-sm sm:text-base leading-relaxed">
-            This section is currently locked. Check back on our wedding day (October 30, 2026) to upload the photos and videos you take!
+            This section is currently locked. Check back on our wedding day (Friday, October 30, 2026) to upload the photos and videos you take!
           </p>
         </div>
       </section>

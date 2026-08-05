@@ -49,7 +49,7 @@ export default function Hero() {
 
           {/* Date & Location text */}
           <div className="space-y-3 text-xs sm:text-sm text-white/90 font-medium tracking-widest text-center">
-            <p className="font-serif text-lg tracking-[0.2em] text-[#FDFCFB] drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">30th OCTOBER 2026</p>
+            <p className="font-serif text-lg tracking-[0.2em] text-[#FDFCFB] drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">FRIDAY, 30th OCTOBER 2026</p>
             <p className="text-white/80 text-[10px] uppercase tracking-[0.3em] drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">LAGOS, NIGERIA</p>
           </div>
         </div>

@@ -85,7 +85,7 @@ const correctTimelineOrder = [
   "Said I love you",
   "Official outing to meet friends",
   "Official outing to meet Family",
-  "Wedding day — October 30th, 2026",
+  "Wedding day — Friday, October 30th, 2026",
 ];
 
 // ─── MAZE DATA ────────────────────────────────────

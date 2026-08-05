@@ -281,8 +281,8 @@ export default function EnvelopeLoader() {
                       <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[#D4AF37]"></div>
                     </div>
 
-                    <p className="text-[#6E646A] text-sm sm:text-base tracking-[0.35em] sm:tracking-[0.4em] font-medium font-mono">
-                      30.10.2026
+                    <p className="text-[#6E646A] text-xs sm:text-sm md:text-base tracking-[0.25em] sm:tracking-[0.35em] font-medium font-mono uppercase">
+                      FRIDAY • 30.10.2026
                     </p>
                   </div>
                 </div>

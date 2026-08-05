@@ -17,12 +17,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Olivia & Iyanu — The Wedding Experience | October 30, 2026",
+  title: "Olivia & Iyanu — The Wedding Experience | Friday, October 30, 2026",
   description:
     "Join us in celebrating the union of Olivia & Iyanu. Explore our love story, curved gallery, Asoebi attire shop, fun zone, and submit your RSVP.",
   openGraph: {
     title: "Olivia & Iyanu — The Wedding Experience",
-    description: "Celebrate the marriage of Olivia & Iyanu on October 30, 2026.",
+    description: "Celebrate the marriage of Olivia & Iyanu on Friday, October 30, 2026.",
     images: [{ url: "/images/hero.png" }],
   },
 };

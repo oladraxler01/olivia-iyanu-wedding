@@ -86,7 +86,7 @@ export async function POST(request: Request) {
                     Olivia &amp; Iyanuoluwa
                   </h1>
                   <p style="margin: 6px 0 0 0; color: #E8D7BE; font-size: 13px; letter-spacing: 1px;">
-                    #LetsDoLifeTogether • December 2026
+                    #LetsDoLifeTogether • Friday, October 30, 2026
                   </p>
                 </td>
               </tr>
