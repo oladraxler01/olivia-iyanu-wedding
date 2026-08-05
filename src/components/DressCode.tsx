@@ -66,10 +66,30 @@ export default function DressCode() {
   const [mounted, setMounted] = useState(false);
   const touchStartXRef = useRef<number | null>(null);
 
+  // Preload initial lookbook images on mount for instant rendering
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
+    // Preload cover and first few pages
+    lookbookPages.slice(0, 4).forEach((src) => {
+      const img = new window.Image();
+      img.src = src;
+    });
   }, []);
+
+  // Proactively preload adjacent pages as user flips
+  useEffect(() => {
+    if (!isLookbookOpen) return;
+    const preload = (idx: number) => {
+      if (idx >= 0 && idx < lookbookPages.length) {
+        const img = new window.Image();
+        img.src = lookbookPages[idx];
+      }
+    };
+    preload(currentPage + 1);
+    preload(currentPage + 2);
+    preload(currentPage - 1);
+  }, [isLookbookOpen, currentPage]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -146,8 +166,8 @@ export default function DressCode() {
               </button>
               <span className="text-[#E3D3DA]">|</span>
               <a
-                href="/OLIVIA & IYANU'S WEDDING LOOKBOOK_20260729_195054_0000.pdf"
-                download="Olivia_Iyanu_Wedding_Lookbook.pdf"
+                href="/OLIVIA & IYANU'S WEDDING LOOKBOOK.pdf"
+                download="OLIVIA & IYANU'S WEDDING LOOKBOOK.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-sm font-semibold text-[#0E5C52] hover:text-[#B23A6B] transition-colors pb-1 border-b-2 border-[#0E5C52] hover:border-[#B23A6B]"
@@ -233,15 +253,15 @@ export default function DressCode() {
 
                 {/* Direct PDF Link */}
                 <a
-                  href="/OLIVIA & IYANU'S WEDDING LOOKBOOK_20260729_195054_0000.pdf"
+                  href="/OLIVIA & IYANU'S WEDDING LOOKBOOK.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
-                  download="Olivia_Iyanu_Lookbook.pdf"
+                  download="OLIVIA & IYANU'S WEDDING LOOKBOOK.pdf"
                   className="inline-flex items-center gap-1 text-xs bg-white/10 hover:bg-white/20 text-white px-2.5 sm:px-3 py-1.5 rounded-lg transition-colors border border-white/10"
                   title="Download Original PDF"
                 >
                   <Download className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">PDF</span>
+                  <span className="hidden sm:inline">Download PDF</span>
                 </a>
 
                 {/* Close Button */}
