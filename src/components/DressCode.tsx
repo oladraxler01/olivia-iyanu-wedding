@@ -1,8 +1,21 @@
 "use client";
 
-import { Download, X, Loader2 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Download, X, ChevronLeft, ChevronRight, LayoutGrid, FileText } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+
+const lookbookPages = [
+  "/lookbook/page_01.jpg",
+  "/lookbook/page_02.jpg",
+  "/lookbook/page_03.jpg",
+  "/lookbook/page_04.jpg",
+  "/lookbook/page_05.jpg",
+  "/lookbook/page_06.jpg",
+  "/lookbook/page_07.jpg",
+  "/lookbook/page_08.jpg",
+  "/lookbook/page_09.jpg",
+  "/lookbook/page_10.jpg",
+];
 
 const lookbook = [
   {
@@ -48,13 +61,47 @@ const lookbook = [
 
 export default function DressCode() {
   const [isLookbookOpen, setIsLookbookOpen] = useState(false);
-  const [isPdfLoading, setIsPdfLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [viewMode, setViewMode] = useState<"slider" | "scroll">("slider");
   const [mounted, setMounted] = useState(false);
+  const touchStartXRef = useRef<number | null>(null);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
+
+  // Keyboard navigation
+  useEffect(() => {
+    if (!isLookbookOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsLookbookOpen(false);
+      if (e.key === "ArrowRight") setCurrentPage((p) => Math.min(lookbookPages.length - 1, p + 1));
+      if (e.key === "ArrowLeft") setCurrentPage((p) => Math.max(0, p - 1));
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isLookbookOpen]);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartXRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartXRef.current === null) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const diffX = touchStartXRef.current - touchEndX;
+    if (Math.abs(diffX) > 50) {
+      if (diffX > 0 && currentPage < lookbookPages.length - 1) {
+        // Swipe left -> Next page
+        setCurrentPage((p) => p + 1);
+      } else if (diffX < 0 && currentPage > 0) {
+        // Swipe right -> Prev page
+        setCurrentPage((p) => p - 1);
+      }
+    }
+    touchStartXRef.current = null;
+  };
 
   return (
     <section id="dress-code" className="py-24 px-4 bg-[#FDFBF7] overflow-hidden">
@@ -74,27 +121,36 @@ export default function DressCode() {
           </p>
 
           <div className="flex flex-col items-center gap-4 mb-8">
-            <div className="w-[300px] bg-white border border-[#E3D3DA] shadow-md relative overflow-hidden group rounded-sm">
+            <div 
+              onClick={() => setIsLookbookOpen(true)}
+              className="w-[280px] sm:w-[320px] bg-white border border-[#E3D3DA] shadow-lg relative overflow-hidden group rounded-xl cursor-pointer hover:shadow-2xl hover:scale-[1.02] transition-all duration-300"
+            >
               <img
-                src="/images/image.png"
+                src="/lookbook/page_01.jpg"
                 alt="Lookbook Cover"
-                className="w-full h-auto block"
+                className="w-full h-auto block object-cover"
               />
-              <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors z-10 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end justify-center p-4">
+                <span className="text-white text-xs font-semibold uppercase tracking-widest bg-[#0E5C52]/90 backdrop-blur-sm px-4 py-2 rounded-full border border-[#D4AF37]/50 shadow-md">
+                  📖 Tap To Open Lookbook
+                </span>
+              </div>
             </div>
 
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-4 sm:gap-6 mt-2">
               <button
                 onClick={() => setIsLookbookOpen(true)}
-                className="inline-flex items-center gap-2 text-sm font-semibold text-[#0E5C52] hover:text-[#B23A6B] transition-colors pb-1 border-b border-[#0E5C52] hover:border-[#B23A6B] cursor-pointer"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-[#0E5C52] hover:text-[#B23A6B] transition-colors pb-1 border-b-2 border-[#0E5C52] hover:border-[#B23A6B] cursor-pointer"
               >
-                View Lookbook
+                View Full Lookbook (10 Pages)
               </button>
               <span className="text-[#E3D3DA]">|</span>
               <a
                 href="/OLIVIA & IYANU'S WEDDING LOOKBOOK_20260729_195054_0000.pdf"
-                download="Olivia_Iyanu_Lookbook.pdf"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-[#0E5C52] hover:text-[#B23A6B] transition-colors pb-1 border-b border-[#0E5C52] hover:border-[#B23A6B]"
+                download="Olivia_Iyanu_Wedding_Lookbook.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-[#0E5C52] hover:text-[#B23A6B] transition-colors pb-1 border-b-2 border-[#0E5C52] hover:border-[#B23A6B]"
               >
                 Save PDF <Download className="w-4 h-4" />
               </a>
@@ -107,7 +163,7 @@ export default function DressCode() {
           {lookbook.map((item) => (
             <div
               key={item.id}
-              className="flex-none w-[280px] sm:w-[320px] bg-white border border-[#E3D3DA] p-6 snap-start flex flex-col"
+              className="flex-none w-[280px] sm:w-[320px] bg-white border border-[#E3D3DA] p-6 snap-start flex flex-col rounded-xl shadow-xs"
             >
               {/* Image Space for Materials */}
               {item.showImageSpace && (
@@ -147,34 +203,143 @@ export default function DressCode() {
 
       {/* Lookbook Modal */}
       {mounted && isLookbookOpen && createPortal(
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8 bg-black/80 backdrop-blur-sm">
-          <div className="relative w-full max-w-5xl h-[90vh] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-[#E3D3DA] bg-[#FDFBF7]">
-              <h3 className="font-serif text-xl text-[#0E5C52]">Fashion Lookbook</h3>
-              <button 
-                onClick={() => {
-                  setIsLookbookOpen(false);
-                  setIsPdfLoading(true);
-                }}
-                className="p-2 bg-[#F5EFEF] rounded-full hover:bg-[#E3D3DA] transition-colors cursor-pointer"
-              >
-                <X className="w-5 h-5 text-[#6B5A63]" />
-              </button>
-            </div>
-            <div className="flex-1 w-full h-full bg-gray-100 relative">
-              {isPdfLoading && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-gray-100 gap-3">
-                  <Loader2 className="w-8 h-8 text-[#0E5C52] animate-spin" />
-                  <p className="text-[#6B5A63] text-sm font-medium animate-pulse">Loading Lookbook (16MB)...</p>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 md:p-6 bg-black/90 backdrop-blur-md">
+          <div className="relative w-full max-w-5xl h-[94vh] sm:h-[90vh] bg-[#1A1618] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-white/10">
+            {/* Header */}
+            <div className="flex items-center justify-between px-3 sm:px-6 py-3 border-b border-white/10 bg-[#241B22] text-white">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <h3 className="font-serif text-base sm:text-xl text-[#FDFBF7]">Fashion Lookbook</h3>
+                <span className="text-xs bg-[#0E5C52] text-white px-2.5 py-0.5 rounded-full font-mono">
+                  {viewMode === "slider" ? `${currentPage + 1} / ${lookbookPages.length}` : "All Pages"}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1.5 sm:gap-3">
+                {/* View Mode Switcher */}
+                <div className="hidden xs:flex items-center bg-white/10 rounded-lg p-0.5 border border-white/10">
+                  <button
+                    onClick={() => setViewMode("slider")}
+                    className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${viewMode === "slider" ? "bg-[#0E5C52] text-white shadow-xs" : "text-white/70 hover:text-white"}`}
+                  >
+                    <FileText className="w-3.5 h-3.5 inline mr-1" /> Flip
+                  </button>
+                  <button
+                    onClick={() => setViewMode("scroll")}
+                    className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${viewMode === "scroll" ? "bg-[#0E5C52] text-white shadow-xs" : "text-white/70 hover:text-white"}`}
+                  >
+                    <LayoutGrid className="w-3.5 h-3.5 inline mr-1" /> Scroll
+                  </button>
                 </div>
-              )}
-              <iframe
-                src="/OLIVIA & IYANU'S WEDDING LOOKBOOK_20260729_195054_0000.pdf#view=FitH"
-                className={`w-full h-full border-none relative z-20 ${isPdfLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-500'}`}
-                title="Olivia & Iyanu Wedding Lookbook"
-                onLoad={() => setIsPdfLoading(false)}
-              />
+
+                {/* Direct PDF Link */}
+                <a
+                  href="/OLIVIA & IYANU'S WEDDING LOOKBOOK_20260729_195054_0000.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download="Olivia_Iyanu_Lookbook.pdf"
+                  className="inline-flex items-center gap-1 text-xs bg-white/10 hover:bg-white/20 text-white px-2.5 sm:px-3 py-1.5 rounded-lg transition-colors border border-white/10"
+                  title="Download Original PDF"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">PDF</span>
+                </a>
+
+                {/* Close Button */}
+                <button 
+                  onClick={() => setIsLookbookOpen(false)}
+                  className="p-1.5 sm:p-2 bg-white/10 hover:bg-white/20 rounded-full text-white/90 hover:text-white transition-colors cursor-pointer"
+                  aria-label="Close Lookbook"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
             </div>
+
+            {/* Viewer Content */}
+            {viewMode === "slider" ? (
+              <div 
+                className="flex-1 w-full h-full relative flex items-center justify-center p-2 sm:p-4 select-none touch-pan-y"
+                onTouchStart={handleTouchStart}
+                onTouchEnd={handleTouchEnd}
+              >
+                {/* Page Image */}
+                <div className="w-full h-full flex items-center justify-center relative">
+                  <img
+                    src={lookbookPages[currentPage]}
+                    alt={`Lookbook Page ${currentPage + 1}`}
+                    className="max-h-[68vh] sm:max-h-[74vh] max-w-full object-contain rounded-lg shadow-2xl transition-all duration-300"
+                  />
+                </div>
+
+                {/* Nav Arrows */}
+                {currentPage > 0 && (
+                  <button
+                    onClick={() => setCurrentPage((p) => p - 1)}
+                    className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 p-2.5 sm:p-3 rounded-full bg-black/60 hover:bg-black/80 text-white backdrop-blur-md transition-all shadow-lg hover:scale-110 cursor-pointer"
+                    aria-label="Previous Page"
+                  >
+                    <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+                  </button>
+                )}
+
+                {currentPage < lookbookPages.length - 1 && (
+                  <button
+                    onClick={() => setCurrentPage((p) => p + 1)}
+                    className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 p-2.5 sm:p-3 rounded-full bg-black/60 hover:bg-black/80 text-white backdrop-blur-md transition-all shadow-lg hover:scale-110 cursor-pointer"
+                    aria-label="Next Page"
+                  >
+                    <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+                  </button>
+                )}
+              </div>
+            ) : (
+              // Continuous Vertical Scroll Mode
+              <div className="flex-1 w-full h-full overflow-y-auto p-4 sm:p-8 space-y-6 bg-black/40">
+                {lookbookPages.map((pageSrc, index) => (
+                  <div key={index} className="max-w-3xl mx-auto flex flex-col items-center">
+                    <span className="text-white/60 text-xs font-mono mb-2 self-start">Page {index + 1} of {lookbookPages.length}</span>
+                    <img
+                      src={pageSrc}
+                      alt={`Lookbook Page ${index + 1}`}
+                      className="w-full h-auto rounded-lg shadow-xl"
+                      loading="lazy"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Bottom Thumbnail Strip (Slider Mode Only) */}
+            {viewMode === "slider" && (
+              <div className="px-3 py-2 bg-[#241B22]/90 border-t border-white/10 flex items-center justify-between gap-2 overflow-x-auto hide-scrollbar">
+                <button
+                  disabled={currentPage === 0}
+                  onClick={() => setCurrentPage((p) => p - 1)}
+                  className="px-2.5 py-1 text-xs text-white/80 hover:text-white disabled:opacity-30 disabled:pointer-events-none flex items-center gap-1 shrink-0"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" /> Prev
+                </button>
+
+                <div className="flex items-center gap-1.5 overflow-x-auto py-1">
+                  {lookbookPages.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentPage(idx)}
+                      className={`h-2 transition-all rounded-full ${currentPage === idx ? "w-6 bg-[#0E5C52]" : "w-2 bg-white/30 hover:bg-white/60"}`}
+                      aria-label={`Jump to page ${idx + 1}`}
+                    />
+                  ))}
+                </div>
+
+                <button
+                  disabled={currentPage === lookbookPages.length - 1}
+                  onClick={() => setCurrentPage((p) => p + 1)}
+                  className="px-2.5 py-1 text-xs text-white/80 hover:text-white disabled:opacity-30 disabled:pointer-events-none flex items-center gap-1 shrink-0"
+                >
+                  Next <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
           </div>
         </div>,
         document.body

@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Volume2, VolumeX } from "lucide-react";
-import { motion } from "framer-motion";
 
 export default function AudioPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -12,15 +10,49 @@ export default function AudioPlayer() {
   useEffect(() => {
     let fadeInterval: NodeJS.Timeout;
 
-    const handleStartMusic = () => {
-      if (audioRef.current) {
-        shouldPlayRef.current = true;
-        audioRef.current.volume = 1;
-        audioRef.current.play().then(() => {
-          setIsPlaying(true);
-          window.dispatchEvent(new CustomEvent("music-state-change", { detail: { isPlaying: true } }));
-        }).catch((e) => console.log("Audio play failed:", e));
+    const playAudio = () => {
+      if (!audioRef.current) return;
+      shouldPlayRef.current = true;
+      audioRef.current.volume = 1;
+
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setIsPlaying(true);
+            window.dispatchEvent(
+              new CustomEvent("music-state-change", { detail: { isPlaying: true } })
+            );
+          })
+          .catch((err) => {
+            console.log("Autoplay prevented by mobile browser policy:", err);
+            // On mobile iOS/Android, if autoplay was blocked before user gesture,
+            // unlock audio on the very first touch/scroll interaction anywhere on the screen
+            const unlockAudio = () => {
+              if (audioRef.current && shouldPlayRef.current) {
+                audioRef.current.play().then(() => {
+                  setIsPlaying(true);
+                  window.dispatchEvent(
+                    new CustomEvent("music-state-change", { detail: { isPlaying: true } })
+                  );
+                }).catch(() => {});
+              }
+              document.removeEventListener("touchstart", unlockAudio);
+              document.removeEventListener("touchend", unlockAudio);
+              document.removeEventListener("click", unlockAudio);
+              document.removeEventListener("scroll", unlockAudio);
+            };
+
+            document.addEventListener("touchstart", unlockAudio, { passive: true });
+            document.addEventListener("touchend", unlockAudio, { passive: true });
+            document.addEventListener("click", unlockAudio, { passive: true });
+            document.addEventListener("scroll", unlockAudio, { passive: true });
+          });
       }
+    };
+
+    const handleStartMusic = () => {
+      playAudio();
     };
 
     const handleStopMusic = () => {
@@ -28,7 +60,9 @@ export default function AudioPlayer() {
       if (audioRef.current) {
         audioRef.current.pause();
         setIsPlaying(false);
-        window.dispatchEvent(new CustomEvent("music-state-change", { detail: { isPlaying: false } }));
+        window.dispatchEvent(
+          new CustomEvent("music-state-change", { detail: { isPlaying: false } })
+        );
       }
     };
 
@@ -46,7 +80,10 @@ export default function AudioPlayer() {
       clearInterval(fadeInterval);
       fadeInterval = setInterval(() => {
         if (audioRef.current && audioRef.current.volume > 0.15) {
-          audioRef.current.volume = Math.max(0.05, Number((audioRef.current.volume - 0.1).toFixed(2)));
+          audioRef.current.volume = Math.max(
+            0.05,
+            Number((audioRef.current.volume - 0.1).toFixed(2))
+          );
         } else {
           if (audioRef.current) audioRef.current.volume = 0.05;
           clearInterval(fadeInterval);
@@ -57,16 +94,22 @@ export default function AudioPlayer() {
     const fadeInMusic = () => {
       if (!audioRef.current) return;
       if (!shouldPlayRef.current) return; // Don't play if user never opened envelope or explicitly stopped
-      
+
       // On mobile or if paused by other media, resume play
-      audioRef.current.play().then(() => {
-        setIsPlaying(true);
-      }).catch(() => {});
+      audioRef.current
+        .play()
+        .then(() => {
+          setIsPlaying(true);
+        })
+        .catch(() => {});
 
       clearInterval(fadeInterval);
       fadeInterval = setInterval(() => {
         if (audioRef.current && audioRef.current.volume < 1) {
-          audioRef.current.volume = Math.min(1, Number((audioRef.current.volume + 0.1).toFixed(2)));
+          audioRef.current.volume = Math.min(
+            1,
+            Number((audioRef.current.volume + 0.1).toFixed(2))
+          );
         } else {
           clearInterval(fadeInterval);
         }
@@ -78,7 +121,7 @@ export default function AudioPlayer() {
     window.addEventListener("toggle-music", handleToggleMusic);
     window.addEventListener("fade-music-out", fadeOutMusic);
     window.addEventListener("fade-music-in", fadeInMusic);
-    
+
     return () => {
       window.removeEventListener("start-music", handleStartMusic);
       window.removeEventListener("stop-music", handleStopMusic);
@@ -90,11 +133,16 @@ export default function AudioPlayer() {
   }, []);
 
   return (
-    <audio 
-      ref={audioRef} 
-      src="/images/envelope_music.webm" 
-      loop 
+    <audio
+      ref={audioRef}
+      loop
       preload="auto"
-    />
+      playsInline
+      className="hidden"
+    >
+      <source src="/images/envelope_music.mp3" type="audio/mpeg" />
+      <source src="/images/envelope_music.m4a" type="audio/mp4" />
+      <source src="/images/envelope_music.webm" type="audio/webm" />
+    </audio>
   );
 }
