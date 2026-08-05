@@ -257,33 +257,39 @@ export default function EnvelopeLoader() {
                   </svg>
 
                   {/* Typography on the Flap */}
-                  <div className="absolute top-[5%] sm:top-[7%] md:top-[9%] left-1/2 -translate-x-1/2 w-[86%] sm:w-[75%] md:w-full max-w-sm sm:max-w-md md:max-w-lg text-center flex flex-col items-center justify-start pointer-events-none px-2 sm:px-4">
+                  <div className="absolute top-[4%] sm:top-[6%] md:top-[8%] left-1/2 -translate-x-1/2 w-[88%] max-w-[280px] sm:max-w-sm md:max-w-md text-center flex flex-col items-center justify-start pointer-events-none px-2">
 
                     {/* Top Ornament */}
-                    <div className="flex items-center justify-center gap-3 sm:gap-4 mb-2 sm:mb-3 w-full max-w-[200px] sm:max-w-[260px] opacity-85">
+                    <div className="flex items-center justify-center gap-2.5 sm:gap-3.5 mb-1.5 sm:mb-2.5 w-full max-w-[160px] sm:max-w-[220px] opacity-85">
                       <div className="h-[1px] flex-grow bg-gradient-to-r from-transparent to-[#D4AF37]"></div>
-                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rotate-45 border border-[#D4AF37]"></div>
+                      <div className="w-1.5 h-1.5 rotate-45 border border-[#D4AF37]"></div>
                       <div className="h-[1px] flex-grow bg-gradient-to-l from-transparent to-[#D4AF37]"></div>
                     </div>
 
-                    <p style={{ fontFamily: "var(--font-cormorant), cursive, serif" }} className="text-[#4A4045] text-lg sm:text-2xl md:text-3xl italic font-light mb-2.5 sm:mb-4 max-w-[300px] sm:max-w-none leading-snug sm:leading-normal">
+                    <p style={{ fontFamily: "var(--font-cormorant), cursive, serif" }} className="text-[#4A4045] text-base sm:text-2xl md:text-3xl italic font-light mb-1.5 sm:mb-3 max-w-[280px] sm:max-w-none leading-snug sm:leading-normal">
                       You are lovingly invited to the wedding of
                     </p>
 
-                    <h1 className="text-[#1A1618] font-serif text-[30px] sm:text-4xl md:text-5xl tracking-[0.16em] sm:tracking-[0.2em] uppercase mb-2.5 sm:mb-4 leading-tight sm:leading-normal">
-                      OLIVIA <br /> <span className="text-lg sm:text-xl font-light text-[#D4AF37] tracking-[0.2em]">AND</span> <br /> IYANU
+                    <h1 className="text-[#1A1618] font-serif text-[26px] sm:text-4xl md:text-5xl tracking-[0.14em] sm:tracking-[0.18em] uppercase mb-1.5 sm:mb-3 leading-tight sm:leading-normal">
+                      OLIVIA <br /> <span className="text-base sm:text-xl font-light text-[#D4AF37] tracking-[0.2em]">AND</span> <br /> IYANU
                     </h1>
 
                     {/* Bottom Ornament */}
-                    <div className="flex items-center justify-center gap-2.5 sm:gap-3 my-1.5 sm:my-2 w-full max-w-[110px] sm:max-w-[140px] opacity-75">
-                      <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[#D4AF37]"></div>
+                    <div className="flex items-center justify-center gap-2 sm:gap-2.5 my-1 sm:my-1.5 w-full max-w-[90px] sm:max-w-[120px] opacity-75">
+                      <div className="w-1 h-1 rounded-full bg-[#D4AF37]"></div>
                       <div className="h-[1px] flex-grow bg-[#D4AF37]"></div>
-                      <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[#D4AF37]"></div>
+                      <div className="w-1 h-1 rounded-full bg-[#D4AF37]"></div>
                     </div>
 
-                    <p className="text-[#6E646A] text-xs sm:text-sm md:text-base tracking-[0.25em] sm:tracking-[0.35em] font-medium font-mono uppercase">
-                      FRIDAY • 30.10.2026
-                    </p>
+                    {/* Date Block: Stacked to fit cleanly inside the V shape without ever clipping */}
+                    <div className="flex flex-col items-center justify-center">
+                      <span className="text-[#99731E] text-[10px] sm:text-[11px] md:text-xs font-bold tracking-[0.25em] sm:tracking-[0.3em] uppercase mb-0.5">
+                        FRIDAY
+                      </span>
+                      <span className="text-[#5A4F56] text-xs sm:text-sm md:text-base tracking-[0.18em] sm:tracking-[0.22em] font-medium font-mono">
+                        30.10.2026
+                      </span>
+                    </div>
                   </div>
                 </div>
 
