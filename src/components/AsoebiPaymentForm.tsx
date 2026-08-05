@@ -309,7 +309,7 @@ export default function AsoebiPaymentForm() {
         <div className="text-center max-w-2xl mx-auto mb-10">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0E5C52]/10 text-[#0E5C52] text-xs font-bold uppercase tracking-[0.25em] mb-3">
             <ShoppingBag className="w-3.5 h-3.5 text-[#B23A6B]" />
-            Aso-Ebi &amp; Cultural Attire
+            Asoebi Shop
           </div>
           <h2
             style={{ fontFamily: "var(--font-cormorant), Georgia, serif" }}
