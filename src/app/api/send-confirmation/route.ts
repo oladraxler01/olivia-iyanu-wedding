@@ -215,21 +215,43 @@ export async function POST(request: Request) {
     const resendApiKey = process.env.RESEND_API_KEY;
     if (resendApiKey) {
       try {
-        const resendRes = await fetch("https://api.resend.com/emails", {
+        const fromEmail = process.env.RESEND_FROM_EMAIL || "Olivia & Iyanu Wedding <celebration@oliviawedsiyanu.xyz>";
+        
+        let resendRes = await fetch("https://api.resend.com/emails", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${resendApiKey}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: "Olivia & Iyanu Wedding <onboarding@resend.dev>",
+            from: fromEmail,
             to: [recipientEmail],
             subject,
             html: htmlEmail,
           }),
         });
 
-        const resendData = await resendRes.json();
+        let resendData = await resendRes.json();
+        
+        // If the custom domain is not yet verified in Resend, gracefully fallback to testing sender
+        if (!resendRes.ok && fromEmail !== "Olivia & Iyanu Wedding <onboarding@resend.dev>") {
+          console.warn("Custom domain not yet verified, trying sandbox fallback...", resendData);
+          resendRes = await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${resendApiKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              from: "Olivia & Iyanu Wedding <onboarding@resend.dev>",
+              to: [recipientEmail],
+              subject,
+              html: htmlEmail,
+            }),
+          });
+          resendData = await resendRes.json();
+        }
+
         console.log("Resend API response:", resendData);
         if (!resendRes.ok) {
           console.error("Resend send failed:", resendData);
