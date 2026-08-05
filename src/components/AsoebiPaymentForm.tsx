@@ -246,7 +246,7 @@ export default function AsoebiPaymentForm() {
       }
 
       // Trigger automated confirmation email if email provided
-      if (email.trim()) {
+      if (email.trim() && email.includes("@")) {
         const lineItems = priceList
           .filter((item) => (quantities[item.id] || 0) > 0)
           .map((item) => ({
@@ -257,23 +257,25 @@ export default function AsoebiPaymentForm() {
             qty: quantities[item.id] || 0,
           }));
 
-        fetch("/api/send-confirmation", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: email.trim(),
-            fullName: fullName.trim(),
-            phone: phone.trim(),
-            mode,
-            lineItems,
-            totalAmount,
-            deliveryLocation: deliveryLocation.trim(),
-            filaMeasurement: filaMeasurement.trim(),
-            notes: notes.trim(),
-          }),
-        }).catch((err) => {
-          console.warn("Automated email dispatch error:", err);
-        });
+        try {
+          await fetch("/api/send-confirmation", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: email.trim(),
+              fullName: fullName.trim(),
+              phone: phone.trim(),
+              mode,
+              lineItems,
+              totalAmount,
+              deliveryLocation: deliveryLocation.trim(),
+              filaMeasurement: filaMeasurement.trim(),
+              notes: notes.trim(),
+            }),
+          });
+        } catch (emailErr) {
+          console.warn("Automated email dispatch error:", emailErr);
+        }
       }
 
       setSubmittedMode(mode);
