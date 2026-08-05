@@ -190,8 +190,10 @@ export function parseAsoebiItems(rawItems: any): {
   filaMeasurement: string | null;
   orderType: "pay_now" | "interest" | "unknown";
   notes: string | null;
+  email: string | null;
 } {
-  if (!rawItems) return { lineItems: [], filaMeasurement: null, orderType: "unknown", notes: null };
+  if (!rawItems)
+    return { lineItems: [], filaMeasurement: null, orderType: "unknown", notes: null, email: null };
 
   let parsed: Record<string, any> = {};
 
@@ -201,7 +203,7 @@ export function parseAsoebiItems(rawItems: any): {
     try {
       parsed = JSON.parse(rawItems);
     } catch {
-      return { lineItems: [], filaMeasurement: null, orderType: "unknown", notes: null };
+      return { lineItems: [], filaMeasurement: null, orderType: "unknown", notes: null, email: null };
     }
   }
 
@@ -209,8 +211,16 @@ export function parseAsoebiItems(rawItems: any): {
   let filaMeasurement: string | null = null;
   let orderType: "pay_now" | "interest" | "unknown" = parsed.order_type || parsed.type || "unknown";
   let notes: string | null = parsed.notes || parsed.comment || null;
+  let email: string | null = parsed.email || parsed.guest_email || null;
 
   Object.entries(parsed).forEach(([key, val]) => {
+    if (key === "email" || key === "guest_email") {
+      if (val && typeof val === "string" && val.trim() !== "") {
+        email = val.trim();
+      }
+      return;
+    }
+
     if (key === "fila_measurement" || key === "filaMeasurement" || key === "cap_measurement") {
       if (val && typeof val === "string" && val.trim() !== "") {
         filaMeasurement = val.trim();
@@ -258,7 +268,7 @@ export function parseAsoebiItems(rawItems: any): {
     }
   });
 
-  return { lineItems, filaMeasurement, orderType, notes };
+  return { lineItems, filaMeasurement, orderType, notes, email };
 }
 
 export function isOrderPaid(order: AsoebiOrder): boolean {
@@ -1167,7 +1177,7 @@ export default function AdminDashboard() {
                       </tr>
                     ) : (
                       filteredAsoebiOrders.map((order) => {
-                        const { lineItems, filaMeasurement, notes } = parseAsoebiItems(order.items);
+                        const { lineItems, filaMeasurement, notes, email } = parseAsoebiItems(order.items);
                         const cleanPhone = (order.phone || "").replace(/\D/g, "");
                         const isPaid = isOrderPaid(order);
 
@@ -1205,6 +1215,17 @@ export default function AdminDashboard() {
                                   </button>
                                 )}
                               </div>
+                              {email && (
+                                <div className="flex items-center gap-1.5 mt-1 text-xs text-[#241B22]">
+                                  <Mail className="w-3 h-3 text-[#0E5C52] flex-shrink-0" />
+                                  <a
+                                    href={`mailto:${email}`}
+                                    className="hover:underline truncate max-w-[180px] text-[11.5px]"
+                                  >
+                                    {email}
+                                  </a>
+                                </div>
+                              )}
                               {order.phone && (
                                 <a
                                   href={`https://wa.me/${cleanPhone.startsWith("0") ? "234" + cleanPhone.slice(1) : cleanPhone}`}
@@ -2062,6 +2083,21 @@ export default function AdminDashboard() {
                     {selectedOrder.phone}
                   </span>
                 </div>
+                {(() => {
+                  const { email } = parseAsoebiItems(selectedOrder.items);
+                  if (!email) return null;
+                  return (
+                    <div className="flex justify-between">
+                      <span className="text-[#6B5A63]">Email:</span>
+                      <a
+                        href={`mailto:${email}`}
+                        className="text-[#0E5C52] hover:underline font-medium"
+                      >
+                        {email}
+                      </a>
+                    </div>
+                  );
+                })()}
                 <div className="flex justify-between">
                   <span className="text-[#6B5A63]">Delivery:</span>
                   <span className="font-medium text-[#241B22] text-right max-w-[200px]">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Loader2,
@@ -19,6 +19,7 @@ import {
   ArrowRight,
   Info,
   ShieldCheck,
+  Mail,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -89,6 +90,7 @@ export default function AsoebiPaymentForm() {
   const [filaMeasurement, setFilaMeasurement] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [deliveryLocation, setDeliveryLocation] = useState("");
   const [notes, setNotes] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -97,6 +99,36 @@ export default function AsoebiPaymentForm() {
   const [submittedMode, setSubmittedMode] = useState<"interest" | "pay_now" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [copiedBankField, setCopiedBankField] = useState<string | null>(null);
+
+  // Auto-switch tab based on URL parameters or hash
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const checkParams = () => {
+        const searchParams = new URLSearchParams(window.location.search);
+        const hash = window.location.hash;
+        const modeParam = searchParams.get("mode") || searchParams.get("tab");
+
+        if (
+          modeParam === "pay" ||
+          modeParam === "pay_now" ||
+          hash === "#asoebi-pay" ||
+          searchParams.get("pay") === "true"
+        ) {
+          setMode("pay_now");
+        } else if (
+          modeParam === "interest" ||
+          modeParam === "reserve" ||
+          hash === "#asoebi-reserve"
+        ) {
+          setMode("interest");
+        }
+      };
+
+      checkParams();
+      window.addEventListener("hashchange", checkParams);
+      return () => window.removeEventListener("hashchange", checkParams);
+    }
+  }, []);
 
   const totalAmount = priceList.reduce((sum, item) => {
     const q = quantities[item.id] || 0;
@@ -194,6 +226,7 @@ export default function AsoebiPaymentForm() {
         delivery_location: deliveryLocation.trim(),
         items: {
           ...quantities,
+          email: email.trim() || undefined,
           fila_measurement: filaMeasurement.trim() || undefined,
           order_type: mode, // "pay_now" | "interest"
           notes: notes.trim(),
@@ -212,6 +245,37 @@ export default function AsoebiPaymentForm() {
         throw new Error("Failed to record order: " + dbError.message);
       }
 
+      // Trigger automated confirmation email if email provided
+      if (email.trim()) {
+        const lineItems = priceList
+          .filter((item) => (quantities[item.id] || 0) > 0)
+          .map((item) => ({
+            id: item.id,
+            name: item.name,
+            shortName: item.shortName,
+            price: item.price,
+            qty: quantities[item.id] || 0,
+          }));
+
+        fetch("/api/send-confirmation", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: email.trim(),
+            fullName: fullName.trim(),
+            phone: phone.trim(),
+            mode,
+            lineItems,
+            totalAmount,
+            deliveryLocation: deliveryLocation.trim(),
+            filaMeasurement: filaMeasurement.trim(),
+            notes: notes.trim(),
+          }),
+        }).catch((err) => {
+          console.warn("Automated email dispatch error:", err);
+        });
+      }
+
       setSubmittedMode(mode);
     } catch (err: any) {
       console.error("Asoebi submission error:", err);
@@ -224,6 +288,7 @@ export default function AsoebiPaymentForm() {
   const handleReset = () => {
     setFullName("");
     setPhone("");
+    setEmail("");
     setDeliveryLocation("");
     setFilaMeasurement("");
     setNotes("");
@@ -394,6 +459,28 @@ export default function AsoebiPaymentForm() {
                         className="w-full px-4 py-3 bg-[#FDFBF9] border border-[#E3D3DA] rounded-xl text-sm text-[#241B22] focus:outline-none focus:border-[#0E5C52] focus:ring-1 focus:ring-[#0E5C52]"
                         disabled={isSubmitting}
                       />
+                    </div>
+                  </div>
+
+                  <div className="mt-3">
+                    <label className="block text-xs font-semibold text-[#4A3E45] mb-1.5 flex flex-wrap items-center justify-between gap-1">
+                      <span>
+                        Email Address <span className="text-[#8C7A84] font-normal">(Optional)</span>
+                      </span>
+                      <span className="text-[11px] text-[#0E5C52] font-normal">
+                        Receive confirmation &amp; direct payment link
+                      </span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="e.g. yourname@example.com"
+                        className="w-full pl-10 pr-4 py-2.5 bg-[#FDFBF9] border border-[#E3D3DA] rounded-xl text-xs sm:text-sm text-[#241B22] focus:outline-none focus:border-[#0E5C52] focus:ring-1 focus:ring-[#0E5C52]"
+                        disabled={isSubmitting}
+                      />
+                      <Mail className="w-4 h-4 text-[#8C7A84] absolute left-3.5 top-1/2 -translate-y-1/2" />
                     </div>
                   </div>
                 </div>
@@ -676,10 +763,18 @@ export default function AsoebiPaymentForm() {
                       {submittedMode === "interest" ? "Reservation (Interest Only)" : "Paid Order (Proof Uploaded)"}
                     </strong>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-[#6B5A63]">Phone / WhatsApp:</span>
-                    <strong className="text-[#241B22]">{phone}</strong>
-                  </div>
+                  {phone && (
+                    <div className="flex justify-between">
+                      <span className="text-[#6B5A63]">Phone / WhatsApp:</span>
+                      <strong className="text-[#241B22]">{phone}</strong>
+                    </div>
+                  )}
+                  {email && (
+                    <div className="flex justify-between">
+                      <span className="text-[#6B5A63]">Email Address:</span>
+                      <strong className="text-[#241B22]">{email}</strong>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span className="text-[#6B5A63]">Delivery Location:</span>
                     <strong className="text-[#241B22]">{deliveryLocation}</strong>
@@ -690,6 +785,14 @@ export default function AsoebiPaymentForm() {
                       ₦{totalAmount.toLocaleString()}
                     </strong>
                   </div>
+                  {email && (
+                    <div className="p-3 bg-[#0E5C52]/5 rounded-xl border border-[#0E5C52]/20 text-[#0E5C52] mt-2 flex items-start gap-2">
+                      <Mail className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+                      <div className="text-[11.5px] leading-relaxed">
+                        An automated summary {submittedMode === "interest" ? "and direct payment link has" : "has"} been sent to <strong>{email}</strong>.
+                      </div>
+                    </div>
+                  )}
                   {submittedMode === "interest" && (
                     <div className="p-3 bg-[#FAF3E7] rounded-xl border border-[#D4AF37]/40 text-[#8C6D1F] mt-2">
                       <p className="font-semibold flex items-center gap-1.5">
