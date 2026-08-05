@@ -345,7 +345,7 @@ export default function AsoebiPaymentForm() {
               </span>
             </div>
             <p className="text-xs sm:text-sm text-[#5C4D55] leading-relaxed">
-              To guarantee fabric and Aso-Ebi availability, and to give our custom tailors ample time for preparation, please note that <strong>all fabric allocations and reservations must be paid for on or before August 31, 2026</strong>.
+              To guarantee fabric and Aso-Ebi availability, and to give our custom tailors ample time for preparation, please note that <strong>all reservations must be paid for on or before August 31, 2026</strong>.
             </p>
           </div>
         </motion.div>
@@ -361,11 +361,10 @@ export default function AsoebiPaymentForm() {
                   setMode("pay_now");
                   setError(null);
                 }}
-                className={`py-3.5 px-3 sm:px-6 rounded-2xl font-medium text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer ${
-                  mode === "pay_now"
-                    ? "bg-[#0E5C52] text-white font-bold shadow-md"
-                    : "text-[#6B5A63] hover:text-[#0E5C52]"
-                }`}
+                className={`py-3.5 px-3 sm:px-6 rounded-2xl font-medium text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer ${mode === "pay_now"
+                  ? "bg-[#0E5C52] text-white font-bold shadow-md"
+                  : "text-[#6B5A63] hover:text-[#0E5C52]"
+                  }`}
               >
                 <CreditCard className="w-4 h-4 text-[#D4AF37]" />
                 <span className="text-center">
@@ -382,11 +381,10 @@ export default function AsoebiPaymentForm() {
                   setMode("interest");
                   setError(null);
                 }}
-                className={`py-3.5 px-3 sm:px-6 rounded-2xl font-medium text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer ${
-                  mode === "interest"
-                    ? "bg-white text-[#0E5C52] font-bold shadow-sm border border-[#D4AF37]/40"
-                    : "text-[#6B5A63] hover:text-[#0E5C52]"
-                }`}
+                className={`py-3.5 px-3 sm:px-6 rounded-2xl font-medium text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer ${mode === "interest"
+                  ? "bg-white text-[#0E5C52] font-bold shadow-sm border border-[#D4AF37]/40"
+                  : "text-[#6B5A63] hover:text-[#0E5C52]"
+                  }`}
               >
                 <FileCheck className="w-4 h-4 text-[#0E5C52]" />
                 <span className="text-center">
@@ -506,11 +504,10 @@ export default function AsoebiPaymentForm() {
                       return (
                         <div
                           key={item.id}
-                          className={`p-4 rounded-2xl border transition-all duration-200 ${
-                            isSelected
-                              ? "bg-[#FFFDF9] border-[#0E5C52]/50 shadow-sm"
-                              : "bg-[#FAF7F2] border-[#E3D3DA]/70 hover:border-[#E3D3DA]"
-                          }`}
+                          className={`p-4 rounded-2xl border transition-all duration-200 ${isSelected
+                            ? "bg-[#FFFDF9] border-[#0E5C52]/50 shadow-sm"
+                            : "bg-[#FAF7F2] border-[#E3D3DA]/70 hover:border-[#E3D3DA]"
+                            }`}
                         >
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             {/* Item Details */}
@@ -725,11 +722,10 @@ export default function AsoebiPaymentForm() {
                 <button
                   type="submit"
                   disabled={isSubmitting || totalAmount <= 0}
-                  className={`w-full py-4 px-6 rounded-2xl font-semibold text-sm sm:text-base transition-all duration-300 shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
-                    mode === "interest"
-                      ? "bg-[#0E5C52] text-white hover:bg-[#0A4A42]"
-                      : "bg-[#B23A6B] text-white hover:bg-[#962F59]"
-                  }`}
+                  className={`w-full py-4 px-6 rounded-2xl font-semibold text-sm sm:text-base transition-all duration-300 shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${mode === "interest"
+                    ? "bg-[#0E5C52] text-white hover:bg-[#0A4A42]"
+                    : "bg-[#B23A6B] text-white hover:bg-[#962F59]"
+                    }`}
                 >
                   {isSubmitting ? (
                     <>
