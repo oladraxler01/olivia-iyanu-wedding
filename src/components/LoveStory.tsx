@@ -1,8 +1,8 @@
 "use client";
 
-import { Heart, Camera, Utensils, Users, Image as ImageIcon, Crown, X, Loader2, Play, Pause } from "lucide-react";
+import { Heart, Camera, Utensils, Users, Image as ImageIcon, Crown, X, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 const milestones = [
   {
@@ -16,7 +16,7 @@ const milestones = [
     icon: <Camera className="w-5 h-5 text-[#B23A6B]/50" />,
     title: "Creating Memories",
     desc: "A glimpse of the magic before the big day.",
-    media: "video"
+    media: "vimeo"
   },
   {
     icon: <Camera className="w-5 h-5 text-[#B23A6B]/50" />,
@@ -51,97 +51,6 @@ const milestones = [
   },
 ];
 
-function MemoryVideo() {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    video.muted = true;
-    video.playsInline = true;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const playPromise = video.play();
-            if (playPromise !== undefined) {
-              playPromise
-                .then(() => {
-                  setIsPlaying(true);
-                  window.dispatchEvent(new Event("fade-music-out"));
-                })
-                .catch(() => {});
-            }
-          } else {
-            video.pause();
-            setIsPlaying(false);
-            window.dispatchEvent(new Event("fade-music-in"));
-          }
-        });
-      },
-      { threshold: 0.2 }
-    );
-
-    observer.observe(video);
-    return () => observer.disconnect();
-  }, []);
-
-  const toggle = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const video = videoRef.current;
-    if (!video) return;
-    if (video.paused) {
-      video.muted = false;
-      video.play().then(() => {
-        setIsPlaying(true);
-        window.dispatchEvent(new Event("fade-music-out"));
-      }).catch(() => {});
-    } else {
-      video.pause();
-      setIsPlaying(false);
-      window.dispatchEvent(new Event("fade-music-in"));
-    }
-  };
-
-  return (
-    <div
-      onClick={toggle}
-      className="relative w-full aspect-[9/16] rounded-2xl overflow-hidden bg-[#241B22] mb-4 shadow-md group cursor-pointer"
-    >
-      <video
-        ref={videoRef}
-        poster="/images/video_poster.jpg"
-        preload="auto"
-        autoPlay
-        muted
-        loop
-        playsInline
-        className="w-full h-full object-cover"
-        onPlay={() => {
-          setIsPlaying(true);
-          window.dispatchEvent(new Event("fade-music-out"));
-        }}
-        onPause={() => {
-          setIsPlaying(false);
-        }}
-      >
-        <source src="/images/wedding_highlight.mp4" type="video/mp4" />
-        <source src="/images/IMG_1797.MP4" type="video/mp4" />
-      </video>
-
-      {/* Play/Pause Hover/Tap Indicator */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity bg-black/20">
-        <div className="p-3 bg-black/60 backdrop-blur-md rounded-full text-white shadow-lg">
-          {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 fill-white" />}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function LoveStory() {
   const [fullscreenMedia, setFullscreenMedia] = useState<React.ReactNode | null>(null);
 
@@ -152,6 +61,41 @@ export default function LoveStory() {
     minutes: 0,
     seconds: 0,
   });
+
+  useEffect(() => {
+    let observer: IntersectionObserver;
+    import("@vimeo/player").then((PlayerModule) => {
+      const Player = PlayerModule.default;
+      const iframe = document.getElementById("story-vimeo-player") as HTMLIFrameElement;
+      if (iframe) {
+        const player = new Player(iframe);
+        player.on("play", () => {
+          window.dispatchEvent(new Event("fade-music-out"));
+        });
+        player.on("pause", () => {
+          window.dispatchEvent(new Event("fade-music-in"));
+        });
+
+        observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              player.setVolume(0.5).catch(() => {});
+              player.play().catch(() => {});
+            } else {
+              player.pause().catch(() => {});
+              window.dispatchEvent(new Event("fade-music-in"));
+            }
+          });
+        }, { threshold: 0.3 });
+        
+        observer.observe(iframe);
+      }
+    }).catch(err => console.log("Failed to load Vimeo player", err));
+
+    return () => {
+      if (observer) observer.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     const updateTimer = () => {
@@ -304,8 +248,17 @@ export default function LoveStory() {
                           <span className="text-white text-xs font-semibold tracking-widest uppercase drop-shadow-md">Loading Image...</span>
                         </div>
                       </div>
-                    ) : m.media === "video" ? (
-                      <MemoryVideo />
+                    ) : m.media === "vimeo" ? (
+                      <div className="w-full aspect-[9/16] rounded-2xl overflow-hidden bg-black mb-4 shadow-sm">
+                        <iframe
+                          id="story-vimeo-player"
+                          src="https://player.vimeo.com/video/1213738960?badge=0&autopause=0&player_id=0&app_id=58479&title=0&byline=0&portrait=0"
+                          frameBorder="0"
+                          allow="autoplay; fullscreen; picture-in-picture"
+                          className="w-full h-full"
+                          title="Pre-wedding shoot"
+                        ></iframe>
+                      </div>
                     ) : (
                       <div
                         onClick={() => setFullscreenMedia(
