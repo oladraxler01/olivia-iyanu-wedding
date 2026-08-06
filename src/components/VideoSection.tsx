@@ -9,33 +9,60 @@ export default function VideoSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
+  const startPlaybackWithSound = () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.muted = false;
+    video.volume = 1;
+    window.dispatchEvent(new Event("fade-music-out"));
+
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          setIsPlaying(true);
+        })
+        .catch(() => {
+          // If unmuted playback is blocked on initial auto-scroll before user touch,
+          // unlock audio on the very first touch/scroll/click
+          const unlock = () => {
+            if (videoRef.current) {
+              videoRef.current.muted = false;
+              videoRef.current.volume = 1;
+              videoRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+            }
+            window.dispatchEvent(new Event("fade-music-out"));
+          };
+          window.addEventListener("touchstart", unlock, { once: true, passive: true });
+          window.addEventListener("scroll", unlock, { once: true, passive: true });
+          window.addEventListener("click", unlock, { once: true, passive: true });
+        });
+    }
+  };
+
+  const stopPlayback = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.pause();
+    setIsPlaying(false);
+    window.dispatchEvent(new Event("fade-music-in"));
+  };
+
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    // Ensure muted & playsInline for guaranteed mobile & desktop autoplay
-    video.muted = true;
-    video.playsInline = true;
+    video.muted = false;
+    video.volume = 1;
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            // Once the video section enters view, automatically play and lower background music
-            const playPromise = video.play();
-            if (playPromise !== undefined) {
-              playPromise
-                .then(() => {
-                  setIsPlaying(true);
-                  window.dispatchEvent(new Event("fade-music-out"));
-                })
-                .catch(() => {});
-            }
+            startPlaybackWithSound();
           } else {
-            // Once user scrolls away from the video, pause and restore background music
-            video.pause();
-            setIsPlaying(false);
-            window.dispatchEvent(new Event("fade-music-in"));
+            stopPlayback();
           }
         });
       },
@@ -57,14 +84,9 @@ export default function VideoSection() {
     if (!video) return;
 
     if (video.paused) {
-      video.play().then(() => {
-        setIsPlaying(true);
-        window.dispatchEvent(new Event("fade-music-out"));
-      }).catch(() => {});
+      startPlaybackWithSound();
     } else {
-      video.pause();
-      setIsPlaying(false);
-      window.dispatchEvent(new Event("fade-music-in"));
+      stopPlayback();
     }
   };
 
@@ -96,12 +118,10 @@ export default function VideoSection() {
             borderRadius: "40px / 80px",
           }}
         >
-          {/* Full High-Definition Original Video with Guaranteed Autoplay */}
+          {/* High-Definition Original Video with Full Sound */}
           <video
             ref={videoRef}
             src="/images/IMG_1797.MP4"
-            autoPlay
-            muted
             loop
             playsInline
             preload="auto"
