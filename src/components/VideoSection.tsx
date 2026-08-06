@@ -2,22 +2,17 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Volume2, VolumeX, Play, Pause } from "lucide-react";
+import { Play, Pause } from "lucide-react";
 
 export default function VideoSection() {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isMuted, setIsMuted] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const isIntersectingRef = useRef(false);
   const userInteractedRef = useRef(false);
 
-  const startVideoPlayback = (forceUnmute = true) => {
+  const startVideoPlayback = () => {
     if (!videoRef.current) return;
-    
-    if (forceUnmute) {
-      videoRef.current.muted = false;
-      setIsMuted(false);
-    }
+    videoRef.current.muted = false;
 
     // Instantly duck/pause background website music
     window.dispatchEvent(new Event("fade-music-out"));
@@ -33,7 +28,6 @@ export default function VideoSection() {
           // play video and unlock sound on the first touch/scroll gesture
           if (videoRef.current) {
             videoRef.current.muted = true;
-            setIsMuted(true);
             videoRef.current
               .play()
               .then(() => {
@@ -41,7 +35,6 @@ export default function VideoSection() {
                 const unlockSound = () => {
                   if (videoRef.current) {
                     videoRef.current.muted = false;
-                    setIsMuted(false);
                   }
                   window.dispatchEvent(new Event("fade-music-out"));
                   document.removeEventListener("touchstart", unlockSound);
@@ -116,23 +109,6 @@ export default function VideoSection() {
     }
   };
 
-  const toggleSound = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!videoRef.current) return;
-    const nextMuteState = !isMuted;
-    videoRef.current.muted = nextMuteState;
-    setIsMuted(nextMuteState);
-
-    if (!nextMuteState) {
-      // If unmuting, make sure video is playing and background music is ducked
-      if (videoRef.current.paused) {
-        startVideoPlayback(true);
-      } else {
-        window.dispatchEvent(new Event("fade-music-out"));
-      }
-    }
-  };
-
   return (
     <section className="py-16 sm:py-24 bg-[#FDFBF7] overflow-hidden flex flex-col items-center">
       {/* Section Heading */}
@@ -168,7 +144,6 @@ export default function VideoSection() {
             poster="/images/video_poster.jpg"
             preload="auto"
             loop
-            muted={isMuted}
             playsInline
             className="absolute top-0 left-0 w-full h-full object-cover"
             onPlay={() => setIsPlaying(true)}
@@ -195,26 +170,6 @@ export default function VideoSection() {
               <span className="text-xs sm:text-sm font-medium tracking-wide">
                 {isPlaying ? "Pause" : "Play"}
               </span>
-            </button>
-
-            {/* Audio Toggle */}
-            <button
-              type="button"
-              onClick={toggleSound}
-              className="flex items-center gap-2 bg-black/50 hover:bg-[#0E5C52] backdrop-blur-md text-white px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-full transition-all shadow-lg cursor-pointer border border-white/20"
-              title={isMuted ? "Unmute Video Audio" : "Mute Video Audio"}
-            >
-              {isMuted ? (
-                <>
-                  <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white/80" />
-                  <span className="text-xs sm:text-sm font-medium tracking-wide">Unmute</span>
-                </>
-              ) : (
-                <>
-                  <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#D4AF37]" />
-                  <span className="text-xs sm:text-sm font-medium tracking-wide">Mute</span>
-                </>
-              )}
             </button>
           </div>
         </div>
