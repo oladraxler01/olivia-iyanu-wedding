@@ -59,6 +59,9 @@ function MemoryVideo() {
     const video = videoRef.current;
     if (!video) return;
 
+    video.muted = true;
+    video.playsInline = true;
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -79,7 +82,7 @@ function MemoryVideo() {
           }
         });
       },
-      { threshold: 0.3 }
+      { threshold: 0.2 }
     );
 
     observer.observe(video);
@@ -91,6 +94,7 @@ function MemoryVideo() {
     const video = videoRef.current;
     if (!video) return;
     if (video.paused) {
+      video.muted = false;
       video.play().then(() => {
         setIsPlaying(true);
         window.dispatchEvent(new Event("fade-music-out"));
@@ -105,13 +109,14 @@ function MemoryVideo() {
   return (
     <div
       onClick={toggle}
-      className="relative w-full aspect-[9/16] rounded-2xl overflow-hidden bg-black mb-4 shadow-sm group cursor-pointer"
+      className="relative w-full aspect-[9/16] rounded-2xl overflow-hidden bg-[#241B22] mb-4 shadow-md group cursor-pointer"
     >
       <video
         ref={videoRef}
-        src="/images/IMG_1797.MP4"
         poster="/images/video_poster.jpg"
         preload="auto"
+        autoPlay
+        muted
         loop
         playsInline
         className="w-full h-full object-cover"
@@ -122,9 +127,14 @@ function MemoryVideo() {
         onPause={() => {
           setIsPlaying(false);
         }}
-      />
+      >
+        <source src="/images/wedding_highlight.mp4" type="video/mp4" />
+        <source src="/images/IMG_1797.MP4" type="video/mp4" />
+      </video>
+
+      {/* Play/Pause Hover/Tap Indicator */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity bg-black/20">
-        <div className="p-3 bg-black/60 backdrop-blur-md rounded-full text-white">
+        <div className="p-3 bg-black/60 backdrop-blur-md rounded-full text-white shadow-lg">
           {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 fill-white" />}
         </div>
       </div>
