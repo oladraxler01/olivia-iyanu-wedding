@@ -6,106 +6,65 @@ import { Play, Pause } from "lucide-react";
 
 export default function VideoSection() {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const isIntersectingRef = useRef(false);
-  const userInteractedRef = useRef(false);
 
-  const startVideoPlayback = () => {
-    if (!videoRef.current) return;
-    videoRef.current.muted = false;
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
 
-    // Instantly duck/pause background website music
-    window.dispatchEvent(new Event("fade-music-out"));
+    // Ensure muted & playsInline for guaranteed mobile & desktop autoplay
+    video.muted = true;
+    video.playsInline = true;
 
-    const playPromise = videoRef.current.play();
-    if (playPromise !== undefined) {
-      playPromise
-        .then(() => {
-          setIsPlaying(true);
-        })
-        .catch(() => {
-          // If browser strictly blocks unmuted autoplay without user gesture,
-          // play video and unlock sound on the first touch/scroll gesture
-          if (videoRef.current) {
-            videoRef.current.muted = true;
-            videoRef.current
-              .play()
-              .then(() => {
-                setIsPlaying(true);
-                const unlockSound = () => {
-                  if (videoRef.current) {
-                    videoRef.current.muted = false;
-                  }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            // Once the video section enters view, automatically play and lower background music
+            const playPromise = video.play();
+            if (playPromise !== undefined) {
+              playPromise
+                .then(() => {
+                  setIsPlaying(true);
                   window.dispatchEvent(new Event("fade-music-out"));
-                  document.removeEventListener("touchstart", unlockSound);
-                  document.removeEventListener("scroll", unlockSound);
-                  document.removeEventListener("click", unlockSound);
-                };
-                document.addEventListener("touchstart", unlockSound, { passive: true, once: true });
-                document.addEventListener("scroll", unlockSound, { passive: true, once: true });
-                document.addEventListener("click", unlockSound, { passive: true, once: true });
-              })
-              .catch(() => {});
+                })
+                .catch(() => {});
+            }
+          } else {
+            // Once user scrolls away from the video, pause and restore background music
+            video.pause();
+            setIsPlaying(false);
+            window.dispatchEvent(new Event("fade-music-in"));
           }
         });
-    }
-  };
+      },
+      { threshold: 0.2 }
+    );
 
-  const stopVideoPlayback = () => {
-    if (!videoRef.current) return;
-    videoRef.current.pause();
-    setIsPlaying(false);
-    // Smoothly restore background music volume
-    window.dispatchEvent(new Event("fade-music-in"));
-  };
-
-  // IntersectionObserver for mobile auto-play on scroll
-  useEffect(() => {
-    let observer: IntersectionObserver;
-
-    if (videoRef.current) {
-      observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              isIntersectingRef.current = true;
-              startVideoPlayback();
-            } else {
-              isIntersectingRef.current = false;
-              stopVideoPlayback();
-            }
-          });
-        },
-        { threshold: 0.3 }
-      );
-
-      observer.observe(videoRef.current);
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
     }
 
     return () => {
-      if (observer) observer.disconnect();
+      observer.disconnect();
     };
   }, []);
 
-  // Hover triggers for Desktop / Laptop
-  const handleMouseEnter = () => {
-    startVideoPlayback();
-  };
-
-  const handleMouseLeave = () => {
-    if (!isIntersectingRef.current || !userInteractedRef.current) {
-      stopVideoPlayback();
-    }
-  };
-
   const togglePlay = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    userInteractedRef.current = true;
-    if (!videoRef.current) return;
-    if (isPlaying) {
-      stopVideoPlayback();
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (video.paused) {
+      video.play().then(() => {
+        setIsPlaying(true);
+        window.dispatchEvent(new Event("fade-music-out"));
+      }).catch(() => {});
     } else {
-      startVideoPlayback();
+      video.pause();
+      setIsPlaying(false);
+      window.dispatchEvent(new Event("fade-music-in"));
     }
   };
 
@@ -130,32 +89,34 @@ export default function VideoSection() {
       >
         {/* Massive Visually Curved Video Container */}
         <div
+          ref={containerRef}
           onClick={togglePlay}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
           className="relative w-full max-w-[1800px] aspect-[4/5] sm:aspect-[18/9] bg-black shadow-[0_30px_60px_rgba(0,0,0,0.3)] overflow-hidden flex items-center justify-center border-[4px] sm:border-[12px] border-[#FFFDFB] group cursor-pointer"
           style={{
             borderRadius: "40px / 80px",
           }}
         >
-          {/* High-Speed Streaming HTML5 Video */}
+          {/* Full High-Definition Original Video with Guaranteed Autoplay */}
           <video
             ref={videoRef}
-            poster="/images/video_poster.jpg"
-            preload="auto"
+            src="/images/IMG_1797.MP4"
+            autoPlay
+            muted
             loop
             playsInline
+            preload="auto"
             className="absolute top-0 left-0 w-full h-full object-cover"
-            onPlay={() => setIsPlaying(true)}
-            onPause={() => setIsPlaying(false)}
-          >
-            <source src="/images/wedding_highlight.mp4" type="video/mp4" />
-            <source src="/images/wedding_highlight.webm" type="video/webm" />
-            <source src="/images/IMG_1797.MP4" type="video/mp4" />
-          </video>
+            onPlay={() => {
+              setIsPlaying(true);
+              window.dispatchEvent(new Event("fade-music-out"));
+            }}
+            onPause={() => {
+              setIsPlaying(false);
+            }}
+          />
 
-          {/* Custom Controls Overlay - Visible on Hover & Tap */}
-          <div className="absolute bottom-5 sm:bottom-8 left-0 right-0 px-4 sm:px-12 flex items-center justify-between z-20 opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-auto">
+          {/* Custom Controls Overlay - Shows on Hover & Mobile Tap */}
+          <div className="absolute bottom-5 sm:bottom-8 left-0 right-0 px-4 sm:px-12 flex items-center justify-between z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-auto">
             {/* Play/Pause Toggle */}
             <button
               type="button"
