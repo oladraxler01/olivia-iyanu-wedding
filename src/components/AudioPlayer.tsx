@@ -81,41 +81,43 @@ export default function AudioPlayer() {
       if (!audioRef.current) return;
       clearInterval(fadeInterval);
       fadeInterval = setInterval(() => {
-        if (audioRef.current && audioRef.current.volume > 0.08) {
+        if (audioRef.current && audioRef.current.volume > 0.05) {
           audioRef.current.volume = Math.max(
-            0.05,
-            Number((audioRef.current.volume - 0.15).toFixed(2))
+            0,
+            Number((audioRef.current.volume - 0.2).toFixed(2))
           );
         } else {
-          if (audioRef.current) audioRef.current.volume = 0.05;
+          if (audioRef.current) {
+            audioRef.current.volume = 0;
+            audioRef.current.pause();
+          }
           clearInterval(fadeInterval);
         }
-      }, 40);
+      }, 30);
     };
 
     const fadeInMusic = () => {
       if (!audioRef.current) return;
       if (!shouldPlayRef.current) return; // Don't play if user never opened envelope or explicitly stopped
 
-      // On mobile or if paused by other media, resume play
+      clearInterval(fadeInterval);
+      audioRef.current.volume = 0;
       audioRef.current
         .play()
         .then(() => {
           setIsPlaying(true);
+          fadeInterval = setInterval(() => {
+            if (audioRef.current && audioRef.current.volume < 1) {
+              audioRef.current.volume = Math.min(
+                1,
+                Number((audioRef.current.volume + 0.1).toFixed(2))
+              );
+            } else {
+              clearInterval(fadeInterval);
+            }
+          }, 40);
         })
         .catch(() => {});
-
-      clearInterval(fadeInterval);
-      fadeInterval = setInterval(() => {
-        if (audioRef.current && audioRef.current.volume < 1) {
-          audioRef.current.volume = Math.min(
-            1,
-            Number((audioRef.current.volume + 0.1).toFixed(2))
-          );
-        } else {
-          clearInterval(fadeInterval);
-        }
-      }, 50);
     };
 
     window.addEventListener("start-music", handleStartMusic);

@@ -6,31 +6,31 @@ import { Volume2, VolumeX, Play, Pause } from "lucide-react";
 
 export default function VideoSection() {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const isIntersectingRef = useRef(false);
   const userInteractedRef = useRef(false);
 
-  const startVideoPlayback = (unmute = false) => {
+  const startVideoPlayback = (forceUnmute = true) => {
     if (!videoRef.current) return;
     
-    if (unmute) {
+    if (forceUnmute) {
       videoRef.current.muted = false;
       setIsMuted(false);
-    } else {
-      videoRef.current.muted = isMuted;
     }
+
+    // Instantly duck/pause background website music
+    window.dispatchEvent(new Event("fade-music-out"));
 
     const playPromise = videoRef.current.play();
     if (playPromise !== undefined) {
       playPromise
         .then(() => {
           setIsPlaying(true);
-          // Instantly duck background music when video plays
-          window.dispatchEvent(new Event("fade-music-out"));
         })
         .catch(() => {
-          // If browser blocked unmuted autoplay (e.g. mobile/Safari), fallback to muted play
+          // If browser strictly blocks unmuted autoplay without user gesture,
+          // play video and unlock sound on the first touch/scroll gesture
           if (videoRef.current) {
             videoRef.current.muted = true;
             setIsMuted(true);
@@ -38,7 +38,19 @@ export default function VideoSection() {
               .play()
               .then(() => {
                 setIsPlaying(true);
-                window.dispatchEvent(new Event("fade-music-out"));
+                const unlockSound = () => {
+                  if (videoRef.current) {
+                    videoRef.current.muted = false;
+                    setIsMuted(false);
+                  }
+                  window.dispatchEvent(new Event("fade-music-out"));
+                  document.removeEventListener("touchstart", unlockSound);
+                  document.removeEventListener("scroll", unlockSound);
+                  document.removeEventListener("click", unlockSound);
+                };
+                document.addEventListener("touchstart", unlockSound, { passive: true, once: true });
+                document.addEventListener("scroll", unlockSound, { passive: true, once: true });
+                document.addEventListener("click", unlockSound, { passive: true, once: true });
               })
               .catch(() => {});
           }
