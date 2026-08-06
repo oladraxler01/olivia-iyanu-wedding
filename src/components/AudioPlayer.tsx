@@ -81,16 +81,16 @@ export default function AudioPlayer() {
       if (!audioRef.current) return;
       clearInterval(fadeInterval);
       fadeInterval = setInterval(() => {
-        if (audioRef.current && audioRef.current.volume > 0.15) {
+        if (audioRef.current && audioRef.current.volume > 0.08) {
           audioRef.current.volume = Math.max(
             0.05,
-            Number((audioRef.current.volume - 0.1).toFixed(2))
+            Number((audioRef.current.volume - 0.15).toFixed(2))
           );
         } else {
           if (audioRef.current) audioRef.current.volume = 0.05;
           clearInterval(fadeInterval);
         }
-      }, 80);
+      }, 40);
     };
 
     const fadeInMusic = () => {
@@ -115,7 +115,7 @@ export default function AudioPlayer() {
         } else {
           clearInterval(fadeInterval);
         }
-      }, 80);
+      }, 50);
     };
 
     window.addEventListener("start-music", handleStartMusic);

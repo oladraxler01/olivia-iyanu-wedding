@@ -162,7 +162,7 @@ export default function DressCode() {
                 onClick={() => setIsLookbookOpen(true)}
                 className="inline-flex items-center gap-2 text-sm font-semibold text-[#0E5C52] hover:text-[#B23A6B] transition-colors pb-1 border-b-2 border-[#0E5C52] hover:border-[#B23A6B] cursor-pointer"
               >
-                View Full Lookbook (10 Pages)
+                View Full Lookbook
               </button>
               <span className="text-[#E3D3DA]">|</span>
               <a
