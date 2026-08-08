@@ -189,6 +189,16 @@ export default function AsoebiPaymentForm() {
       return;
     }
 
+    if ((quantities.fila || 0) > 0 && !filaMeasurement.trim()) {
+      setError("Cap size / head measurement is compulsory when ordering Men's cap (fila). Please provide the measurement (e.g. 22.5 inches, 57cm, or Size 7¼).");
+      const capInput = document.getElementById("fila-measurement-input");
+      if (capInput) {
+        capInput.scrollIntoView({ behavior: "smooth", block: "center" });
+        capInput.focus();
+      }
+      return;
+    }
+
     if (mode === "pay_now" && !file) {
       setError("Please upload your transfer receipt / proof of payment.");
       return;
@@ -560,20 +570,53 @@ export default function AsoebiPaymentForm() {
 
                           {/* Men's Fila Cap Head Measurement Box */}
                           {item.id === "fila" && (
-                            <div className="mt-3 pt-3 border-t border-[#E3D3DA]/70">
-                              <label className="block text-xs font-semibold text-[#4A3E45] mb-1">
-                                Cap Size / Head Measurement <span className="text-[#8C7A84] font-normal">(e.g. 22.5 inches, 57cm, or Size 7¼)</span>
-                              </label>
+                            <div className={`mt-3 pt-3 border-t transition-all ${
+                              qty > 0 
+                                ? "border-[#B23A6B]/30 bg-[#FFF9FB] -mx-4 -mb-4 p-4 rounded-b-2xl" 
+                                : "border-[#E3D3DA]/70"
+                            }`}>
+                              <div className="flex items-center justify-between gap-2 mb-1.5">
+                                <label htmlFor="fila-measurement-input" className="block text-xs font-bold text-[#241B22]">
+                                  Cap Size / Head Measurement{" "}
+                                  {qty > 0 ? (
+                                    <span className="text-[#B23A6B] font-bold">* (Compulsory)</span>
+                                  ) : (
+                                    <span className="text-[#8C7A84] font-normal">(Required if cap selected)</span>
+                                  )}
+                                </label>
+                                {qty > 0 && (
+                                  <span className="inline-flex items-center gap-1 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-[#B23A6B] text-white shadow-xs">
+                                    Compulsory
+                                  </span>
+                                )}
+                              </div>
                               <input
+                                id="fila-measurement-input"
                                 type="text"
+                                required={qty > 0}
                                 value={filaMeasurement}
                                 onChange={(e) => setFilaMeasurement(e.target.value)}
-                                placeholder="e.g. 22.5 inches (or leave blank if standard size)"
-                                className="w-full px-3.5 py-2.5 bg-white border border-[#E3D3DA] rounded-xl text-xs text-[#241B22] focus:outline-none focus:border-[#0E5C52] focus:ring-1 focus:ring-[#0E5C52]"
+                                placeholder={
+                                  qty > 1
+                                    ? "e.g. Cap 1: 22.5 inches, Cap 2: 23 inches (Compulsory for tailoring)"
+                                    : "e.g. 22.5 inches, 57cm, or Size 7¼ (Compulsory for tailoring)"
+                                }
+                                className={`w-full px-3.5 py-2.5 bg-white rounded-xl text-xs text-[#241B22] focus:outline-none transition-all ${
+                                  qty > 0 && !filaMeasurement.trim()
+                                    ? "border-2 border-[#B23A6B] focus:border-[#B23A6B] focus:ring-1 focus:ring-[#B23A6B]"
+                                    : "border border-[#E3D3DA] focus:border-[#0E5C52] focus:ring-1 focus:ring-[#0E5C52]"
+                                }`}
                                 disabled={isSubmitting}
                               />
-                              <p className="text-[10.5px] text-[#8C7A84] italic mt-1">
-                                Your cap will be tailored specifically to this head measurement.
+                              <p className="text-[10.5px] text-[#8C7A84] italic mt-1.5 flex items-center gap-1">
+                                <Info className="w-3 h-3 text-[#B23A6B] shrink-0" />
+                                {qty > 0 ? (
+                                  <span className="text-[#B23A6B] font-medium">
+                                    Each cap will be custom tailored to this head measurement. Measure around the head just above the ears.
+                                  </span>
+                                ) : (
+                                  <span>Your cap will be tailored specifically to this head measurement.</span>
+                                )}
                               </p>
                             </div>
                           )}
