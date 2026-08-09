@@ -102,6 +102,21 @@ export default function VideoSection() {
         Save The Date
       </motion.p>
 
+      {/* Official Invitation Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.7, delay: 0.2 }}
+        className="mb-12 relative w-full max-w-sm sm:max-w-md mx-auto overflow-hidden shadow-xl rounded-xl border-[4px] sm:border-[6px] border-[#FFFDFB] cursor-pointer group"
+      >
+        <img 
+          src="/images/image copy 5.png" 
+          alt="Official Wedding Invitation" 
+          className="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-700" 
+        />
+      </motion.div>
+
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         whileInView={{ opacity: 1, scale: 1 }}

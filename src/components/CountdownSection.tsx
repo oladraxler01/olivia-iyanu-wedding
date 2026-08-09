@@ -41,15 +41,6 @@ export default function CountdownSection() {
         transition={{ duration: 0.7 }}
         className="max-w-4xl mx-auto"
       >
-        {/* Official Invitation Card */}
-        <div className="mb-12 relative w-full max-w-xl mx-auto overflow-hidden shadow-2xl rounded-xl border-[6px] border-[#FFFDFB]">
-          <img 
-            src="/images/image copy 5.png" 
-            alt="Official Wedding Invitation" 
-            className="w-full h-auto object-contain hover:scale-105 transition-transform duration-700" 
-          />
-        </div>
-
         {/* Date Pill */}
         <div className="inline-flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs sm:text-sm text-[#241B22]/80 font-medium mb-8 bg-[#FFFDFB] border border-[#E3D3DA] px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-2xs max-w-full">
           <span className="flex items-center gap-1.5 text-[#0E5C52] font-semibold whitespace-nowrap">
