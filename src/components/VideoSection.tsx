@@ -121,7 +121,7 @@ export default function VideoSection() {
           {/* High-Definition Original Video with Full Sound */}
           <video
             ref={videoRef}
-            src="/images/IMG_1797.MP4"
+            src="/images/IMG_2289.MP4"
             loop
             playsInline
             preload="auto"
