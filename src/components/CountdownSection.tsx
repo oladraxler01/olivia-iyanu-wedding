@@ -41,16 +41,24 @@ export default function CountdownSection() {
         transition={{ duration: 0.7 }}
         className="max-w-4xl mx-auto"
       >
+        {/* Address Block */}
+        <div className="mb-8 text-center space-y-2 max-w-2xl mx-auto px-4">
+          <p className="text-[11px] sm:text-xs font-bold text-[#6B5A63] tracking-[0.2em] uppercase">
+            VENUE:
+          </p>
+          <h3 className="font-serif text-lg sm:text-xl md:text-2xl font-bold text-[#0E5C52] leading-tight">
+            REDEEMED CHRISTIAN CHURCH OF GOD, DOMINION SANCTUARY
+          </h3>
+          <p className="text-xs sm:text-sm text-[#241B22]/80 uppercase tracking-widest font-medium">
+            ACME ROAD, OGBA IKEJA, LAGOS.
+          </p>
+        </div>
+
         {/* Date Pill */}
-        <div className="inline-flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs sm:text-sm text-[#241B22]/80 font-medium mb-8 bg-[#FFFDFB] border border-[#E3D3DA] px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-2xs max-w-full">
-          <span className="flex items-center gap-1.5 text-[#0E5C52] font-semibold whitespace-nowrap">
+        <div className="inline-flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs sm:text-sm text-[#241B22]/80 font-medium mb-10 bg-[#FFFDFB] border border-[#E3D3DA] px-5 py-2.5 rounded-full shadow-sm max-w-full">
+          <span className="flex items-center gap-2 text-[#0E5C52] font-semibold whitespace-nowrap">
             <Calendar className="w-4 h-4 text-[#B23A6B] shrink-0" />
-            Friday, 30 October 2026
-          </span>
-          <span className="text-[#E3D3DA] hidden xs:inline">•</span>
-          <span className="flex items-center gap-1.5 whitespace-nowrap">
-            <MapPin className="w-4 h-4 text-[#D4A5A5] shrink-0" />
-            Lagos, Nigeria
+            FRIDAY 30TH OCT, 2026
           </span>
         </div>
 
