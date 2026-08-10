@@ -61,7 +61,7 @@ export const priceList: PriceItem[] = [
     id: "gele",
     name: "Sego Gele (head wrap)",
     shortName: "Sego Gele",
-    price: 10200,
+    price: 11500,
     category: "accessory",
     description: "Premium metallic luster headwrap to complete the look",
   },

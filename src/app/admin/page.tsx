@@ -118,7 +118,7 @@ export const ASOEBI_CATALOG: Record<
     id: "gele",
     name: "Sego Gele (head wrap)",
     shortName: "Sego Gele",
-    price: 10200,
+    price: 11500,
     category: "accessory",
   },
   fila: {
@@ -243,13 +243,19 @@ export function parseAsoebiItems(rawItems: any): {
       const catalogItem = ASOEBI_CATALOG[key];
       const qty = typeof val === "number" ? val : parseInt(String(val || 0), 10);
       if (!isNaN(qty) && qty > 0) {
+        let unitPrice = catalogItem.price;
+        // Preserve original 10,200 price for orders placed before the price change
+        if (key === "gele" && (!parsed.submitted_at || new Date(parsed.submitted_at) < new Date("2026-08-10T12:00:00Z"))) {
+          unitPrice = 10200;
+        }
+        
         lineItems.push({
           id: key,
           name: catalogItem.name,
           shortName: catalogItem.shortName,
           qty,
-          unitPrice: catalogItem.price,
-          subtotal: catalogItem.price * qty,
+          unitPrice,
+          subtotal: unitPrice * qty,
         });
       }
     } else {
