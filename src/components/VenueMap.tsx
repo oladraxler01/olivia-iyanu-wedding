@@ -5,7 +5,7 @@ import { MapPin, Navigation, Search } from "lucide-react";
 
 export default function VenueMap() {
   const [origin, setOrigin] = useState("");
-  const destination = "Lagos, Nigeria"; // Default wedding venue
+  const destination = "Pleasant Event Center, Ikeja, Lagos"; // Default wedding venue
 
   const handleGetDirections = (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,7 +106,7 @@ export default function VenueMap() {
               loading="lazy"
               allowFullScreen
               referrerPolicy="no-referrer-when-downgrade"
-              src="https://maps.google.com/maps?q=Lagos,+Nigeria&t=&z=12&ie=UTF8&iwloc=&output=embed"
+              src="https://maps.google.com/maps?q=Pleasant+Event+Center,+1+Obanta+Avenue,+Ikeja,+Lagos&t=&z=15&ie=UTF8&iwloc=&output=embed"
             ></iframe>
           </div>
         </div>

@@ -42,16 +42,35 @@ export default function CountdownSection() {
         className="max-w-4xl mx-auto"
       >
         {/* Address Block */}
-        <div className="mb-8 text-center space-y-2 max-w-2xl mx-auto px-4">
-          <p className="text-[11px] sm:text-xs font-bold text-[#6B5A63] tracking-[0.2em] uppercase">
-            VENUE:
-          </p>
-          <h3 className="font-serif text-lg sm:text-xl md:text-2xl font-bold text-[#0E5C52] leading-tight">
-            REDEEMED CHRISTIAN CHURCH OF GOD, DOMINION SANCTUARY
-          </h3>
-          <p className="text-xs sm:text-sm text-[#241B22]/80 uppercase tracking-widest font-medium">
-            ACME ROAD, OGBA IKEJA, LAGOS.
-          </p>
+        <div className="mb-8 text-center space-y-5 max-w-2xl mx-auto px-4">
+          {/* Church Venue */}
+          <div className="space-y-1.5">
+            <p className="text-[11px] sm:text-xs font-bold text-[#6B5A63] tracking-[0.2em] uppercase">
+              VENUE:
+            </p>
+            <h3 className="font-serif text-lg sm:text-xl md:text-2xl font-bold text-[#0E5C52] leading-tight">
+              REDEEMED CHRISTIAN CHURCH OF GOD, DOMINION SANCTUARY
+            </h3>
+            <p className="text-xs sm:text-sm text-[#241B22]/80 uppercase tracking-widest font-medium">
+              ACME ROAD, OGBA IKEJA, LAGOS.
+            </p>
+          </div>
+
+          {/* Divider */}
+          <div className="w-16 h-px bg-[#B23A6B]/30 mx-auto"></div>
+
+          {/* Reception Venue */}
+          <div className="space-y-1.5">
+            <p className="text-[11px] sm:text-xs font-bold text-[#6B5A63] tracking-[0.2em] uppercase">
+              RECEPTION FOLLOWS IMMEDIATELY @
+            </p>
+            <h3 className="font-serif text-lg sm:text-xl md:text-2xl font-bold text-[#0E5C52] leading-tight">
+              PLEASANT EVENT CENTER
+            </h3>
+            <p className="text-xs sm:text-sm text-[#241B22]/80 uppercase tracking-widest font-medium">
+              1 OBANTA AVENUE, OFF AJAO ROAD, IKEJA, LAGOS.
+            </p>
+          </div>
         </div>
 
         {/* Date Pill */}
