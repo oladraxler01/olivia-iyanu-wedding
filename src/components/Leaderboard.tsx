@@ -127,8 +127,8 @@ export default function Leaderboard({ currentPlayerName = "" }: { currentPlayerN
         
         Object.values(playerStats).forEach(stats => {
            Object.entries(stats.bestScores).forEach(([gt, best]) => {
-              if (gt === 'trivia') stats.totalScore += Math.floor(best) * 1000;
-              else if (gt === 'timeline') stats.totalScore += 10000;
+              if (gt === 'trivia') stats.totalScore += Math.floor(best) * 10;
+              else if (gt === 'timeline') stats.totalScore += 50;
               else if (gt === 'memory') stats.totalScore += Math.floor(best);
               else if (gt === 'maze') stats.totalScore += Math.floor(best);
            });
