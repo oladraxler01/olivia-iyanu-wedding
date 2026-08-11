@@ -395,12 +395,10 @@ function MemoryGame({ playerName, onClose, onNext, nextTitle }: { playerName: st
   useEffect(() => {
     if (allMatched && !finalScore && startTime) {
       const timeMs = Date.now() - startTime;
-      // Base score 100 (min 8 moves). Deduct 3 per extra move, and 1 per 2 seconds. Add inverted ms fraction for tie-breaking.
+      // Base score 100 (min 8 moves). Deduct 3 per extra move, and 1 per 2 seconds.
       const basePoints = Math.max(0, 100 - (Math.max(0, moves - 8) * 3) - Math.floor(timeMs / 2000));
-      const fraction = (1000 - (timeMs % 1000)) / 1000;
-      const scoreWithTime = basePoints + fraction;
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setFinalScore(scoreWithTime);
+      // Database column is integer, so no fractions allowed
+      setFinalScore(basePoints);
     }
   }, [allMatched, finalScore, startTime, moves]);
 
@@ -576,8 +574,8 @@ function MazeGame({ playerName, onClose, onNext, nextTitle }: { playerName: stri
           const totalMoves = moves + 1;
           // Base score 100 (min 11 moves). Deduct 3 per extra move, and 1 per 1 second.
           const basePoints = Math.max(0, 100 - (Math.max(0, totalMoves - 11) * 3) - Math.floor(timeMs / 1000));
-          const fraction = (1000 - (timeMs % 1000)) / 1000;
-          setFinalScore(basePoints + fraction);
+          // Database column is integer, so no fractions allowed
+          setFinalScore(basePoints);
         } else {
           setFinalScore(Math.max(0, 100 - (Math.max(0, (moves + 1) - 11) * 3)));
         }
