@@ -397,8 +397,9 @@ function MemoryGame({ playerName, onClose, onNext, nextTitle }: { playerName: st
       const timeMs = Date.now() - startTime;
       // Base score 100 (min 8 moves). Deduct 3 per extra move, and 1 per 2 seconds.
       const basePoints = Math.max(0, 100 - (Math.max(0, moves - 8) * 3) - Math.floor(timeMs / 2000));
-      // Database column is integer, so no fractions allowed
-      setFinalScore(basePoints);
+      // Store tie breaker as milliseconds within the integer
+      const tieBreaker = Math.floor(999 - (timeMs % 1000));
+      setFinalScore((basePoints * 1000) + tieBreaker);
     }
   }, [allMatched, finalScore, startTime, moves]);
 
@@ -574,10 +575,11 @@ function MazeGame({ playerName, onClose, onNext, nextTitle }: { playerName: stri
           const totalMoves = moves + 1;
           // Base score 100 (min 11 moves). Deduct 3 per extra move, and 1 per 1 second.
           const basePoints = Math.max(0, 100 - (Math.max(0, totalMoves - 11) * 3) - Math.floor(timeMs / 1000));
-          // Database column is integer, so no fractions allowed
-          setFinalScore(basePoints);
+          // Store tie breaker as milliseconds within the integer
+          const tieBreaker = Math.floor(999 - (timeMs % 1000));
+          setFinalScore((basePoints * 1000) + tieBreaker);
         } else {
-          setFinalScore(Math.max(0, 100 - (Math.max(0, (moves + 1) - 11) * 3)));
+          setFinalScore(Math.max(0, 100 - (Math.max(0, (moves + 1) - 11) * 3)) * 1000);
         }
       }
     },

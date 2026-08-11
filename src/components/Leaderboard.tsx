@@ -129,8 +129,8 @@ export default function Leaderboard({ currentPlayerName = "" }: { currentPlayerN
            Object.entries(stats.bestScores).forEach(([gt, best]) => {
               if (gt === 'trivia') stats.totalScore += Math.floor(best) * 10;
               else if (gt === 'timeline') stats.totalScore += 50;
-              else if (gt === 'memory') stats.totalScore += Math.floor(best);
-              else if (gt === 'maze') stats.totalScore += Math.floor(best);
+              else if (gt === 'memory') stats.totalScore += Math.floor(best / 1000);
+              else if (gt === 'maze') stats.totalScore += Math.floor(best / 1000);
            });
         });
         
@@ -194,18 +194,16 @@ export default function Leaderboard({ currentPlayerName = "" }: { currentPlayerN
     const effectiveTab = tab === "all" ? entry.game_type || "all" : tab;
     const isTrivia = effectiveTab === "trivia";
     const isTimed = effectiveTab === "memory" || effectiveTab === "maze";
-    const rawScore = isTimed || isTrivia ? Math.floor(entry.score) : entry.score;
+    const rawScore = isTimed ? Math.floor(entry.score / 1000) : (isTrivia ? Math.floor(entry.score) : entry.score);
     
     let timeStr = "";
     if (isTrivia) {
       const timeFrac = entry.score - rawScore;
       timeStr = timeFrac > 0 && timeFrac < 1 ? `(${(1 / timeFrac).toFixed(1)}s)` : "";
     } else if (isTimed) {
-      const timeFrac = entry.score - rawScore;
-      if (timeFrac > 0) {
-        // since we used (1000 - timeMs % 1000) / 1000 to add fractions to score for tie breaking
-        const msFrac = 1 - timeFrac; 
-        timeStr = `(tie-break: ${msFrac.toFixed(3)})`;
+      const msFraction = (entry.score % 1000) / 1000;
+      if (msFraction > 0) {
+        timeStr = `(tie-break: ${msFraction.toFixed(3)})`;
       }
     }
 
