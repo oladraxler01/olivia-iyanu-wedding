@@ -69,7 +69,7 @@ export const priceList: PriceItem[] = [
     id: "fila",
     name: "Men's cap (fila)",
     shortName: "Men's Fila Cap",
-    price: 10000,
+    price: 13000,
     category: "accessory",
     description: "Custom tailored cap made to your specific head size",
   },

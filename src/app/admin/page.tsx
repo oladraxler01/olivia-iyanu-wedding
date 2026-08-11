@@ -124,8 +124,8 @@ export const ASOEBI_CATALOG: Record<
   fila: {
     id: "fila",
     name: "Men's cap (fila)",
-    shortName: "Men's Fila",
-    price: 10000,
+    shortName: "Men's Fila Cap",
+    price: 13000,
     category: "accessory",
   },
 };
