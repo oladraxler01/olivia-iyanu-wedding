@@ -395,10 +395,10 @@ function MemoryGame({ playerName, onClose, onNext, nextTitle }: { playerName: st
   useEffect(() => {
     if (allMatched && !finalScore && startTime) {
       const timeMs = Date.now() - startTime;
-      // Encode time as a fraction so lower time breaks ties (e.g., 15.042500)
-      // Limit to 999,999 ms (~16 minutes) to fit cleanly in fraction
-      const cappedMs = Math.min(timeMs, 999999);
-      const scoreWithTime = moves + (cappedMs / 1000000);
+      // Base score 10,000. Deduct 100 per move, and 1 per second. Add fraction of second inverted for tie-breaking.
+      const basePoints = Math.max(0, 10000 - (moves * 100) - Math.floor(timeMs / 1000));
+      const fraction = (1000 - (timeMs % 1000)) / 1000;
+      const scoreWithTime = basePoints + fraction;
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setFinalScore(scoreWithTime);
     }
@@ -573,11 +573,12 @@ function MazeGame({ playerName, onClose, onNext, nextTitle }: { playerName: stri
         setWon(true);
         if (startTime) {
           const timeMs = Date.now() - startTime;
-          const cappedMs = Math.min(timeMs, 999999);
-          const scoreWithTime = (moves + 1) + (cappedMs / 1000000);
-          setFinalScore(scoreWithTime);
+          const totalMoves = moves + 1;
+          const basePoints = Math.max(0, 10000 - (totalMoves * 100) - Math.floor(timeMs / 1000));
+          const fraction = (1000 - (timeMs % 1000)) / 1000;
+          setFinalScore(basePoints + fraction);
         } else {
-          setFinalScore(moves + 1);
+          setFinalScore(Math.max(0, 10000 - ((moves + 1) * 100)));
         }
       }
     },

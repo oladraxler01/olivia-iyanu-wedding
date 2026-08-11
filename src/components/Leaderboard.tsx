@@ -72,8 +72,6 @@ export default function Leaderboard({ currentPlayerName = "" }: { currentPlayerN
     setLoading(true);
     setError(null);
     try {
-      const isAscending = game_type === "memory" || game_type === "maze";
-
       let query = supabase
         .from("leaderboards")
         .select("id, guest_name, score, game_type, created_at");
@@ -90,18 +88,11 @@ export default function Leaderboard({ currentPlayerName = "" }: { currentPlayerN
             bestScores[key] = entry;
           } else {
             const currentBest = bestScores[key].score;
-            if (isAscending) {
-              if (entry.score < currentBest) bestScores[key] = entry;
-            } else {
-              if (entry.score > currentBest) bestScores[key] = entry;
-            }
+            if (entry.score > currentBest) bestScores[key] = entry;
           }
         });
 
-        const sorted = Object.values(bestScores).sort((a, b) => {
-          if (isAscending) return a.score - b.score;
-          return b.score - a.score;
-        });
+        const sorted = Object.values(bestScores).sort((a, b) => b.score - a.score);
 
         // Assign exact rank numbers
         const ranked = sorted.map((item, idx) => ({
@@ -129,22 +120,17 @@ export default function Leaderboard({ currentPlayerName = "" }: { currentPlayerN
             stats.bestScores[gt] = entry.score;
             stats.games.add(gt);
           } else {
-            const isAsc = gt === "memory" || gt === "maze";
             const currentBest = stats.bestScores[gt];
-            if (isAsc) {
-              if (entry.score < currentBest) stats.bestScores[gt] = entry.score;
-            } else {
-              if (entry.score > currentBest) stats.bestScores[gt] = entry.score;
-            }
+            if (entry.score > currentBest) stats.bestScores[gt] = entry.score;
           }
         });
         
         Object.values(playerStats).forEach(stats => {
            Object.entries(stats.bestScores).forEach(([gt, best]) => {
-              if (gt === 'trivia') stats.totalScore += Math.floor(best) * 10;
-              else if (gt === 'timeline') stats.totalScore += 50;
-              else if (gt === 'memory') stats.totalScore += Math.max(0, 100 - (Math.floor(best) * 2));
-              else if (gt === 'maze') stats.totalScore += Math.max(0, 100 - (Math.floor(best) * 2));
+              if (gt === 'trivia') stats.totalScore += Math.floor(best) * 1000;
+              else if (gt === 'timeline') stats.totalScore += 10000;
+              else if (gt === 'memory') stats.totalScore += Math.floor(best);
+              else if (gt === 'maze') stats.totalScore += Math.floor(best);
            });
         });
         
@@ -217,14 +203,15 @@ export default function Leaderboard({ currentPlayerName = "" }: { currentPlayerN
     } else if (isTimed) {
       const timeFrac = entry.score - rawScore;
       if (timeFrac > 0) {
-        const ms = timeFrac * 1000000;
-        timeStr = `(${(ms / 1000).toFixed(1)}s)`;
+        // since we used (1000 - timeMs % 1000) / 1000 to add fractions to score for tie breaking
+        const msFrac = 1 - timeFrac; 
+        timeStr = `(tie-break: ${msFrac.toFixed(3)})`;
       }
     }
 
     let unit = "";
     if (tab === "all") unit = "total pts";
-    else if (effectiveTab === "memory" || effectiveTab === "maze") unit = "moves";
+    else if (effectiveTab === "memory" || effectiveTab === "maze") unit = "pts";
     else if (effectiveTab === "timeline" || isTrivia) unit = "pts";
 
     return (
