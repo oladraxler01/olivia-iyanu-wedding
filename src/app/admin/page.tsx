@@ -118,14 +118,14 @@ export const ASOEBI_CATALOG: Record<
     id: "gele",
     name: "Sego Gele (head wrap)",
     shortName: "Sego Gele",
-    price: 12500,
+    price: 11500,
     category: "accessory",
   },
   fila: {
     id: "fila",
     name: "Men's cap (fila)",
-    shortName: "Men's Fila Cap",
-    price: 13000,
+    shortName: "Men's Fila",
+    price: 10000,
     category: "accessory",
   },
 };
