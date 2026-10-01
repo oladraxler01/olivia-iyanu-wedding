@@ -308,6 +308,95 @@ export default function AsoebiPaymentForm() {
     setError(null);
   };
 
+  // Window Closed state: Compact, elegant translucent card without massive height
+  const isWindowClosed = true;
+
+  if (isWindowClosed) {
+    return (
+      <section id="asoebi" className="py-10 sm:py-14 px-4 bg-[#F7F3EE] relative overflow-hidden">
+        {/* Subtle background glow */}
+        <div className="absolute top-0 right-1/4 w-80 h-80 bg-[#D4AF37]/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-[#B23A6B]/5 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="max-w-xl mx-auto relative z-10">
+          {/* Section Header */}
+          <div className="text-center max-w-lg mx-auto mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0E5C52]/10 text-[#0E5C52] text-xs font-bold uppercase tracking-[0.2em] mb-2">
+              <ShoppingBag className="w-3.5 h-3.5 text-[#B23A6B]" />
+              Asoebi Shop
+            </div>
+            <h2
+              style={{ fontFamily: "var(--font-cormorant), Georgia, serif" }}
+              className="text-3xl sm:text-4xl font-light text-[#0E5C52] mb-1.5 tracking-tight"
+            >
+              Celebrate In Style With Us
+            </h2>
+            <p className="text-xs sm:text-sm text-[#6B5A63] font-light leading-relaxed">
+              Official wedding fabric &amp; accessories.
+            </p>
+          </div>
+
+          {/* Compact Translucent Frosted Glass Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="relative bg-white/80 backdrop-blur-md rounded-3xl border-2 border-[#D4AF37]/50 shadow-xl overflow-hidden p-6 sm:p-8 text-center"
+          >
+            {/* Top decorative gradient bar */}
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#D4AF37] via-[#B23A6B] to-[#0E5C52]" />
+
+            {/* Icon Badge */}
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#0E5C52]/10 border border-[#0E5C52]/20 flex items-center justify-center mx-auto mb-3.5 text-[#0E5C52] shadow-inner">
+              <Lock className="w-6 h-6 text-[#0E5C52]" />
+            </div>
+
+            {/* Status Pill */}
+            <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#B23A6B]/15 text-[#B23A6B] text-[11px] font-bold uppercase tracking-wider mb-2.5">
+              <Clock className="w-3 h-3" /> Order Window Closed
+            </div>
+
+            {/* Heading */}
+            <h3
+              style={{ fontFamily: "var(--font-cormorant), Georgia, serif" }}
+              className="text-2xl sm:text-3xl font-light text-[#0E5C52] mb-2 tracking-tight"
+            >
+              Aso-Ebi Orders are Closed
+            </h3>
+
+            {/* Description */}
+            <p className="text-xs sm:text-sm text-[#5C4D55] leading-relaxed max-w-md mx-auto mb-4 font-light">
+              Thank you to everyone who reserved and ordered! The ordering window has officially closed to allow our tailoring and fulfillment team to prepare all packages in time.
+            </p>
+
+            {/* Existing Orders Reassurance Box */}
+            <div className="p-3.5 rounded-2xl bg-[#FAF7F2] border border-[#E8DFC8] text-xs text-[#5C4D55] text-left space-y-1 mb-5 shadow-xs max-w-md mx-auto">
+              <div className="flex items-center gap-2 text-[#0E5C52] font-semibold text-xs">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#D4AF37] shrink-0" />
+                <span>Already Placed an Order?</span>
+              </div>
+              <p className="text-[11px] text-[#6B5A63] leading-relaxed pl-5">
+                All submitted orders and confirmed reservations are safely recorded. We will be in touch regarding tailoring, pickup, and delivery schedules.
+              </p>
+            </div>
+
+            {/* Call to action */}
+            <div className="flex justify-center">
+              <a
+                href="#dress-code"
+                className="px-5 py-2.5 rounded-full bg-[#0E5C52] hover:bg-[#0A4A42] text-white text-xs font-semibold uppercase tracking-wider transition-all duration-200 shadow-md flex items-center gap-2 group cursor-pointer"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-[#D4AF37] group-hover:rotate-12 transition-transform" />
+                <span>View Wedding Dress Code &amp; Lookbook</span>
+              </a>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section id="asoebi" className="py-20 px-4 bg-[#F7F3EE] relative overflow-hidden">
       {/* Subtle background glow */}
