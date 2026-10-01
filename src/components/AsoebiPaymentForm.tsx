@@ -20,6 +20,7 @@ import {
   Info,
   ShieldCheck,
   Mail,
+  Lock,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -169,17 +170,14 @@ export default function AsoebiPaymentForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+    setError("The Aso-Ebi ordering and reservation window has officially closed. New orders are no longer being accepted.");
+    return;
 
     if (!fullName.trim()) {
       setError("Please provide your full name.");
       return;
     }
     if (!phone.trim()) {
-      setError("Please provide your phone / WhatsApp number.");
-      return;
-    }
-    if (!deliveryLocation.trim()) {
       setError("Please provide your delivery location (city and state).");
       return;
     }
@@ -330,7 +328,7 @@ export default function AsoebiPaymentForm() {
             Celebrate In Style With Us
           </h2>
           <p className="text-sm sm:text-base text-[#6B5A63] font-light leading-relaxed">
-            Order your official fabric &amp; accessories or reserve your allocation for the wedding celebration.
+            Official fabric &amp; accessories for our wedding celebration.
           </p>
         </div>
 
@@ -342,26 +340,81 @@ export default function AsoebiPaymentForm() {
           transition={{ duration: 0.6 }}
           className="mb-8 p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-[#FFFDF9] via-[#FAF3E7] to-[#FFF8EE] border-2 border-[#D4AF37]/50 shadow-md flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left"
         >
-          <div className="w-12 h-12 rounded-2xl bg-[#D4AF37]/15 border border-[#D4AF37]/30 flex items-center justify-center flex-shrink-0 text-[#B88A2E] shadow-xs">
-            <Clock className="w-6 h-6 animate-pulse" />
+          <div className="w-12 h-12 rounded-2xl bg-[#B23A6B]/10 border border-[#B23A6B]/20 flex items-center justify-center flex-shrink-0 text-[#B23A6B] shadow-xs">
+            <Lock className="w-6 h-6" />
           </div>
           <div className="flex-1">
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">
               <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#B23A6B] text-white">
-                Important Deadline
+                Orders Closed
               </span>
               <span className="text-sm sm:text-base font-serif font-bold text-[#0E5C52]">
-                Payment &amp; Order Cut-off: August 31st, 2026
+                Aso-Ebi Order &amp; Reservation Window Has Closed
               </span>
             </div>
             <p className="text-xs sm:text-sm text-[#5C4D55] leading-relaxed">
-              To guarantee fabric and Aso-Ebi availability, and to give our custom tailors ample time for preparation, please note that <strong>all reservations must be paid for on or before August 31, 2026</strong>.
+              The window to place new orders or submit fabric reservations is now closed. Tailoring and package preparations are in progress for all confirmed guests.
             </p>
           </div>
         </motion.div>
 
-        {/* Main Card */}
-        <div className="bg-white rounded-3xl border border-[#E3D3DA] shadow-xl overflow-hidden">
+        {/* Main Card with Translucent Cover */}
+        <div className="relative bg-white rounded-3xl border border-[#E3D3DA] shadow-xl overflow-hidden">
+          {/* Translucent Frosted Glass Cover Overlay */}
+          <div className="absolute inset-0 z-30 backdrop-blur-md bg-[#FAF7F2]/80 sm:bg-[#FAF7F2]/85 flex items-center justify-center p-4 sm:p-8">
+            <div className="max-w-md sm:max-w-lg w-full bg-white/95 backdrop-blur-xl border-2 border-[#D4AF37]/60 rounded-3xl p-6 sm:p-10 shadow-2xl text-center relative overflow-hidden my-auto animate-fadeIn">
+              {/* Top decorative gradient bar */}
+              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#D4AF37] via-[#B23A6B] to-[#0E5C52]" />
+
+              {/* Icon Badge */}
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[#0E5C52]/10 border border-[#0E5C52]/20 flex items-center justify-center mx-auto mb-4 text-[#0E5C52] shadow-inner">
+                <Lock className="w-8 h-8 sm:w-10 sm:h-10 text-[#0E5C52]" />
+              </div>
+
+              {/* Status Pill */}
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#B23A6B]/15 text-[#B23A6B] text-[11px] sm:text-xs font-bold uppercase tracking-widest mb-3">
+                <Clock className="w-3.5 h-3.5" /> Order Window Closed
+              </div>
+
+              {/* Heading */}
+              <h3
+                style={{ fontFamily: "var(--font-cormorant), Georgia, serif" }}
+                className="text-2xl sm:text-4xl font-light text-[#0E5C52] mb-3 tracking-tight"
+              >
+                Aso-Ebi Orders are Closed
+              </h3>
+
+              {/* Description */}
+              <p className="text-xs sm:text-sm text-[#5C4D55] leading-relaxed mb-6 font-light">
+                Thank you so much to everyone who reserved and ordered their fabrics and accessories! The ordering window has officially closed to allow our tailoring and fulfillment team to prepare and distribute all packages in time.
+              </p>
+
+              {/* Existing Orders Info Box */}
+              <div className="p-4 rounded-2xl bg-[#FAF7F2] border border-[#E8DFC8] text-xs text-[#5C4D55] text-left space-y-2 mb-6 shadow-xs">
+                <div className="flex items-center gap-2 text-[#0E5C52] font-semibold text-xs sm:text-sm">
+                  <CheckCircle2 className="w-4 h-4 text-[#D4AF37] shrink-0" />
+                  <span>Already Placed an Order?</span>
+                </div>
+                <p className="text-[11px] sm:text-xs text-[#6B5A63] leading-relaxed pl-6">
+                  All submitted orders and confirmed reservations are safely recorded. We will be in touch with updates regarding tailoring, pickup, and delivery schedules.
+                </p>
+              </div>
+
+              {/* Link to Dress Code / Lookbook */}
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <a
+                  href="#dress-code"
+                  className="w-full sm:w-auto px-6 py-3 rounded-full bg-[#0E5C52] hover:bg-[#0A4A42] text-white text-xs font-semibold uppercase tracking-wider transition-all duration-200 shadow-md flex items-center justify-center gap-2 group cursor-pointer"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-[#D4AF37] group-hover:rotate-12 transition-transform" />
+                  <span>View Wedding Dress Code &amp; Lookbook</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Underneath Content - Dimmed & Non-interactive */}
+          <div className="pointer-events-none select-none filter blur-[1.5px] opacity-40 transition-all duration-300" aria-hidden="true" tabIndex={-1}>
           {/* Top Mode Selector Tabs */}
           {!submittedMode && (
             <div className="grid grid-cols-2 p-2 bg-[#F3ECE6] border-b border-[#E3D3DA] gap-2">
@@ -890,6 +943,7 @@ export default function AsoebiPaymentForm() {
                 </div>
               </motion.div>
             )}
+          </div>
           </div>
         </div>
       </div>
