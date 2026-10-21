@@ -22,9 +22,9 @@ const milestones = [
     icon: <Camera className="w-5 h-5 text-[#B23A6B]/50" />,
     title: "Proposal pictures",
     desc: "Every crown has a beginning. Ours started with one question & deserves a proper reveal.",
-    showCountdown: true,
-    countdownDays: 60,
-    media: "loading"
+    showCountdown: false, // Turned this off
+    media: "collage", // Changed from "loading" to "collage"
+    images: ["/images/image copy 6.png", "/images/image copy 7.png"] // Added your specific image paths
   },
   {
     icon: <Users className="w-5 h-5 text-[#B23A6B]/50" />,
@@ -79,15 +79,15 @@ export default function LoveStory() {
         observer = new IntersectionObserver((entries) => {
           entries.forEach(entry => {
             if (entry.isIntersecting) {
-              player.setVolume(0.5).catch(() => {});
-              player.play().catch(() => {});
+              player.setVolume(0.5).catch(() => { });
+              player.play().catch(() => { });
             } else {
-              player.pause().catch(() => {});
+              player.pause().catch(() => { });
               window.dispatchEvent(new Event("fade-music-in"));
             }
           });
         }, { threshold: 0.3 });
-        
+
         observer.observe(iframe);
       }
     }).catch(err => console.log("Failed to load Vimeo player", err));
@@ -237,6 +237,26 @@ export default function LoveStory() {
                         className="w-full rounded-2xl flex flex-col items-center justify-center mb-4 relative overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
                       >
                         <img src={m.imageSrc} alt={m.title} className="w-full h-auto object-contain" />
+                      </div>
+                    ) : m.media === "collage" && m.images ? (
+                      <div className="relative w-full h-[300px] sm:h-[400px] mb-4 mt-4">
+
+                        {/* Main Background Image */}
+                        <div
+                          tabIndex={0}
+                          className="absolute top-0 right-0 w-[85%] h-[85%] rounded-2xl overflow-hidden shadow-md z-10 hover:z-30 focus:z-30 hover:scale-105 focus:scale-105 transition-all duration-500 ease-out cursor-pointer outline-none"
+                        >
+                          <img src={m.images[0]} alt="Proposal" className="w-full h-full object-cover object-center" />
+                        </div>
+
+                        {/* Overlapping Inset Image */}
+                        <div
+                          tabIndex={0}
+                          className="absolute -bottom-4 left-0 w-[55%] h-[55%] rounded-2xl overflow-hidden shadow-2xl border-4 sm:border-8 border-[#FFFDFB] z-20 hover:z-30 focus:z-30 hover:scale-110 focus:scale-110 transition-all duration-500 ease-out cursor-pointer outline-none"
+                        >
+                          <img src={m.images[1]} alt="Ring" className="w-full h-full object-cover" />
+                        </div>
+
                       </div>
                     ) : m.media === "loading" ? (
                       <div className="aspect-[16/9] w-full rounded-2xl border border-dashed border-[#E3D3DA] flex flex-col items-center justify-center gap-2 mb-4 relative overflow-hidden bg-[#EAE1E1]">

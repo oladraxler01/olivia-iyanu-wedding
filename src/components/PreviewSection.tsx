@@ -11,7 +11,7 @@ const previews = [
   },
   {
     icon: PlusCircle,
-    title: "Lucky Dip",
+    title: "Owambe Jackpot",
     description: "Some gifts you choose. This one chooses you."
   },
   {
@@ -40,7 +40,7 @@ export default function PreviewSection() {
   return (
     <section className="py-24 px-4 bg-[#FDFBF7] relative overflow-hidden">
       <div className="max-w-6xl mx-auto relative z-10">
-        
+
         <div className="text-center mb-16">
           <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#B23A6B] mb-3">
             A Little Preview
@@ -79,7 +79,7 @@ export default function PreviewSection() {
           })}
         </div>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
