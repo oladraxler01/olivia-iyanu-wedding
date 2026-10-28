@@ -49,7 +49,7 @@ export default function CountdownSection() {
               VENUE:
             </p>
             <h3 className="font-serif text-lg sm:text-xl md:text-2xl font-bold text-[#0E5C52] leading-tight">
-              REDEEMED CHRISTIAN CHURCH OF GOD, DOMINION SANCTUARY 11am sharp
+              REDEEMED CHRISTIAN CHURCH OF GOD, DOMINION SANCTUARY "11AM SHARP"
             </h3>
             <p className="text-xs sm:text-sm text-[#241B22]/80 uppercase tracking-widest font-medium">
               ACME ROAD, OGBA IKEJA, LAGOS.
@@ -65,7 +65,7 @@ export default function CountdownSection() {
               RECEPTION FOLLOWS IMMEDIATELY @
             </p>
             <h3 className="font-serif text-lg sm:text-xl md:text-2xl font-bold text-[#0E5C52] leading-tight">
-              PLEASANT EVENT CENTER 1pm sharp
+              PLEASANT EVENT CENTER "1PM SHARP"
             </h3>
             <p className="text-xs sm:text-sm text-[#241B22]/80 uppercase tracking-widest font-medium">
               1 OBANTA AVENUE, OFF AJAO ROAD, IKEJA, LAGOS.
