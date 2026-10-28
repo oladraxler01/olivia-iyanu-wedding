@@ -29,11 +29,35 @@ export default function GuestUploads() {
     }
   }, []);
 
+  // File size limits
+  const MAX_IMAGE_MB = 10;
+  const MAX_VIDEO_MB = 50;
+
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const newFiles = Array.from(e.target.files);
-      setFiles((prev) => [...prev, ...newFiles]);
+    if (!e.target.files) return;
+    const incoming = Array.from(e.target.files);
+    const oversized: string[] = [];
+    const valid: File[] = [];
+
+    incoming.forEach((file) => {
+      const isVideo = file.type.startsWith("video/");
+      const limitMB = isVideo ? MAX_VIDEO_MB : MAX_IMAGE_MB;
+      const sizeMB = file.size / (1024 * 1024);
+      if (sizeMB > limitMB) {
+        oversized.push(`${file.name} (${sizeMB.toFixed(1)} MB — max ${limitMB} MB for ${isVideo ? "videos" : "images"})`);
+      } else {
+        valid.push(file);
+      }
+    });
+
+    if (oversized.length > 0) {
+      setError(`These files are too large and were skipped:\n• ${oversized.join("\n• ")}`);
+    } else {
+      setError(null);
     }
+    if (valid.length > 0) setFiles((prev) => [...prev, ...valid]);
+    // Reset input so same file can be re-selected after removal
+    e.target.value = "";
   };
 
   const removeFile = (index: number) => {
@@ -181,8 +205,9 @@ export default function GuestUploads() {
                   onClick={() => !isUploading && fileInputRef.current?.click()}
                 >
                   <UploadCloud className="w-10 h-10 text-[#0E5C52] mx-auto mb-3" />
-                  <p className="text-sm font-medium text-[#241B22] mb-1">Click to browse files</p>
-                  <p className="text-xs text-[#6B5A63]">Supports JPG, PNG, MP4, MOV</p>
+                  <p className="text-sm font-medium text-[#241B22] mb-1">Click or drag files here</p>
+                  <p className="text-xs text-[#6B5A63]">Photos (JPG, PNG) · Videos (MP4, MOV)</p>
+                  <p className="text-xs text-[#B23A6B] mt-1 font-medium">Max {MAX_IMAGE_MB} MB per photo · {MAX_VIDEO_MB} MB per video</p>
                   <input 
                     type="file" 
                     ref={fileInputRef}

@@ -37,6 +37,10 @@ import {
   Zap,
   CheckCheck,
   CreditCard,
+  Camera,
+  Image as ImageIcon,
+  Video,
+  Play,
 } from "lucide-react";
 
 // ─── TYPES ──────────────────────────────────────────────────────────
@@ -318,6 +322,13 @@ export default function AdminDashboard() {
   const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // Media Modals & State
+  const [selectedMedia, setSelectedMedia] = useState<GuestMedia | null>(null);
+  const [deleteMediaId, setDeleteMediaId] = useState<number | null>(null);
+  const [isDeletingMedia, setIsDeletingMedia] = useState(false);
+  const [mediaGuestFilter, setMediaGuestFilter] = useState<string>("all");
+  const [mediaTypeFilter, setMediaTypeFilter] = useState<"all" | "image" | "video">("all");
+
   // Copy Feedback State
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
@@ -556,6 +567,51 @@ export default function AdminDashboard() {
       setIsDeleting(false);
     }
   };
+
+  // Delete Media Record Handler
+  const handleDeleteMedia = async (id: number, mediaUrl: string) => {
+    setIsDeletingMedia(true);
+    try {
+      // Extract storage filename from URL
+      const urlParts = mediaUrl.split("/guest-uploads/");
+      if (urlParts.length > 1) {
+        const fileName = urlParts[1].split("?")[0];
+        await supabase.storage.from("guest-uploads").remove([fileName]);
+      }
+      const { error: delErr } = await supabase.from("guest_media").delete().eq("id", id);
+      if (delErr) throw delErr;
+      setGuestMedia((prev) => prev.filter((m) => m.id !== id));
+      setDeleteMediaId(null);
+      if (selectedMedia?.id === id) setSelectedMedia(null);
+    } catch (err: any) {
+      alert("Failed to delete media: " + err.message);
+    } finally {
+      setIsDeletingMedia(false);
+    }
+  };
+
+  // Unique guest names for media filter
+  const mediaGuestNames = useMemo(() => {
+    const names = Array.from(new Set(guestMedia.map((m) => m.guest_name)));
+    return names.sort();
+  }, [guestMedia]);
+
+  // Filtered media
+  const filteredMedia = useMemo(() => {
+    return guestMedia.filter((m) => {
+      const matchesGuest = mediaGuestFilter === "all" || m.guest_name === mediaGuestFilter;
+      const matchesType = mediaTypeFilter === "all" || m.media_type === mediaTypeFilter;
+      const matchesSearch = !searchQuery || m.guest_name.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesGuest && matchesType && matchesSearch;
+    });
+  }, [guestMedia, mediaGuestFilter, mediaTypeFilter, searchQuery]);
+
+  const mediaStats = useMemo(() => ({
+    total: guestMedia.length,
+    images: guestMedia.filter((m) => m.media_type === "image").length,
+    videos: guestMedia.filter((m) => m.media_type === "video").length,
+    uploaders: new Set(guestMedia.map((m) => m.guest_name)).size,
+  }), [guestMedia]);
 
   // Filtered RSVPs
   const filteredRSVPs = useMemo(() => {
@@ -906,6 +962,18 @@ export default function AdminDashboard() {
             </div>
             <p className="text-[10px] text-[#6B5A63] mt-1">
               {inventoryCounts.withFilaMeasurement} head sizes provided
+            </p>
+          </div>
+
+          {/* Camera Uploads KPI */}
+          <div className="bg-white p-5 rounded-2xl border border-[#E3D3DA] shadow-sm col-span-2 lg:col-span-1">
+            <div className="flex items-center justify-between text-[#6B5A63] mb-2">
+              <span className="text-xs font-medium uppercase tracking-wider">Camera Uploads</span>
+              <Camera className="w-4 h-4 text-[#B23A6B]" />
+            </div>
+            <p className="text-2xl font-bold text-[#241B22]">{guestMedia.length}</p>
+            <p className="text-[11px] text-[#6B5A63] mt-1">
+              {guestMedia.filter(m => m.media_type === "image").length} photos · {guestMedia.filter(m => m.media_type === "video").length} videos
             </p>
           </div>
         </div>
@@ -1966,36 +2034,139 @@ export default function AdminDashboard() {
             TAB 4: GUEST MEDIA
         ═══════════════════════════════════════════════════════════ */}
         {activeTab === "media" && (
-          <div className="bg-white rounded-3xl border border-[#E3D3DA] p-6 shadow-sm">
-            <h2 className="text-lg font-bold text-[#241B22] mb-4">
-              Guest Uploads ({guestMedia.length})
-            </h2>
-            {guestMedia.length === 0 ? (
-              <p className="text-sm text-[#6B5A63] text-center py-12">
-                No guest photos or videos uploaded yet.
-              </p>
-            ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4">
-                {guestMedia.map((m) => (
-                  <div
-                    key={m.id}
-                    className="relative group rounded-2xl overflow-hidden border border-[#E3D3DA] aspect-square bg-black/5"
+          <div className="space-y-4">
+            {/* Stats Bar */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                { label: "Total Uploads", value: mediaStats.total, color: "#0E5C52" },
+                { label: "Photos", value: mediaStats.images, color: "#B23A6B" },
+                { label: "Videos", value: mediaStats.videos, color: "#7C3AED" },
+                { label: "Unique Guests", value: mediaStats.uploaders, color: "#B88A2E" },
+              ].map((s) => (
+                <div key={s.label} className="bg-white rounded-2xl p-4 border border-[#E3D3DA] text-center shadow-sm">
+                  <p className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</p>
+                  <p className="text-[11px] text-[#6B5A63] uppercase tracking-wider font-medium mt-0.5">{s.label}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Filters */}
+            <div className="bg-white rounded-2xl border border-[#E3D3DA] p-3 flex flex-wrap gap-3 items-center">
+              <div className="flex items-center gap-2">
+                <Filter className="w-3.5 h-3.5 text-[#8C7A84]" />
+                <span className="text-xs font-semibold text-[#6B5A63]">Type:</span>
+                {(["all", "image", "video"] as const).map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => setMediaTypeFilter(t)}
+                    className={`px-3 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                      mediaTypeFilter === t
+                        ? "bg-[#0E5C52] text-white"
+                        : "bg-[#FDFBF7] border border-[#E3D3DA] text-[#6B5A63] hover:text-[#0E5C52]"
+                    }`}
                   >
-                    <img
-                      src={m.media_url}
-                      alt={m.guest_name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-2 flex flex-col justify-end text-white text-[10px]">
-                      <span className="font-bold truncate">{m.guest_name}</span>
-                      <span className="text-white/80">
-                        {new Date(m.created_at).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
+                    {t === "all" ? `All (${mediaStats.total})` : t === "image" ? `📷 Photos (${mediaStats.images})` : `🎬 Videos (${mediaStats.videos})`}
+                  </button>
                 ))}
               </div>
-            )}
+              <div className="flex items-center gap-2 ml-auto">
+                <span className="text-xs font-semibold text-[#6B5A63]">Guest:</span>
+                <select
+                  value={mediaGuestFilter}
+                  onChange={(e) => setMediaGuestFilter(e.target.value)}
+                  className="text-xs bg-[#FDFBF7] border border-[#E3D3DA] rounded-lg px-2.5 py-1.5 text-[#241B22] focus:outline-none"
+                >
+                  <option value="all">All Guests ({mediaGuestNames.length})</option>
+                  {mediaGuestNames.map((name) => (
+                    <option key={name} value={name}>{name} ({guestMedia.filter(m => m.guest_name === name).length})</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Gallery */}
+            <div className="bg-white rounded-3xl border border-[#E3D3DA] p-5 shadow-sm">
+              {loading ? (
+                <div className="py-16 text-center">
+                  <Loader2 className="w-8 h-8 animate-spin mx-auto mb-3 text-[#0E5C52]" />
+                  <p className="text-sm text-[#6B5A63]">Loading uploads...</p>
+                </div>
+              ) : filteredMedia.length === 0 ? (
+                <div className="py-16 text-center">
+                  <Camera className="w-12 h-12 text-[#E3D3DA] mx-auto mb-3" />
+                  <p className="text-sm text-[#6B5A63]">
+                    {guestMedia.length === 0
+                      ? "No guest photos or videos uploaded yet. They'll appear here once guests start uploading on the wedding day!"
+                      : "No uploads match your current filters."}
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                  {filteredMedia.map((m) => (
+                    <div
+                      key={m.id}
+                      className="relative group rounded-2xl overflow-hidden border border-[#E3D3DA] bg-black/5"
+                      style={{ aspectRatio: "1" }}
+                    >
+                      {/* Thumbnail */}
+                      {m.media_type === "video" ? (
+                        <div className="w-full h-full bg-[#1a1a2e] flex items-center justify-center">
+                          <video
+                            src={m.media_url}
+                            className="w-full h-full object-cover"
+                            muted
+                            preload="metadata"
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                              <Play className="w-5 h-5 text-white ml-0.5" />
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <img
+                          src={m.media_url}
+                          alt={m.guest_name}
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          loading="lazy"
+                        />
+                      )}
+
+                      {/* Type badge */}
+                      <div className="absolute top-2 left-2">
+                        <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded-md ${
+                          m.media_type === "video"
+                            ? "bg-purple-600/90 text-white"
+                            : "bg-[#0E5C52]/90 text-white"
+                        }`}>
+                          {m.media_type === "video" ? "VID" : "IMG"}
+                        </span>
+                      </div>
+
+                      {/* Hover overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-between p-2">
+                        <div className="flex justify-end">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setDeleteMediaId(m.id); }}
+                            className="w-7 h-7 bg-red-500/90 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors cursor-pointer"
+                            title="Delete"
+                          >
+                            <Trash2 className="w-3.5 h-3.5 text-white" />
+                          </button>
+                        </div>
+                        <div
+                          className="cursor-pointer"
+                          onClick={() => setSelectedMedia(m)}
+                        >
+                          <p className="text-white font-bold text-xs truncate">{m.guest_name}</p>
+                          <p className="text-white/70 text-[10px]">{new Date(m.created_at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
@@ -2410,6 +2581,107 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
+
+      {/* ─────────────────────────────────────────────────────────────
+          MODAL 6: GUEST MEDIA LIGHTBOX
+      ───────────────────────────────────────────────────────────── */}
+      {selectedMedia && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+          onClick={() => setSelectedMedia(null)}
+        >
+          <div
+            className="relative max-w-4xl w-full bg-[#111] rounded-3xl overflow-hidden shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 bg-black/40">
+              <div>
+                <p className="text-white font-bold text-sm">{selectedMedia.guest_name}</p>
+                <p className="text-white/60 text-xs">{new Date(selectedMedia.created_at).toLocaleString()}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <a
+                  href={selectedMedia.media_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  download
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0E5C52] text-white rounded-lg text-xs font-semibold hover:bg-[#0A4A42] transition-colors"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  Download
+                </a>
+                <button
+                  onClick={() => { setDeleteMediaId(selectedMedia.id); }}
+                  className="px-3 py-1.5 bg-red-600 text-white rounded-lg text-xs font-semibold hover:bg-red-700 transition-colors cursor-pointer"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  onClick={() => setSelectedMedia(null)}
+                  className="p-1.5 text-white/70 hover:text-white rounded-lg transition-colors cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Media */}
+            <div className="max-h-[75vh] flex items-center justify-center bg-black">
+              {selectedMedia.media_type === "video" ? (
+                <video
+                  src={selectedMedia.media_url}
+                  controls
+                  autoPlay
+                  className="max-h-[75vh] max-w-full"
+                />
+              ) : (
+                <img
+                  src={selectedMedia.media_url}
+                  alt={selectedMedia.guest_name}
+                  className="max-h-[75vh] max-w-full object-contain"
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────
+          MODAL 7: DELETE MEDIA CONFIRMATION
+      ───────────────────────────────────────────────────────────── */}
+      {deleteMediaId !== null && (
+        <div className="fixed inset-0 z-[60] bg-black/60 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 max-w-sm w-full border border-[#E3D3DA] shadow-2xl text-center">
+            <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-3">
+              <Trash2 className="w-6 h-6" />
+            </div>
+            <h3 className="font-bold text-base text-[#241B22] mb-1">Delete This Upload?</h3>
+            <p className="text-xs text-[#6B5A63] mb-5">
+              This will permanently remove the photo/video from both the gallery and storage. This cannot be undone.
+            </p>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setDeleteMediaId(null)}
+                className="flex-1 py-2.5 bg-[#FDFBF7] border border-[#E3D3DA] rounded-xl text-xs font-semibold text-[#6B5A63] hover:bg-white transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  const item = guestMedia.find(m => m.id === deleteMediaId);
+                  if (item) handleDeleteMedia(item.id, item.media_url);
+                }}
+                disabled={isDeletingMedia}
+                className="flex-1 py-2.5 bg-red-600 text-white rounded-xl text-xs font-semibold hover:bg-red-700 transition-colors cursor-pointer disabled:opacity-50"
+              >
+                {isDeletingMedia ? "Deleting..." : "Yes, Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
