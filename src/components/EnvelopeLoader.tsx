@@ -10,6 +10,31 @@ export default function EnvelopeLoader() {
   const [isRemoved, setIsRemoved] = useState(false);
 
   useEffect(() => {
+    // ── QR code bypass: skip the loader when linking directly to #disposable-camera ──
+    if (window.location.hash === "#disposable-camera") {
+      // Instantly make main content visible
+      const main = document.querySelector("#main-content") as HTMLElement;
+      if (main) {
+        main.style.transform = "scale(1)";
+        main.style.opacity = "1";
+        main.style.transition = "none";
+      }
+      document.body.style.overflow = "auto";
+      setIsRemoved(true);
+
+      // Scroll to the section after the DOM has painted
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const section = document.querySelector("#disposable-camera") as HTMLElement;
+          if (section) {
+            section.scrollIntoView({ behavior: "smooth" });
+          }
+        });
+      });
+      return;
+    }
+
+    // ── Normal flow ──
     window.scrollTo(0, 0);
     document.body.style.overflow = "hidden";
 
