@@ -42,6 +42,13 @@ import {
   Video,
   Play,
 } from "lucide-react";
+import {
+  computeLeaderboards,
+  parseScore,
+  PlayerProfile as UnifiedPlayerProfile,
+  PlayerRankingEntry,
+  RawLeaderboardRow,
+} from "@/lib/gameScoring";
 
 // ─── TYPES ──────────────────────────────────────────────────────────
 export type RSVP = {
@@ -72,25 +79,8 @@ export type GuestMedia = {
   media_type: string;
 };
 
-export type LeaderboardRow = {
-  id: number;
-  guest_name: string;
-  game_type: string;
-  score: number;
-  created_at: string;
-};
-
-export type PlayerProfile = {
-  guest_name: string;
-  totalScore: number;
-  gamesPlayed: number;
-  games: Set<string>;
-  bestScores: Record<string, number>;
-  rawEntries: LeaderboardRow[];
-  firstPlayed: string;
-  latestPlayed: string;
-  overallRank?: number;
-};
+export type LeaderboardRow = RawLeaderboardRow;
+export type PlayerProfile = UnifiedPlayerProfile;
 
 // Item Catalog Definition with prices matching AsoebiPaymentForm
 export const ASOEBI_CATALOG: Record<
@@ -319,7 +309,7 @@ export default function AdminDashboard() {
   const [selectedOrder, setSelectedOrder] = useState<AsoebiOrder | null>(null);
   const [selectedRSVP, setSelectedRSVP] = useState<RSVP | null>(null);
   const [selectedPlayer, setSelectedPlayer] = useState<PlayerProfile | null>(null);
-  const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<number | string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Media Modals & State
@@ -464,97 +454,11 @@ export default function AdminDashboard() {
 
   // ─── GAME AGGREGATIONS & RANKINGS ──────────────────────────────────
   const { playerProfiles, overallRankedList, gameRankings } = useMemo(() => {
-    const map: Record<string, PlayerProfile> = {};
-
-    leaderboardEntries.forEach((entry) => {
-      const nameKey = entry.guest_name.trim().toLowerCase();
-      if (!map[nameKey]) {
-        map[nameKey] = {
-          guest_name: entry.guest_name.trim(),
-          totalScore: 0,
-          gamesPlayed: 0,
-          games: new Set(),
-          bestScores: {},
-          rawEntries: [],
-          firstPlayed: entry.created_at,
-          latestPlayed: entry.created_at,
-        };
-      }
-
-      const prof = map[nameKey];
-      prof.rawEntries.push(entry);
-      if (new Date(entry.created_at) < new Date(prof.firstPlayed)) prof.firstPlayed = entry.created_at;
-      if (new Date(entry.created_at) > new Date(prof.latestPlayed)) prof.latestPlayed = entry.created_at;
-
-      const gt = entry.game_type;
-      prof.games.add(gt);
-
-      if (prof.bestScores[gt] === undefined) {
-        prof.bestScores[gt] = entry.score;
-      } else {
-        const isAsc = gt === "memory" || gt === "maze";
-        if (isAsc) {
-          if (entry.score < prof.bestScores[gt]) prof.bestScores[gt] = entry.score;
-        } else {
-          if (entry.score > prof.bestScores[gt]) prof.bestScores[gt] = entry.score;
-        }
-      }
-    });
-
-    // Compute composite score for all players
-    Object.values(map).forEach((prof) => {
-      prof.gamesPlayed = prof.games.size;
-      let sum = 0;
-      Object.entries(prof.bestScores).forEach(([gt, best]) => {
-        if (gt === "trivia") sum += Math.floor(best) * 10;
-        else if (gt === "timeline") sum += 50;
-        else if (gt === "memory") sum += Math.max(0, 100 - Math.floor(best) * 2);
-        else if (gt === "maze") sum += Math.max(0, 100 - Math.floor(best) * 2);
-      });
-      prof.totalScore = sum;
-    });
-
-    // Sort Overall List
-    const sortedOverall = Object.values(map)
-      .sort((a, b) => b.totalScore - a.totalScore)
-      .map((p, idx) => ({ ...p, overallRank: idx + 1 }));
-
-    // Compute Individual Game Rankings (100% of participants for each game)
-    const computeGameRank = (gameType: string, isAscending: boolean) => {
-      const gameEntries = leaderboardEntries.filter((e) => e.game_type === gameType);
-      const playerBest: Record<string, { guest_name: string; score: number; created_at: string; id: number }> = {};
-
-      gameEntries.forEach((e) => {
-        const key = e.guest_name.trim().toLowerCase();
-        if (!playerBest[key]) {
-          playerBest[key] = { guest_name: e.guest_name.trim(), score: e.score, created_at: e.created_at, id: e.id };
-        } else {
-          const curr = playerBest[key].score;
-          if (isAscending ? e.score < curr : e.score > curr) {
-            playerBest[key] = { guest_name: e.guest_name.trim(), score: e.score, created_at: e.created_at, id: e.id };
-          }
-        }
-      });
-
-      return Object.values(playerBest)
-        .sort((a, b) => (isAscending ? a.score - b.score : b.score - a.score))
-        .map((p, idx) => ({ ...p, rank: idx + 1 }));
-    };
-
-    return {
-      playerProfiles: map,
-      overallRankedList: sortedOverall,
-      gameRankings: {
-        trivia: computeGameRank("trivia", false),
-        memory: computeGameRank("memory", true),
-        timeline: computeGameRank("timeline", false),
-        maze: computeGameRank("maze", true),
-      },
-    };
+    return computeLeaderboards(leaderboardEntries);
   }, [leaderboardEntries]);
 
   // Delete Score Record Handler
-  const handleDeleteScore = async (id: number) => {
+  const handleDeleteScore = async (id: number | string) => {
     setIsDeleting(true);
     try {
       const { error: delErr } = await supabase.from("leaderboards").delete().eq("id", id);
@@ -1759,7 +1663,7 @@ export default function AdminDashboard() {
                                 >
                                   Trivia:{" "}
                                   {player.bestScores.trivia !== undefined
-                                    ? `${Math.floor(player.bestScores.trivia)}/5`
+                                    ? `${Math.floor(player.bestScores.trivia)}/10`
                                     : "—"}
                                 </span>
 
@@ -1772,7 +1676,7 @@ export default function AdminDashboard() {
                                 >
                                   Memory:{" "}
                                   {player.bestScores.memory !== undefined
-                                    ? `${Math.floor(player.bestScores.memory)} mv`
+                                    ? `${Math.floor(player.bestScores.memory / 1000)} pts`
                                     : "—"}
                                 </span>
 
@@ -1784,7 +1688,7 @@ export default function AdminDashboard() {
                                   }`}
                                 >
                                   Timeline:{" "}
-                                  {player.bestScores.timeline !== undefined ? "Done" : "—"}
+                                  {player.bestScores.timeline !== undefined ? "Done (50 pts)" : "—"}
                                 </span>
 
                                 <span
@@ -1796,7 +1700,7 @@ export default function AdminDashboard() {
                                 >
                                   Maze:{" "}
                                   {player.bestScores.maze !== undefined
-                                    ? `${Math.floor(player.bestScores.maze)} mv`
+                                    ? `${Math.floor(player.bestScores.maze / 1000)} pts`
                                     : "—"}
                                 </span>
                               </div>
@@ -1826,9 +1730,9 @@ export default function AdminDashboard() {
                 <div className="p-4 bg-[#FDFBF7] border-b border-[#E3D3DA] flex items-center justify-between">
                   <h3 className="font-bold text-sm text-[#241B22]">
                     {gameSubTab === "trivia" && "❓ Couple Trivia — Complete Player Rankings"}
-                    {gameSubTab === "memory" && "🃏 Memory Match — Complete Player Rankings (Fewest Moves)"}
+                    {gameSubTab === "memory" && "🃏 Memory Match — Complete Player Rankings (Highest Performance Points)"}
                     {gameSubTab === "timeline" && "⏳ Our Timeline — Complete Player Rankings"}
-                    {gameSubTab === "maze" && "🌀 Find the Bride (Maze) — Complete Player Rankings (Fewest Moves)"}
+                    {gameSubTab === "maze" && "🌀 Find the Bride (Maze) — Complete Player Rankings (Highest Performance Points)"}
                   </h3>
                   <span className="text-xs text-[#6B5A63]">
                     {gameRankings[gameSubTab].length} players participated
@@ -1843,12 +1747,12 @@ export default function AdminDashboard() {
                         <th className="py-4 px-4">Player Name</th>
                         <th className="py-4 px-4 text-right">
                           {gameSubTab === "trivia"
-                            ? "Correct Answers / Score"
+                            ? "Score (Correct Answers)"
                             : gameSubTab === "memory" || gameSubTab === "maze"
-                            ? "Moves Taken"
+                            ? "Performance Score"
                             : "Status"}
                         </th>
-                        <th className="py-4 px-4 text-center">Time / Speed</th>
+                        <th className="py-4 px-4 text-center">Time / Tie-Breaker</th>
                         <th className="py-4 px-4 text-right">Date Played</th>
                         <th className="py-4 px-4 text-right">Actions</th>
                       </tr>
@@ -1862,29 +1766,12 @@ export default function AdminDashboard() {
                         </tr>
                       ) : (
                         gameRankings[gameSubTab].map((p) => {
-                          const isTimed = gameSubTab === "memory" || gameSubTab === "maze";
-                          const isTrivia = gameSubTab === "trivia";
-                          const rawScore = isTimed || isTrivia ? Math.floor(p.score) : p.score;
-
-                          let timeStr = "—";
-                          if (isTrivia) {
-                            const timeFrac = p.score - rawScore;
-                            if (timeFrac > 0 && timeFrac < 1) {
-                              timeStr = `${(1 / timeFrac).toFixed(1)}s`;
-                            }
-                          } else if (isTimed) {
-                            const timeFrac = p.score - rawScore;
-                            if (timeFrac > 0) {
-                              const ms = timeFrac * 1000000;
-                              timeStr = `${(ms / 1000).toFixed(1)}s`;
-                            }
-                          }
-
+                          const parsed = p.parsedScore || parseScore(gameSubTab, p.score);
                           const playerProf = playerProfiles[p.guest_name.toLowerCase()];
 
                           return (
                             <tr
-                              key={p.guest_name}
+                              key={p.id || p.guest_name}
                               className="hover:bg-[#FDFBF7]/80 transition-colors"
                             >
                               <td className="py-4 px-4 sm:px-6 text-center">
@@ -1915,19 +1802,15 @@ export default function AdminDashboard() {
 
                               <td className="py-4 px-4 text-right">
                                 <span className="font-bold text-[#0E5C52] text-sm sm:text-base">
-                                  {rawScore}{" "}
+                                  {parsed.displayScore}{" "}
                                   <span className="text-[10px] font-normal text-[#6B5A63]">
-                                    {gameSubTab === "trivia"
-                                      ? "/ 5 correct"
-                                      : gameSubTab === "memory" || gameSubTab === "maze"
-                                      ? "moves"
-                                      : "pts"}
+                                    {parsed.unit}
                                   </span>
                                 </span>
                               </td>
 
                               <td className="py-4 px-4 text-center font-mono text-xs text-[#6B5A63]">
-                                {timeStr}
+                                {parsed.tieBreakerStr || "—"}
                               </td>
 
                               <td className="py-4 px-4 text-right text-xs text-[#8C7A84]">
@@ -2507,7 +2390,7 @@ export default function AdminDashboard() {
                     <span className="font-medium text-[#241B22]">❓ Couple Trivia</span>
                     <span className="font-bold text-[#0E5C52]">
                       {selectedPlayer.bestScores.trivia !== undefined
-                        ? `${Math.floor(selectedPlayer.bestScores.trivia)}/5 correct (${Math.floor(selectedPlayer.bestScores.trivia) * 10} pts)`
+                        ? `${Math.floor(selectedPlayer.bestScores.trivia)}/10 correct (${Math.floor(selectedPlayer.bestScores.trivia) * 10} pts)`
                         : "Not played"}
                     </span>
                   </div>
@@ -2516,7 +2399,7 @@ export default function AdminDashboard() {
                     <span className="font-medium text-[#241B22]">🃏 Memory Match</span>
                     <span className="font-bold text-[#0E5C52]">
                       {selectedPlayer.bestScores.memory !== undefined
-                        ? `${Math.floor(selectedPlayer.bestScores.memory)} moves (${Math.max(0, 100 - Math.floor(selectedPlayer.bestScores.memory) * 2)} pts)`
+                        ? `${Math.floor(selectedPlayer.bestScores.memory / 1000)} pts`
                         : "Not played"}
                     </span>
                   </div>
@@ -2534,7 +2417,7 @@ export default function AdminDashboard() {
                     <span className="font-medium text-[#241B22]">🌀 Find the Bride (Maze)</span>
                     <span className="font-bold text-[#0E5C52]">
                       {selectedPlayer.bestScores.maze !== undefined
-                        ? `${Math.floor(selectedPlayer.bestScores.maze)} moves (${Math.max(0, 100 - Math.floor(selectedPlayer.bestScores.maze) * 2)} pts)`
+                        ? `${Math.floor(selectedPlayer.bestScores.maze / 1000)} pts`
                         : "Not played"}
                     </span>
                   </div>

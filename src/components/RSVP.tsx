@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import confetti from "canvas-confetti";
-import { Heart, CheckCircle2, Loader2, AlertCircle, ShieldCheck } from "lucide-react";
+import { motion } from "framer-motion";
+import { Heart, CheckCircle2, Loader2, AlertCircle, ShieldCheck, Lock, Clock, Sparkles, Calendar } from "lucide-react";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 
@@ -42,6 +43,135 @@ export default function RSVP() {
       console.warn("Could not read stored RSVP:", e);
     }
   }, []);
+
+  // Window Closed state: Compact, elegant translucent card matching the Asoebi closed state
+  const isWindowClosed = true;
+
+  if (isWindowClosed) {
+    return (
+      <section id="rsvp" className="py-10 sm:py-14 px-4 bg-[#FBF6F7] relative overflow-hidden">
+        {/* Subtle background glow */}
+        <div className="absolute top-0 right-1/4 w-80 h-80 bg-[#D4AF37]/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-[#B23A6B]/5 rounded-full blur-3xl pointer-events-none" />
+
+        {/* Decorative Left Botanical Element */}
+        <div className="absolute -left-16 -top-10 md:left-[-15%] lg:left-0 md:top-1/2 md:-translate-y-1/2 opacity-25 md:opacity-40 pointer-events-none z-0 mix-blend-multiply w-[220px] h-[220px] md:w-[350px] md:h-[350px]">
+          <Image 
+            src="/images/rose.png" 
+            alt="Decorative Rose" 
+            fill 
+            sizes="(max-width: 768px) 220px, 350px"
+            className="object-contain"
+          />
+        </div>
+
+        {/* Decorative Right Botanical Element */}
+        <div className="absolute -right-16 bottom-0 md:right-[-15%] lg:right-0 md:top-1/2 md:bottom-auto md:-translate-y-1/2 opacity-25 md:opacity-40 pointer-events-none z-0 mix-blend-multiply w-[220px] h-[220px] md:w-[350px] md:h-[350px]" style={{ transform: "scaleX(-1)" }}>
+          <Image 
+            src="/images/rose.png" 
+            alt="Decorative Rose" 
+            fill 
+            sizes="(max-width: 768px) 220px, 350px"
+            className="object-contain"
+          />
+        </div>
+
+        <div className="max-w-xl mx-auto relative z-10">
+          {/* Section Header */}
+          <div className="text-center max-w-lg mx-auto mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#B23A6B]/10 text-[#B23A6B] text-xs font-bold uppercase tracking-[0.2em] mb-2">
+              <Heart className="w-3.5 h-3.5 fill-[#B23A6B]" />
+              RSVP Section
+            </div>
+            <h2
+              style={{ fontFamily: "var(--font-cormorant), Georgia, serif" }}
+              className="text-3xl sm:text-4xl font-light text-[#093F38] mb-1.5 tracking-tight"
+            >
+              Join The Celebration
+            </h2>
+            <p className="text-xs sm:text-sm text-[#6B5A63] font-light leading-relaxed">
+              Olivia &amp; Iyanu Wedding Celebration
+            </p>
+          </div>
+
+          {/* Compact Translucent Frosted Glass Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="relative bg-white/85 backdrop-blur-md rounded-3xl border-2 border-[#D4AF37]/50 shadow-xl overflow-hidden p-6 sm:p-8 text-center"
+          >
+            {/* Top decorative gradient bar */}
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#D4AF37] via-[#B23A6B] to-[#0E5C52]" />
+
+            {/* Icon Badge */}
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#0E5C52]/10 border border-[#0E5C52]/20 flex items-center justify-center mx-auto mb-3.5 text-[#0E5C52] shadow-inner">
+              <Lock className="w-6 h-6 text-[#0E5C52]" />
+            </div>
+
+            {/* Status Pill */}
+            <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#B23A6B]/15 text-[#B23A6B] text-[11px] font-bold uppercase tracking-wider mb-2.5">
+              <Clock className="w-3 h-3" /> RSVP Window Closed
+            </div>
+
+            {/* Heading */}
+            <h3
+              style={{ fontFamily: "var(--font-cormorant), Georgia, serif" }}
+              className="text-2xl sm:text-3xl font-light text-[#093F38] mb-2 tracking-tight"
+            >
+              RSVP Submissions are Closed
+            </h3>
+
+            {/* Description */}
+            <p className="text-xs sm:text-sm text-[#5C4D55] leading-relaxed max-w-md mx-auto mb-4 font-light">
+              Thank you so much to everyone who responded! The RSVP window has officially closed to allow our planning and catering teams to finalize seating and arrangements.
+            </p>
+
+            {/* Existing RSVP Reassurance Box */}
+            <div className="p-3.5 rounded-2xl bg-[#FAF7F2] border border-[#E8DFC8] text-xs text-[#5C4D55] text-left space-y-1 mb-5 shadow-xs max-w-md mx-auto">
+              <div className="flex items-center gap-2 text-[#0E5C52] font-semibold text-xs">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#D4AF37] shrink-0" />
+                <span>Already Submitted Your RSVP?</span>
+              </div>
+              {savedRsvp ? (
+                <div className="pl-5 space-y-1">
+                  <p className="text-[11px] text-[#6B5A63] leading-relaxed">
+                    Your response is safely recorded for <strong className="text-[#241B22]">{savedRsvp.fullName}</strong> ({savedRsvp.attending === "yes" ? "✨ Joyfully Attending" : "Regretfully Declining"}).
+                  </p>
+                  <p className="text-[10px] text-[#8C827A] italic">
+                    If you need to make urgent changes, please reach out directly to the couple.
+                  </p>
+                </div>
+              ) : (
+                <p className="text-[11px] text-[#6B5A63] leading-relaxed pl-5">
+                  All submitted responses and guest attendance details are safely recorded. If you need urgent adjustments or have questions, please reach out directly to the couple.
+                </p>
+              )}
+            </div>
+
+            {/* Call to action */}
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <a
+                href="#save-the-date"
+                className="px-5 py-2.5 rounded-full bg-[#0E5C52] hover:bg-[#0A4A42] text-white text-xs font-semibold uppercase tracking-wider transition-all duration-200 shadow-md flex items-center gap-2 group cursor-pointer"
+              >
+                <Calendar className="w-3.5 h-3.5 text-[#D4AF37] group-hover:scale-110 transition-transform" />
+                <span>View Wedding Details</span>
+              </a>
+              <a
+                href="#registry"
+                className="px-5 py-2.5 rounded-full bg-white hover:bg-[#FAF7F2] text-[#0E5C52] border border-[#0E5C52]/30 text-xs font-semibold uppercase tracking-wider transition-all duration-200 shadow-xs flex items-center gap-2 group cursor-pointer"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-[#D4AF37] group-hover:rotate-12 transition-transform" />
+                <span>Wedding Registry</span>
+              </a>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

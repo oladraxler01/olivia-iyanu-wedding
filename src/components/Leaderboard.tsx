@@ -35,10 +35,11 @@ export const saveScore = async (guest_name: string, game_type: string, score: nu
   }
 };
 
-// ─── DISPLAY COMPONENT ──────────────────────────────────
+import { computeLeaderboards, parseScore, RawLeaderboardRow } from "@/lib/gameScoring";
+
 export type GameTab = "all" | "trivia" | "memory" | "timeline" | "maze";
 export type ScoreEntry = {
-  id: number;
+  id: number | string;
   guest_name: string;
   score: number;
   game_type?: string;
@@ -72,80 +73,34 @@ export default function Leaderboard({ currentPlayerName = "" }: { currentPlayerN
     setLoading(true);
     setError(null);
     try {
-      let query = supabase
+      const { data, error: dbError } = await supabase
         .from("leaderboards")
         .select("id, guest_name, score, game_type, created_at");
+      if (dbError) throw dbError;
 
-      if (game_type !== "all") {
-        query = query.eq("game_type", game_type).limit(2000);
-        const { data, error: dbError } = await query;
-        if (dbError) throw dbError;
+      const { overallRankedList, gameRankings } = computeLeaderboards((data || []) as RawLeaderboardRow[]);
 
-        const bestScores: Record<string, ScoreEntry> = {};
-        (data || []).forEach(entry => {
-          const key = entry.guest_name.trim().toLowerCase();
-          if (!bestScores[key]) {
-            bestScores[key] = entry;
-          } else {
-            const currentBest = bestScores[key].score;
-            if (entry.score > currentBest) bestScores[key] = entry;
-          }
-        });
-
-        const sorted = Object.values(bestScores).sort((a, b) => b.score - a.score);
-
-        // Assign exact rank numbers
-        const ranked = sorted.map((item, idx) => ({
-          ...item,
-          rank: idx + 1,
+      if (game_type === "all") {
+        const formatted = overallRankedList.map((p) => ({
+          id: p.guest_name,
+          guest_name: p.displayName,
+          score: p.totalScore,
+          game_type: "all",
+          gamesPlayed: p.gamesPlayed,
+          rank: p.overallRank,
         }));
-
-        setAllScores(ranked);
+        setAllScores(formatted);
       } else {
-        query = query.limit(3000);
-        const { data, error: dbError } = await query;
-        if (dbError) throw dbError;
-        
-        const playerStats: Record<string, { guest_name: string; totalScore: number; games: Set<string>; created_at: string; bestScores: Record<string, number> }> = {};
-        
-        (data || []).forEach(entry => {
-          const key = entry.guest_name.trim().toLowerCase();
-          if (!playerStats[key]) {
-            playerStats[key] = { guest_name: entry.guest_name.trim(), totalScore: 0, games: new Set(), created_at: entry.created_at, bestScores: {} };
-          }
-          const stats = playerStats[key];
-          const gt = entry.game_type;
-          
-          if (!stats.bestScores[gt]) {
-            stats.bestScores[gt] = entry.score;
-            stats.games.add(gt);
-          } else {
-            const currentBest = stats.bestScores[gt];
-            if (entry.score > currentBest) stats.bestScores[gt] = entry.score;
-          }
-        });
-        
-        Object.values(playerStats).forEach(stats => {
-           Object.entries(stats.bestScores).forEach(([gt, best]) => {
-              if (gt === 'trivia') stats.totalScore += Math.floor(best) * 10;
-              else if (gt === 'timeline') stats.totalScore += 50;
-              else if (gt === 'memory') stats.totalScore += Math.floor(best / 1000);
-              else if (gt === 'maze') stats.totalScore += Math.floor(best / 1000);
-           });
-        });
-        
-        const aggregated: ScoreEntry[] = Object.values(playerStats)
-          .sort((a, b) => b.totalScore - a.totalScore)
-          .map((stats, idx) => ({
-            id: idx + 1,
-            guest_name: stats.guest_name,
-            score: stats.totalScore,
-            game_type: "all",
-            gamesPlayed: stats.games.size,
-            rank: idx + 1,
-          }));
-          
-        setAllScores(aggregated);
+        const list = gameRankings[game_type] || [];
+        const formatted = list.map((item) => ({
+          id: item.id,
+          guest_name: item.guest_name,
+          score: item.score,
+          game_type: item.game_type,
+          created_at: item.created_at,
+          rank: item.rank,
+        }));
+        setAllScores(formatted);
       }
     } catch (err: any) {
       console.error(err);
@@ -191,32 +146,25 @@ export default function Leaderboard({ currentPlayerName = "" }: { currentPlayerN
 
   // Helper to format score & time label
   const renderScoreDetails = (entry: ScoreEntry, tab: GameTab) => {
-    const effectiveTab = tab === "all" ? entry.game_type || "all" : tab;
-    const isTrivia = effectiveTab === "trivia";
-    const isTimed = effectiveTab === "memory" || effectiveTab === "maze";
-    const rawScore = isTimed ? Math.floor(entry.score / 1000) : (isTrivia ? Math.floor(entry.score) : entry.score);
-    
-    let timeStr = "";
-    if (isTrivia) {
-      const timeFrac = entry.score - rawScore;
-      timeStr = timeFrac > 0 && timeFrac < 1 ? `(${(1 / timeFrac).toFixed(1)}s)` : "";
-    } else if (isTimed) {
-      const msFraction = (entry.score % 1000) / 1000;
-      if (msFraction > 0) {
-        timeStr = `(tie-break: ${msFraction.toFixed(3)})`;
-      }
+    if (tab === "all") {
+      return (
+        <div className="text-right">
+          <span className="font-bold text-[#0E5C52] text-sm sm:text-base">{entry.score}</span>{" "}
+          <span className="text-[10px] sm:text-xs font-normal text-[#6B5A63]">total pts</span>
+        </div>
+      );
     }
 
-    let unit = "";
-    if (tab === "all") unit = "total pts";
-    else if (effectiveTab === "memory" || effectiveTab === "maze") unit = "pts";
-    else if (effectiveTab === "timeline" || isTrivia) unit = "pts";
+    const effectiveTab = entry.game_type || tab;
+    const parsed = parseScore(effectiveTab, entry.score);
 
     return (
       <div className="text-right">
-        <span className="font-bold text-[#0E5C52] text-sm sm:text-base">{rawScore}</span>{" "}
-        <span className="text-[10px] sm:text-xs font-normal text-[#6B5A63]">{unit}</span>
-        {timeStr && <span className="text-[10px] text-[#8C7A84] block font-mono">{timeStr}</span>}
+        <span className="font-bold text-[#0E5C52] text-sm sm:text-base">{parsed.displayScore}</span>{" "}
+        <span className="text-[10px] sm:text-xs font-normal text-[#6B5A63]">{parsed.unit}</span>
+        {parsed.tieBreakerStr && (
+          <span className="text-[10px] text-[#8C7A84] block font-mono">{parsed.tieBreakerStr}</span>
+        )}
       </div>
     );
   };
